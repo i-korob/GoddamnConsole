@@ -29,6 +29,8 @@ namespace GoddamnConsole.Drawing
     {
         public Rectangle(int x, int y, int width, int height)
         {
+            if (width < 0) width = 0; //throw new ArgumentException(nameof(width));
+            if (height < 0) height = 0; //throw new ArgumentException(nameof(height));
             X = x;
             Y = y;
             Width = width;
@@ -60,23 +62,45 @@ namespace GoddamnConsole.Drawing
 
     public class CommonOptions
     {
-        public CharColor Foreground { get; set; }
-        public CharColor Background { get; set; }
-        public CharAttribute Attributes { get; set; }
+        public CharColor Foreground { get; set; } = CharColor.Gray;
+        public CharColor Background { get; set; } = CharColor.Black;
+        public CharAttribute Attributes { get; set; } = CharAttribute.None;
     }
 
     public class RectangleOptions : CommonOptions
     {
-        
+
     }
 
     public class TextOptions : CommonOptions
     {
-        
+        public TextWrapping TextWrapping { get; set; } = TextWrapping.NoWrap;
     }
 
     public class FrameOptions : CommonOptions
     {
-        
+        internal static string[] Frames =
+        {
+            "─│┌┐└┘",
+            "═║╔╗╚╝",
+            "██████",
+            "-|++++"
+        };
+
+        public FrameStyle Style { get; set; }
+    }
+
+    public enum TextWrapping
+    {
+        Wrap,
+        NoWrap
+    }
+
+    public enum FrameStyle 
+    {
+        Single = 0,
+        Double = 1,
+        Fill = 2,
+        Simple = 3
     }
 }

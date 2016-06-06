@@ -21,9 +21,13 @@ namespace GoddamnConsoleSample
     {
         protected override void OnRender(DrawingContext context)
         {
-            context.DrawRectangle(new Rectangle(-10, -10, 20, 20), '#');
-            context.DrawRectangle(new Rectangle(20, 5, 20, 20), '!');
-            context.DrawRectangle(new Rectangle(50, 20, 200, 200), '@');
+            context.DrawFrame(new Rectangle(20, 5, 10, 20));
+            var shrunk = context.Shrink(new Rectangle(21, 6, 8, 20));
+            var scrolled = shrunk.Scroll(new Point(0, 5));
+            shrunk.DrawText(new Rectangle(0, 0, 8, 5), "Lorem ipsum dolor sit amet",
+                new TextOptions { TextWrapping = TextWrapping.Wrap });
+            scrolled.DrawText(new Rectangle(0, 0, 8, 5), "Lorem ipsum dolor sit amet",
+                new TextOptions { TextWrapping = TextWrapping.Wrap });
         }
     }
 }

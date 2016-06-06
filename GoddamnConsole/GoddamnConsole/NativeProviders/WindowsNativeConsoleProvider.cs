@@ -80,7 +80,10 @@ namespace GoddamnConsole.NativeProviders
                     var ph = WindowHeight;
                     WindowWidth = nw;
                     WindowHeight = nh;
-                    Syscon.SetWindowPosition(0, 0);
+                    try
+                    {
+                        Syscon.SetWindowPosition(0, 0);
+                    } catch { }
                     try
                     {
                         SizeChanged?.Invoke(this, new SizeChangedEventArgs(new Size(pw, ph), new Size(nw, nh)));
@@ -91,7 +94,7 @@ namespace GoddamnConsole.NativeProviders
                         Refresh();
                     }
                     catch { /**/ }
-                    Thread.Sleep(100);
+                    Thread.Sleep(16);
                 }
                 _shutdownEvent.Set();
             }).Start();

@@ -5,7 +5,17 @@
         //public override int Width { get; } = 0;
         //public override int Height { get; } = 0;
 
+        public override DrawingContext Scroll(Point sourceOffset)
+        {
+            return this;
+        }
+
         public override DrawingContext Shrink(Point sourceOffset, Rectangle targetArea)
+        {
+            return this;
+        }
+
+        public override DrawingContext Shrink(Rectangle targetArea)
         {
             return this;
         }
@@ -13,6 +23,11 @@
         public override void Clear()
         {
 
+        }
+
+        public override void PutChar(Point pt, char chr, CharColor foreground, CharColor background, CharAttribute attribute)
+        {
+            
         }
 
         public override void DrawRectangle(Rectangle rect, char fill, RectangleOptions opts = null)
