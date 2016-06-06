@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnConsole", "GoddamnConsole\GoddamnConsole.csproj", "{83C284CA-6F56-4E9D-8458-14D0B07620D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnConsoleSample", "GoddamnConsoleSample\GoddamnConsoleSample.csproj", "{B31F1DFC-1ABA-439A-AA45-269A5B09E261}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{83C284CA-6F56-4E9D-8458-14D0B07620D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83C284CA-6F56-4E9D-8458-14D0B07620D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83C284CA-6F56-4E9D-8458-14D0B07620D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83C284CA-6F56-4E9D-8458-14D0B07620D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B31F1DFC-1ABA-439A-AA45-269A5B09E261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B31F1DFC-1ABA-439A-AA45-269A5B09E261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B31F1DFC-1ABA-439A-AA45-269A5B09E261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B31F1DFC-1ABA-439A-AA45-269A5B09E261}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
