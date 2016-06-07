@@ -2,6 +2,18 @@
 
 namespace GoddamnConsole.Drawing
 {
+    public class Size
+    {
+        public Size(int w, int h)
+        {
+            Width = w;
+            Height = h;
+        }
+
+        public int Width { get; }
+        public int Height { get; }
+    }
+
     public class Point
     {
         public Point(int x, int y)

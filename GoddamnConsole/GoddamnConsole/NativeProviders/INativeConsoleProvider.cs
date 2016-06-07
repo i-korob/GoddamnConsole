@@ -1,20 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.NativeProviders
 {
-    public struct Size
-    {
-        public Size(int w, int h)
-        {
-            Width = w;
-            Height = h;
-        }
-
-        public int Width { get; }
-        public int Height { get; }
-    }
-
     public class SizeChangedEventArgs : EventArgs
     {
         public SizeChangedEventArgs(Size before, Size after)

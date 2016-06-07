@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Threading;
+using GoddamnConsole.Drawing;
 using Syscon = System.Console;
 
 namespace GoddamnConsole.NativeProviders
@@ -83,17 +84,13 @@ namespace GoddamnConsole.NativeProviders
                     try
                     {
                         Syscon.SetWindowPosition(0, 0);
-                    } catch { }
+                    } catch { /* Shit sometimes throws while resizing, do not handle this */ }
                     try
                     {
                         SizeChanged?.Invoke(this, new SizeChangedEventArgs(new Size(pw, ph), new Size(nw, nh)));
                     }
-                    catch { /**/ }
-                    try
-                    {
-                        Refresh();
-                    }
-                    catch { /**/ }
+                    catch { /* Do not care if subscriber fucked up */ }
+                    Refresh();
                     Thread.Sleep(16);
                 }
                 _shutdownEvent.Set();
