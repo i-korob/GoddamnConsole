@@ -14,8 +14,8 @@ namespace GoddamnConsole.Drawing
             _x = _scrollX = _y = _scrollY = 0;
         }
 
-        private int _scrollX; // TODO
-        private int _scrollY; // TODO
+        private int _scrollX;
+        private int _scrollY; 
         private int _x;
         private int _y;
         private int _width;
@@ -82,7 +82,6 @@ namespace GoddamnConsole.Drawing
                 {
                     PutChar(new Point(x, y), fill, opts?.Foreground ?? CharColor.Gray,
                         opts?.Background ?? CharColor.Black, opts?.Attributes ?? CharAttribute.None);
-                        //new Character(fill), x + _x, y + _y);
                 }
         }
 
@@ -90,7 +89,7 @@ namespace GoddamnConsole.Drawing
         {
             if (point.Y < 0 || point.Y >= _width) return;
             line = Regex.Replace(line, "[\r\n\t\f]", " ");
-            for (int x = point.X, i = 0; x < Math.Min(line.Length, _width - point.X) + point.X; x++, i++)
+            for (int x = point.X, i = 0; x < Math.Min(line.Length, _width - point.X - _scrollX) + point.X; x++, i++)
             {
                 PutChar(
                     new Point(x, point.Y), 
@@ -106,14 +105,14 @@ namespace GoddamnConsole.Drawing
             var maxWid = Math.Min(rect.Width + rect.X, _width) - rect.X;
             IEnumerable<string> lines = text.Replace("\r\n", "\n").Split('\n');
             lines = (opts?.TextWrapping ?? TextWrapping.NoWrap) == TextWrapping.Wrap
-                ? lines.SelectMany(x => x.Split(maxWid))
-                : lines.Select(x => x.Length >= maxWid ? x.Remove(maxWid) : x);
+                ? lines.SelectMany(x => x.Split(maxWid/* -_scrollX*/)) // wrapped text shouldn't be influenced by scrolling 
+                : lines.Select(x => x.Length > maxWid - _scrollX ? x.Remove(maxWid - _scrollX) : x);
             if (rect.X < 0)
                 lines = lines.Select(x => x.Length > -rect.X ? x.Substring(-rect.X) : "");
             var skip = rect.Y < 0 ? -rect.Y : 0;
             var xOfs = rect.X > 0 ? rect.X : 0;
             var yOfs = rect.Y > 0 ? rect.Y : 0;
-            foreach (var line in lines.Skip(skip).Take(Math.Min(rect.Height, _height - rect.Y)))
+            foreach (var line in lines.Skip(skip).Take(Math.Min(rect.Height - _scrollY, _height - rect.Y - _scrollY)))
             {
                 DrawText(new Point(xOfs, yOfs++), line, opts);
             }

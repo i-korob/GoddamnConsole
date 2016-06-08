@@ -19,7 +19,6 @@ namespace GoddamnConsole
 
         public static void Start(INativeConsoleProvider provider, Control root)
         {
-            provider.CursorVisible = false;
             Root = root;
             if (Provider != null) throw new ArgumentException("Already started");
             Provider = provider;

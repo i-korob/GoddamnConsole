@@ -84,6 +84,21 @@ namespace GoddamnConsole.Controls
         public int ActualHeight =>
             (_parent as IParentControl)?.MeasureChild(this)?.Height ??
             (Console.Root == this ? Console.WindowHeight : 0);
+
+        public void Invalidate() => Console.Refresh();
+        
+        public Point CursorPosition
+        {
+            get { return new Point(Console.Provider.CursorX, Console.Provider.CursorY); }
+            set
+            {
+                if (this == Console.Focused)
+                {
+                    Console.Provider.CursorX = value.X;
+                    Console.Provider.CursorY = value.Y;
+                }
+            }
+        }
     }
 
     public interface IParentControl

@@ -2,9 +2,6 @@
 {
     internal sealed class ImaginaryDrawingContext : DrawingContext
     {
-        //public override int Width { get; } = 0;
-        //public override int Height { get; } = 0;
-
         public override DrawingContext Scroll(Point sourceOffset)
         {
             return this;
