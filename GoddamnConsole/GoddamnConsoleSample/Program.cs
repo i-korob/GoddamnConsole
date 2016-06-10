@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using GoddamnConsole.Controls;
+using GoddamnConsole.Drawing;
 using GoddamnConsole.NativeProviders;
 using Console = GoddamnConsole.Console;
 
@@ -21,9 +22,75 @@ namespace GoddamnConsoleSample
 
         private static void Main()
         {
-            var ctl = new TextBox
+            var ctl = new Grid
             {
-                Text = LongLorem
+                Children =
+                {
+                    new Border
+                    {
+                        Content =
+                            new TextBox
+                            {
+                                Text = LongLorem,
+                                TextWrapping = TextWrapping.Wrap,
+                                Width = 200,
+                                Height = 200
+                            },
+                        AttachedProperties =
+                        {
+                            new GridRowProperty {Row = 0, RowSpan = 2},
+                            new GridColumnProperty {Column = 0},
+                        }
+                    },
+                    new Border
+                    {
+                        Content =
+                            new TextBox
+                            {
+                                Text = LongLorem,
+                                TextWrapping = TextWrapping.Wrap,
+                                Width = 200,
+                                Height = 200
+                            },
+                        AttachedProperties =
+                        {
+                            new GridRowProperty {Row = 0},
+                            new GridColumnProperty {Column = 1, ColumnSpan = 2},
+                        }
+                    },
+                    new Border
+                    {
+                        Content =
+                            new TextBox
+                            {
+                                Text = LongLorem,
+                                TextWrapping = TextWrapping.Wrap,
+                                Width = 200,
+                                Height = 200
+                            },
+                        AttachedProperties =
+                        {
+                            new GridRowProperty {Row = 1},
+                            new GridColumnProperty {Column = 1},
+                        }
+                    },
+                    new Border
+                    {
+                        Content =
+                            new TextBox
+                            {
+                                Text = LongLorem,
+                                TextWrapping = TextWrapping.Wrap,
+                                Width = 200,
+                                Height = 200
+                            },
+                        AttachedProperties =
+                        {
+                            new GridRowProperty {Row = 1},
+                            new GridColumnProperty {Column = 2},
+                        }
+                    },
+                }
             };
             Console.Focused = ctl;
             Console.Start(new WindowsNativeConsoleProvider(), ctl);

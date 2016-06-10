@@ -8,22 +8,45 @@ namespace GoddamnConsole.Controls
     {
         private Control _parent;
 
-        private void OmfgIamThrownOut(object sender, Control ctrl)
+        private void OnDetach(object sender, Control ctrl)
         {
             if (sender != _parent || ctrl != this) return;
             var cctl = sender as IContentControl;
             if (cctl != null && cctl.Content != this)
             {
-                cctl.ContentDetached -= OmfgIamThrownOut;
+                cctl.ContentDetached -= OnDetach;
             }
             else
             {
-                var pctl = sender as IPedophileControl;
+                var pctl = sender as IChildrenControl;
                 if (pctl != null)
                 {
-                    pctl.ChildRemoved -= OmfgIamThrownOut;
+                    pctl.ChildRemoved -= OnDetach;
                 }
                 else throw new Exception("Parent can not have children (wat)"); // how this shit could happen?
+            }
+            try
+            {
+                DetachedFromParent?.Invoke(this, EventArgs.Empty);
+            }
+            catch { /* */ }
+        }
+
+        private void RemoveFromParent()
+        {
+            var cctl = _parent as IContentControl;
+            if (cctl != null && cctl.Content != this)
+            {
+                cctl.Content = null;
+            }
+            else
+            {
+                var pctl = _parent as IChildrenControl;
+                if (pctl != null)
+                {
+                    pctl.Children.Remove(this);
+                }
+                else throw new Exception("Parent can not have children (wat)");
             }
             try
             {
@@ -40,23 +63,38 @@ namespace GoddamnConsole.Controls
             }
             set
             {
-                var cctl = value as IContentControl;
-                if (cctl != null && cctl.Content != this)
-                {
-                    cctl.ContentDetached += OmfgIamThrownOut;
-                    cctl.Content = this;
-                }
-                else
-                {
-                    var pctl = value as IPedophileControl;
-                    if (pctl != null)
-                    {
-                        pctl.ChildRemoved += OmfgIamThrownOut;
-                        pctl.Children.Add(this);
-                    }
-                    else throw new NotSupportedException($"{value.GetType().Name} can not have child");
-                }
+                var prev = _parent;
                 _parent = value;
+                try
+                {
+                    if (value == null)
+                    {
+                        RemoveFromParent();
+                        _parent = null;
+                        return;
+                    }
+                    var cctl = value as IContentControl;
+                    if (cctl != null && cctl.Content != this)
+                    {
+                        cctl.ContentDetached += OnDetach;
+                        cctl.Content = this;
+                    }
+                    else
+                    {
+                        var pctl = value as IChildrenControl;
+                        if (pctl != null)
+                        {
+                            pctl.ChildRemoved += OnDetach;
+                            pctl.Children.Add(this);
+                        }
+                        else throw new NotSupportedException($"{value.GetType().Name} can not have child");
+                    }
+                }
+                catch
+                {
+                    _parent = prev;
+                    throw;
+                }
             }
         }
 
@@ -69,18 +107,20 @@ namespace GoddamnConsole.Controls
 
         internal void OnRenderInternal(DrawingContext context)
         {
-            OnRender(context);
+            Render(context);
         }
 
         protected virtual void OnKeyPress(ConsoleKeyInfo key) { }
-        protected virtual void OnRender(DrawingContext context) { }
-
+        public virtual void Render(DrawingContext context) { }
+        
         public int Width { get; set; }
 
         public int ActualWidth =>
             (_parent as IParentControl)?.MeasureChild(this)?.Width ??
             (Console.Root == this ? Console.WindowWidth : 0);
+
         public int Height { get; set; }
+
         public int ActualHeight =>
             (_parent as IParentControl)?.MeasureChild(this)?.Height ??
             (Console.Root == this ? Console.WindowHeight : 0);
@@ -99,6 +139,8 @@ namespace GoddamnConsole.Controls
                 }
             }
         }
+
+        public ICollection<IAttachedProperty> AttachedProperties { get; } = new List<IAttachedProperty>();
     }
 
     public interface IParentControl
@@ -112,9 +154,14 @@ namespace GoddamnConsole.Controls
         event EventHandler<Control> ContentDetached;
     }
 
-    public interface IPedophileControl : IParentControl
+    public interface IChildrenControl : IParentControl
     {
         ICollection<Control> Children { get; }
         event EventHandler<Control> ChildRemoved;
+    }
+
+    public interface IAttachedProperty
+    {
+
     }
 }

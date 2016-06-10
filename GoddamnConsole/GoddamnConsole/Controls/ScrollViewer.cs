@@ -3,28 +3,16 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public class TextBox : Control
+    public class ScrollViewer : Control, IContentControl
     {
         private int _scrollX;
         private int _scrollY;
-        public string Text { get; set; }
-        public TextWrapping TextWrapping { get; set; } = TextWrapping.Wrap;
-
-        private int MeasureHeight() =>
-            TextWrapping == TextWrapping.Wrap
-                ? DrawingContext.MeasureWrappedText(Text, ActualWidth).Height
-                : DrawingContext.MeasureText(Text).Height;
-
-        private int MeasureWidth() =>
-            TextWrapping == TextWrapping.Wrap
-                ? DrawingContext.MeasureWrappedText(Text, ActualWidth).Width
-                : DrawingContext.MeasureText(Text).Width;
 
         protected override void OnKeyPress(ConsoleKeyInfo key)
         {
             if (key.Key == ConsoleKey.UpArrow && _scrollY < 0) _scrollY++;
             if (key.Key == ConsoleKey.DownArrow && 
-                MeasureHeight() - ActualHeight >= -_scrollY) _scrollY--;
+                MeasureChild(Content).Height - ActualHeight >= -_scrollY) _scrollY--;
             if (key.Key == ConsoleKey.LeftArrow && _scrollX < 0)
             {
                 _scrollX++;
@@ -43,7 +31,7 @@ namespace GoddamnConsole.Controls
             if (_scrollY > 0) _scrollY = 0;
             else
             {
-                var textHeight = MeasureHeight();
+                var textHeight = MeasureChild(Content).Height;
                 if (textHeight < ActualHeight) _scrollY = 0;
                 else if (textHeight - ActualHeight < -_scrollY)
                     _scrollY = -(textHeight - actHeight);
@@ -51,16 +39,21 @@ namespace GoddamnConsole.Controls
             if (_scrollX > 0) _scrollX = 0;
             else
             {
-                var textWidth = MeasureWidth();
+                var textWidth = MeasureChild(Content).Width;
                 if (textWidth < ActualWidth) _scrollX = 0;
                 else if (textWidth - ActualWidth < -_scrollX)
                     _scrollX = -(textWidth - actWidth);
             }
             var scrolled = context.Scroll(new Point(_scrollX, _scrollY));
-            scrolled.DrawText(
-                new Rectangle(0, 0, actWidth, actHeight), 
-                Text,
-                new TextOptions {TextWrapping = TextWrapping});
+            Content.Render(scrolled);
         }
+
+        public Size MeasureChild(Control child)
+        {
+            return new Size(Math.Max(0, child.Width), Math.Max(0, child.Height));
+        }
+
+        public Control Content { get; set; }
+        public event EventHandler<Control> ContentDetached;
     }
 }

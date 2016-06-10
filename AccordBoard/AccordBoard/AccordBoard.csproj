@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{83C284CA-6F56-4E9D-8458-14D0B07620D9}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{F1F617BD-6492-4731-A628-70156998EFB1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GoddamnConsole</RootNamespace>
-    <AssemblyName>GoddamnConsole</AssemblyName>
+    <RootNamespace>AccordBoard</RootNamespace>
+    <AssemblyName>AccordBoard</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -20,16 +22,15 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,20 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Character.cs" />
-    <Compile Include="Console.cs" />
-    <Compile Include="Controls\Border.cs" />
-    <Compile Include="Controls\Control.cs" />
-    <Compile Include="Controls\Grid.cs" />
-    <Compile Include="Controls\ScrollViewer.cs" />
-    <Compile Include="Controls\TextBox.cs" />
-    <Compile Include="Drawing\DrawingContext.cs" />
-    <Compile Include="Drawing\ImaginaryDrawingContext.cs" />
-    <Compile Include="Drawing\Objects.cs" />
-    <Compile Include="Drawing\RealDrawingContext.cs" />
-    <Compile Include="NativeProviders\INativeConsoleProvider.cs" />
-    <Compile Include="NativeProviders\WindowsNativeConsoleProvider.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
