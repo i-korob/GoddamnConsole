@@ -26,6 +26,7 @@ namespace GoddamnConsole.Drawing
 
         public static Size MeasureWrappedText(string text, int maxWidth)
         {
+            if (maxWidth <= 0) return new Size(0, 0);
             if (text == null) return new Size(0, 0);
             var lines =
                 text.Replace("\r\n", "\n").Split('\n').SelectMany(x => x.Split(maxWidth)).ToArray();

@@ -39,6 +39,21 @@ namespace GoddamnConsole.NativeProviders
             public static int SizeOf { get; } = Marshal.SizeOf<CHAR_INFO>();
         }
 
+        // ReSharper disable once InconsistentNaming
+        [StructLayout(LayoutKind.Sequential)]
+        private struct CONSOLE_SCREEN_BUFFER_INFO
+        {
+            // ReSharper disable MemberCanBePrivate.Local
+            // ReSharper disable FieldCanBeMadeReadOnly.Local
+            public COORD Size;
+            public COORD CursorPosition;
+            public short Attributes;
+            public SMALL_RECT Window;
+            public COORD MaxWindowSize;
+            // ReSharper restore FieldCanBeMadeReadOnly.Local
+            // ReSharper restore MemberCanBePrivate.Local
+        }
+
         private readonly CancellationTokenSource _threadToken;
         private readonly ManualResetEvent _shutdownEvent = new ManualResetEvent(false);
         private readonly CHAR_INFO* _buffer;
@@ -66,25 +81,22 @@ namespace GoddamnConsole.NativeProviders
         public WindowsNativeConsoleProvider()
         {
             _threadToken = new CancellationTokenSource();
-            WindowWidth = Syscon.WindowWidth;
-            WindowHeight = Syscon.WindowHeight;
+            Syscon.SetBufferSize(BufferSize, BufferSize * 2);
             _buffer = (CHAR_INFO*) (_bufferPtr = Marshal.AllocHGlobal(BufferSize * BufferSize * CHAR_INFO.SizeOf)).ToPointer();
             _std = GetStdHandle(-11);
             new Thread(() => // window size monitor
             {
                 while (!_threadToken.IsCancellationRequested)
                 {
-                    int nw = Syscon.WindowWidth,
-                        nh = Syscon.WindowHeight;
+                    var info = new CONSOLE_SCREEN_BUFFER_INFO();
+                    GetConsoleScreenBufferInfo(_std, ref info);
+                    int nw = info.Window.Right - info.Window.Left + 1,
+                        nh = info.Window.Bottom - info.Window.Top + 1;
                     if (nw == WindowWidth && nh == WindowHeight) continue;
                     var pw = WindowWidth;
                     var ph = WindowHeight;
                     WindowWidth = nw;
                     WindowHeight = nh;
-                    try
-                    {
-                        Syscon.SetWindowPosition(0, 0);
-                    } catch { /* Shit sometimes throws while resizing, do not handle this */ }
                     try
                     {
                         SizeChanged?.Invoke(this, new SizeChangedEventArgs(new Size(pw, ph), new Size(nw, nh)));
@@ -115,6 +127,12 @@ namespace GoddamnConsole.NativeProviders
             ref SMALL_RECT writeRegion);
 
         [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetConsoleScreenBufferInfo(
+            IntPtr consoleHandle,
+            ref CONSOLE_SCREEN_BUFFER_INFO bufInfo);
+
+        [DllImport("kernel32.dll")]
         private static extern IntPtr GetStdHandle(int handle);
 
         private static readonly Action<IntPtr, byte, int> Memset;
@@ -143,6 +161,7 @@ namespace GoddamnConsole.NativeProviders
 
         public void PutChar(Character chr, int x, int y)
         {
+            if (x >= BufferSize || y >= BufferSize || x < 0 || y < 0) return;
             _buffer[y* BufferSize + x].Attributes =
                 (short) ((short) chr.Attribute | (short) chr.Foreground | ((short) chr.Background << 4));
             _buffer[y* BufferSize + x].Char = chr.Char;
@@ -180,10 +199,10 @@ namespace GoddamnConsole.NativeProviders
         {
             var rect = new SMALL_RECT
             {
-                Left = 0,
-                Top = 0,
-                Right = BufferSize - 1, // (short)(wid - 1),
-                Bottom = BufferSize - 1, // (short)(hei - 1)
+                Left = (short) Syscon.WindowLeft,
+                Top = (short) Syscon.WindowTop,
+                Right = (short) (Syscon.WindowLeft + BufferSize - 1), // (short)(wid - 1),
+                Bottom = (short) (Syscon.WindowTop + BufferSize - 1), // (short)(hei - 1)
             };
             WriteConsoleOutputW(_std, _bufferPtr,
                 new COORD { X = BufferSize, Y = BufferSize },

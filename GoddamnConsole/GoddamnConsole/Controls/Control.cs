@@ -126,7 +126,12 @@ namespace GoddamnConsole.Controls
             (_parent as IParentControl)?.MeasureChild(this)?.Height ??
             (Console.Root == this ? Console.WindowHeight : 0);
 
-        public void Invalidate() => Console.Refresh();
+        public void Invalidate()
+        {
+            if (Parent != null)
+                Parent.Invalidate();
+            else if (Console.Root == this) Console.Refresh();  
+        } 
         
         public Point CursorPosition
         {

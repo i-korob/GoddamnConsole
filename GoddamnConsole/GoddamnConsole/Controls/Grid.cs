@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Security.AccessControl;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
@@ -37,6 +37,7 @@ namespace GoddamnConsole.Controls
                     return;
                 }
                 _internal.Add(item);
+                _grid.Invalidate();
             }
 
             public void Clear()
@@ -47,6 +48,7 @@ namespace GoddamnConsole.Controls
                 {
                     _grid.ChildRemoved?.Invoke(_grid, item);
                 }
+                _grid.Invalidate();
             }
 
             public bool Contains(Control item)
@@ -64,7 +66,8 @@ namespace GoddamnConsole.Controls
                 if (!Contains(item)) return false;
                 _internal.Remove(item);
                 _grid.ChildRemoved?.Invoke(_grid, item);
-                return false;
+                _grid.Invalidate();
+                return true;
             }
 
             public int Count => _internal.Count;
@@ -73,6 +76,12 @@ namespace GoddamnConsole.Controls
 
         public Grid()
         {
+            var rd = new ObservableCollection<GridSize>();
+            rd.CollectionChanged += (o, e) => Invalidate();
+            RowDefinitions = rd;
+            var cd = new ObservableCollection<GridSize>();
+            cd.CollectionChanged += (o, e) => Invalidate();
+            ColumnDefinitions = cd;
             Children = new GridChildrenCollection(this);
         }
 
@@ -231,8 +240,8 @@ namespace GoddamnConsole.Controls
                 sizes.Item2.Skip(row).Take(rowSpan).Sum());
         }
 
-        public IList<GridSize> RowDefinitions { get; } = new List<GridSize>();
-        public IList<GridSize> ColumnDefinitions { get; } = new List<GridSize>();
+        public IList<GridSize> RowDefinitions { get; }
+        public IList<GridSize> ColumnDefinitions { get; }
 
         public ICollection<Control> Children { get; }
 
