@@ -152,6 +152,8 @@ namespace GoddamnConsole.Controls
         {
             return AttachedProperties.FirstOrDefault(x => x is TAttachedProperty) as TAttachedProperty;
         }
+
+        public bool Focusable { get; protected set; } = false;
     }
 
     public interface IParentControl

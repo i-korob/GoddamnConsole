@@ -5,6 +5,11 @@ namespace GoddamnConsole.Controls
 {
     public class TextBox : Control
     {
+        public TextBox()
+        {
+            Focusable = true;
+        }
+
         private int _scrollX;
         private int _scrollY;
         public string Text { get; set; }

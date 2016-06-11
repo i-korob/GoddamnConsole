@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GoddamnConsole.Controls;
 using GoddamnConsole.Drawing;
 using GoddamnConsole.NativeProviders;
@@ -40,17 +42,44 @@ namespace GoddamnConsole
                 Focused?.OnKeyPressInternal(e);
             };
             provider.SizeChanged += (o, e) => Refresh();
-            Refresh();
+            FocusNext();
+        }
+
+        private static void AllFocusableElements(Control current, List<Control> elements)
+        {
+            if (current.Focusable) elements.Add(current);
+            var contentControl = current as IContentControl;
+            if (contentControl != null && contentControl.Content != null)
+                AllFocusableElements(contentControl.Content, elements);
+            else
+            {
+                var childrenControl = current as IChildrenControl;
+                if (childrenControl == null) return;
+                foreach (var element in childrenControl.Children)
+                    AllFocusableElements(element, elements);
+            }
         }
 
         public static void FocusNext() // TODO
         {
-
+            var list = new List<Control>();
+            AllFocusableElements(Root, list);
+            Focused =
+                list.Contains(Focused)
+                    ? list[(list.IndexOf(Focused) + 1) % list.Count]
+                    : list.FirstOrDefault();
+            Refresh();
         }
 
         public static void FocusPrev() // TODO
         {
-
+            var list = new List<Control>();
+            AllFocusableElements(Root, list);
+            Focused =
+                list.Contains(Focused)
+                    ? list[(list.Count + list.IndexOf(Focused) - 1) % list.Count]
+                    : list.FirstOrDefault();
+            Refresh();
         }
 
         public static void Refresh()
