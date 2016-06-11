@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
@@ -112,14 +113,14 @@ namespace GoddamnConsole.Controls
 
         protected virtual void OnKeyPress(ConsoleKeyInfo key) { }
         public virtual void Render(DrawingContext context) { }
-        
-        public int Width { get; set; }
+
+        public int Width { get; set; } = int.MaxValue; // max width by default
 
         public int ActualWidth =>
             (_parent as IParentControl)?.MeasureChild(this)?.Width ??
             (Console.Root == this ? Console.WindowWidth : 0);
 
-        public int Height { get; set; }
+        public int Height { get; set; } = int.MaxValue; // max height by default
 
         public int ActualHeight =>
             (_parent as IParentControl)?.MeasureChild(this)?.Height ??
@@ -141,6 +142,11 @@ namespace GoddamnConsole.Controls
         }
 
         public ICollection<IAttachedProperty> AttachedProperties { get; } = new List<IAttachedProperty>();
+
+        public TAttachedProperty AttachedProperty<TAttachedProperty>() where TAttachedProperty : class, IAttachedProperty
+        {
+            return AttachedProperties.FirstOrDefault(x => x is TAttachedProperty) as TAttachedProperty;
+        }
     }
 
     public interface IParentControl

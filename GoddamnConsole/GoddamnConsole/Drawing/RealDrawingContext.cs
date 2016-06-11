@@ -87,7 +87,7 @@ namespace GoddamnConsole.Drawing
 
         public override void DrawText(Point point, string line, TextOptions opts = null)
         {
-            if (point.Y < 0 || point.Y >= _width) return;
+            if (point.Y < 0 || point.Y >= _height) return;
             line = Regex.Replace(line, "[\r\n\t\f]", " ");
             for (int x = point.X, i = 0; x < Math.Min(line.Length, _width - point.X - _scrollX) + point.X; x++, i++)
             {

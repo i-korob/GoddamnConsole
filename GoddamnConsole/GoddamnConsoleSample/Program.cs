@@ -24,6 +24,17 @@ namespace GoddamnConsoleSample
         {
             var ctl = new Grid
             {
+                ColumnDefinitions =
+                {
+                    new GridSize(GridUnitType.Fixed, 10),
+                    new GridSize(GridUnitType.Grow, 1),
+                    new GridSize(GridUnitType.Grow, 2)
+                },
+                RowDefinitions =
+                {
+                    new GridSize(GridUnitType.Fixed, 5),
+                    new GridSize(GridUnitType.Auto, 0)
+                },
                 Children =
                 {
                     new Border
@@ -32,9 +43,7 @@ namespace GoddamnConsoleSample
                             new TextBox
                             {
                                 Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap,
-                                Width = 200,
-                                Height = 200
+                                TextWrapping = TextWrapping.Wrap
                             },
                         AttachedProperties =
                         {
@@ -48,9 +57,7 @@ namespace GoddamnConsoleSample
                             new TextBox
                             {
                                 Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap,
-                                Width = 200,
-                                Height = 200
+                                TextWrapping = TextWrapping.Wrap
                             },
                         AttachedProperties =
                         {
@@ -64,15 +71,14 @@ namespace GoddamnConsoleSample
                             new TextBox
                             {
                                 Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap,
-                                Width = 200,
-                                Height = 200
+                                TextWrapping = TextWrapping.Wrap
                             },
                         AttachedProperties =
                         {
                             new GridRowProperty {Row = 1},
                             new GridColumnProperty {Column = 1},
-                        }
+                        },
+                        //Width = 10
                     },
                     new Border
                     {
@@ -80,16 +86,15 @@ namespace GoddamnConsoleSample
                             new TextBox
                             {
                                 Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap,
-                                Width = 200,
-                                Height = 200
+                                TextWrapping = TextWrapping.Wrap
                             },
                         AttachedProperties =
                         {
                             new GridRowProperty {Row = 1},
                             new GridColumnProperty {Column = 2},
-                        }
-                    },
+                        },
+                        Height = 10
+                    }
                 }
             };
             Console.Focused = ctl;

@@ -13,8 +13,8 @@ namespace GoddamnConsole.Controls
 
         public Size MeasureChild(Control child)
         {
-            return new Size(Math.Max(child.Width, ActualWidth - 2),
-                Math.Max(child.Height, ActualHeight - 2));
+            return new Size(Math.Min(child.Width, ActualWidth - 2),
+                Math.Min(child.Height, ActualHeight - 2));
         }
 
         private Control _content;
