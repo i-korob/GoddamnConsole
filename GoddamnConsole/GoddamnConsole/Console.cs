@@ -60,7 +60,7 @@ namespace GoddamnConsole
             }
         }
 
-        public static void FocusNext() // TODO
+        public static void FocusNext()
         {
             var list = new List<Control>();
             AllFocusableElements(Root, list);

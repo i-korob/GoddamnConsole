@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using GoddamnConsole.Controls;
+using GoddamnConsole.DataBinding;
 using GoddamnConsole.Drawing;
 using GoddamnConsole.NativeProviders;
 using Console = GoddamnConsole.Console;
@@ -97,8 +100,27 @@ namespace GoddamnConsoleSample
                     }
                 }
             };
+            var tc = new TestClass();
+            ctl.DataContext = tc;
+            ctl.Bind(nameof(ctl.Width), "TestProperty", BindingMode.OneWay);
+            tc.TestProperty = 20;
             Console.Focused = ctl;
             Console.Start(new WindowsNativeConsoleProvider(), ctl);
+        }
+    }
+
+    class TestClass : INotifyPropertyChanged
+    {
+        private int _testProperty;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public int TestProperty
+        {
+            get { return _testProperty; }
+            set
+            {
+                _testProperty = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TestProperty)));
+            }
         }
     }
 }

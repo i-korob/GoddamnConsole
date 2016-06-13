@@ -1,13 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using GoddamnConsole.DataBinding;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
     public abstract class Control
     {
+        private readonly Dictionary<PropertyInfo, Binding> _bindings 
+            = new Dictionary<PropertyInfo, Binding>();
+
+        public object DataContext
+        {
+            get { return _dataContext; }
+            set
+            {
+                _dataContext = value;
+                foreach (var binding in _bindings.Values) binding.Refresh();
+            }
+        }
+
+        public void Bind(string propertyName, string bindingPath, BindingMode bindingMode)
+        {
+            var property = GetType().GetProperty(propertyName);
+            if (property == null) throw new ArgumentException("Property not found");
+            Binding existingBinding;
+            _bindings.TryGetValue(property, out existingBinding);
+            if (existingBinding != null)
+            {
+                existingBinding.Dispose();
+                _bindings.Remove(property);
+            }
+            _bindings.Add(property, new Binding(this, property, bindingPath, bindingMode));
+        }
+
+        public void Unbind(string propertyName)
+        {
+            
+        }
+
         private Control _parent;
+        private object _dataContext;
 
         private void OnDetach(object sender, Control ctrl)
         {
@@ -118,13 +153,13 @@ namespace GoddamnConsole.Controls
 
         public int ActualWidth =>
             (_parent as IParentControl)?.MeasureChild(this)?.Width ??
-            (Console.Root == this ? Console.WindowWidth : 0);
+            (Console.Root == this ? Math.Min(Width, Console.WindowWidth) : 0);
 
         public int Height { get; set; } = int.MaxValue; // max height by default
 
         public int ActualHeight =>
             (_parent as IParentControl)?.MeasureChild(this)?.Height ??
-            (Console.Root == this ? Console.WindowHeight : 0);
+            (Console.Root == this ? Math.Min(Height, Console.WindowHeight) : 0);
 
         public void Invalidate()
         {
