@@ -1,23 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using GoddamnConsole.Controls;
 
 namespace GoddamnConsole.DataBinding
 {
-    internal class Binding : IDisposable
+    internal class Binding
     {
+        private class BindingNode
+        {
+            public object Object { get; set; }
+            public Type ObjectType { get; set; }
+            public PropertyInfo Property { get; set; }
+            public PropertyChangedEventHandler Handler { get; set; }
+        }
+
         private readonly string _path;
-        private readonly BindingMode _mode;
         private readonly Control _control;
         private readonly PropertyInfo _property;
-        private object _sourceObject;
-        private PropertyChangedEventHandler _handler;
+        
+        private readonly List<BindingNode> _nodes = new List<BindingNode>();
 
-        public Binding(Control control, PropertyInfo property, string path, BindingMode mode)
+        public Binding(Control control, PropertyInfo property, string path)
         {
             _path = path;
-            _mode = mode;
             _property = property;
             _control = control;
             Refresh();
@@ -25,73 +33,62 @@ namespace GoddamnConsole.DataBinding
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var lastDot = _path.LastIndexOf('.');
-            var last = lastDot == -1 ? _path : _path.Substring(lastDot + 1);
-            if (e.PropertyName == last)
-            {
-                try
-                {
-                    _property.SetValue(_control,
-                                       _sourceObject.GetType()
-                                                    .GetProperty(e.PropertyName)
-                                                    .GetValue(_sourceObject));
-                }
-                catch
-                {
-                    // invalid cast, ignore
-                }
-            }
+            var node = _nodes.FirstOrDefault(x => x.Object == sender && x.Property.Name == e.PropertyName);
+            if (node != null) Refresh();
         }
 
-        public void Dispose()
+        public void Cleanup()
         {
-
+            foreach (var node in _nodes.Where(x => x.Handler != null))
+            {
+                node.ObjectType
+                    .GetEvent(nameof(INotifyPropertyChanged.PropertyChanged))
+                    .RemoveEventHandler(node.Object, node.Handler);
+            }
+            _nodes.Clear();
         }
 
         public void Refresh()
         {
-            if (_sourceObject != null)
+            Cleanup();
+            var data = _control.DataContext;
+            try
             {
-                var objType = _sourceObject.GetType();
-                if (objType.GetInterface(nameof(INotifyPropertyChanged)) != null)
-                    objType.GetEvent(nameof(INotifyPropertyChanged.PropertyChanged))
-                           .RemoveEventHandler(_sourceObject,
-                                               _handler);
-                _sourceObject = null;
-            }
-            var path = _path;
-            var dataContext = _control.DataContext;
-            while (true)
-            {
-                var dot = path.IndexOf('.');
-                if (dot < 0)
+                foreach (var pathNode in _path.Split('.'))
                 {
-                    var last = dataContext.GetType().GetProperty(path);
-                    if (last == null)
+                    var type = data.GetType();
+                    var property = type.GetProperty(pathNode);
+                    if (property == null) throw new Exception("Invalid path");
+                    var propValue = property.GetValue(data);
+                    PropertyChangedEventHandler handler = null;
+                    if (data is INotifyPropertyChanged)
                     {
-                        return;
+                        handler = OnPropertyChanged;
+                        (data as INotifyPropertyChanged).PropertyChanged += handler;
                     }
-                    _sourceObject = dataContext;
-                    _sourceObject.GetType().GetEvent(nameof(INotifyPropertyChanged.PropertyChanged)).AddEventHandler(_sourceObject, _handler = new PropertyChangedEventHandler(OnPropertyChanged));
-                    return;
+                    _nodes.Add(new BindingNode
+                    {
+                        Object = data,
+                        Property = property,
+                        Handler = handler,
+                        ObjectType = type
+                    });
+                    data = propValue;
                 }
-                var current = path.Remove(dot);
-                path = path.Substring(dot + 1);
-                var prop = dataContext.GetType().GetProperty(current);
-                if (prop == null)
+                try
                 {
-                    return;
+                    _property.SetValue(_control, data);
                 }
-                dataContext = prop.GetValue(dataContext);
+                catch
+                {
+                    // invalid property value
+                }
+            }
+            catch
+            {
+                Cleanup();
+                // throw; // invalid path
             }
         }
-    }
-
-    public enum BindingMode
-    {
-        OneWay,
-        // TwoWay,
-        // OneWayToSource,
-        // OneTime
     }
 }

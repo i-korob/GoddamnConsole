@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using GoddamnConsole.Controls;
-using GoddamnConsole.DataBinding;
 using GoddamnConsole.Drawing;
 using GoddamnConsole.NativeProviders;
 using Console = GoddamnConsole.Console;
@@ -80,8 +79,7 @@ namespace GoddamnConsoleSample
                         {
                             new GridRowProperty {Row = 1},
                             new GridColumnProperty {Column = 1},
-                        },
-                        //Width = 10
+                        }
                     },
                     new Border
                     {
@@ -101,9 +99,24 @@ namespace GoddamnConsoleSample
                 }
             };
             var tc = new TestClass();
+            var tnc = new TestClass.TestNestedClass();
+            var tnc2 = new TestClass.TestNestedClass.TestNestedClass2();
+            tc.TestNestedProperty = tnc;
+            tnc.TestNestedProperty2 = tnc2;
+            tnc2.TestProperty = 20;
             ctl.DataContext = tc;
-            ctl.Bind(nameof(ctl.Width), "TestProperty", BindingMode.OneWay);
-            tc.TestProperty = 20;
+            ctl.Bind(nameof(ctl.Width), "TestNestedProperty.TestNestedProperty2.TestProperty");
+            Debug.Assert(ctl.Width == 20);
+            tnc2.TestProperty = 30;
+            Debug.Assert(ctl.Width == 30);
+            tnc.TestNestedProperty2 = new TestClass.TestNestedClass.TestNestedClass2
+            {
+                TestProperty = 40
+            };
+            Debug.Assert(ctl.Width == 40);
+            tnc2.TestProperty = 50;
+            tc.TestNestedProperty = new TestClass.TestNestedClass {TestNestedProperty2 = tnc2};
+            Debug.Assert(ctl.Width == 50);
             Console.Focused = ctl;
             Console.Start(new WindowsNativeConsoleProvider(), ctl);
         }
@@ -111,15 +124,45 @@ namespace GoddamnConsoleSample
 
     class TestClass : INotifyPropertyChanged
     {
-        private int _testProperty;
+        public class TestNestedClass : INotifyPropertyChanged
+        {
+            public class TestNestedClass2 : INotifyPropertyChanged
+            {
+                private int _testProperty;
+                public event PropertyChangedEventHandler PropertyChanged;
+
+                public int TestProperty
+                {
+                    get { return _testProperty; }
+                    set
+                    {
+                        _testProperty = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TestProperty)));
+                    }
+                }
+            }
+
+            private TestNestedClass2 _testProperty;
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            public TestNestedClass2 TestNestedProperty2
+            {
+                get { return _testProperty; }
+                set
+                {
+                    _testProperty = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TestNestedProperty2)));
+                }
+            }
+        }
+
+        private TestNestedClass _testProperty;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int TestProperty
+        public TestNestedClass TestNestedProperty
         {
             get { return _testProperty; }
             set
             {
-                _testProperty = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TestProperty)));
+                _testProperty = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TestNestedProperty)));
             }
         }
     }

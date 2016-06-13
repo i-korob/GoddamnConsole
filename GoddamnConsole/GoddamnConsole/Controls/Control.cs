@@ -22,23 +22,22 @@ namespace GoddamnConsole.Controls
             }
         }
 
-        public void Bind(string propertyName, string bindingPath, BindingMode bindingMode)
+        public void Bind(string propertyName, string bindingPath)
         {
             var property = GetType().GetProperty(propertyName);
             if (property == null) throw new ArgumentException("Property not found");
-            Binding existingBinding;
-            _bindings.TryGetValue(property, out existingBinding);
-            if (existingBinding != null)
-            {
-                existingBinding.Dispose();
-                _bindings.Remove(property);
-            }
-            _bindings.Add(property, new Binding(this, property, bindingPath, bindingMode));
+            Unbind(propertyName);
+            _bindings.Add(property, new Binding(this, property, bindingPath));
         }
 
         public void Unbind(string propertyName)
         {
-            
+            var property = GetType().GetProperty(propertyName);
+            Binding existingBinding;
+            _bindings.TryGetValue(property, out existingBinding);
+            if (existingBinding == null) return;
+            existingBinding.Cleanup();
+            _bindings.Remove(property);
         }
 
         private Control _parent;

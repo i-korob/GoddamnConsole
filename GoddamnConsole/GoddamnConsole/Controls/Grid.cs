@@ -221,8 +221,8 @@ namespace GoddamnConsole.Controls
                     new Rectangle(
                         sizes.Item1.Take(column).Sum(),
                         sizes.Item2.Take(row).Sum(),
-                        sizes.Item1.Skip(column).Take(columnSpan).Sum(),
-                        sizes.Item2.Skip(row).Take(rowSpan).Sum())));
+                        Math.Min(child.Width, sizes.Item1.Skip(column).Take(columnSpan).Sum()),
+                        Math.Min(child.Height, sizes.Item2.Skip(row).Take(rowSpan).Sum()))));
             }
         }
 
@@ -236,8 +236,8 @@ namespace GoddamnConsole.Controls
             var rowSpan = Math.Max(grp?.RowSpan ?? 1, 1);
             var columnSpan = Math.Max(gcp?.ColumnSpan ?? 1, 1);
             return new Size(
-                sizes.Item1.Skip(column).Take(columnSpan).Sum(),
-                sizes.Item2.Skip(row).Take(rowSpan).Sum());
+                Math.Min(child.Width, sizes.Item1.Skip(column).Take(columnSpan).Sum()),
+                Math.Min(child.Height, sizes.Item2.Skip(row).Take(rowSpan).Sum()));
         }
 
         public IList<GridSize> RowDefinitions { get; }
