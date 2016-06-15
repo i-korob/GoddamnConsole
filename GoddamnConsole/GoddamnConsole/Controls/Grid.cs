@@ -116,8 +116,8 @@ namespace GoddamnConsole.Controls
                         }
                         : new CellSize
                         {
-                            Width = child.Width,
-                            Height = child.Height,
+                            Width = child.AssumedWidth,
+                            Height = child.AssumedHeight,
                             ColSpan = Math.Min(gcp.ColumnSpan, 1),
                             RowSpan = Math.Min(grp.RowSpan, 1)
                         };
@@ -221,8 +221,8 @@ namespace GoddamnConsole.Controls
                     new Rectangle(
                         sizes.Item1.Take(column).Sum(),
                         sizes.Item2.Take(row).Sum(),
-                        Math.Min(child.Width, sizes.Item1.Skip(column).Take(columnSpan).Sum()),
-                        Math.Min(child.Height, sizes.Item2.Skip(row).Take(rowSpan).Sum()))));
+                        Math.Min(child.AssumedWidth, sizes.Item1.Skip(column).Take(columnSpan).Sum()),
+                        Math.Min(child.AssumedHeight, sizes.Item2.Skip(row).Take(rowSpan).Sum()))));
             }
         }
 
@@ -236,8 +236,8 @@ namespace GoddamnConsole.Controls
             var rowSpan = Math.Max(grp?.RowSpan ?? 1, 1);
             var columnSpan = Math.Max(gcp?.ColumnSpan ?? 1, 1);
             return new Size(
-                Math.Min(child.Width, sizes.Item1.Skip(column).Take(columnSpan).Sum()),
-                Math.Min(child.Height, sizes.Item2.Skip(row).Take(rowSpan).Sum()));
+                Math.Min(child.AssumedWidth, sizes.Item1.Skip(column).Take(columnSpan).Sum()),
+                Math.Min(child.AssumedHeight, sizes.Item2.Skip(row).Take(rowSpan).Sum()));
         }
 
         public IList<GridSize> RowDefinitions { get; }

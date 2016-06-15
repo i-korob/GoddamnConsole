@@ -7,13 +7,16 @@ namespace GoddamnConsole.Drawing
 {
     internal sealed class RealDrawingContext : DrawingContext
     {
-        public RealDrawingContext()
+
+        public RealDrawingContext(bool lowBrightness = false)
         {
+            _lowBrightness = lowBrightness;
             _width = Console.WindowWidth;
             _height = Console.WindowHeight;
             _x = _scrollX = _y = _scrollY = 0;
         }
 
+        private readonly bool _lowBrightness;
         private int _scrollX;
         private int _scrollY; 
         private int _x;
@@ -23,7 +26,7 @@ namespace GoddamnConsole.Drawing
 
         public override DrawingContext Scroll(Point sourceOffset)
         {
-            return new RealDrawingContext
+            return new RealDrawingContext(_lowBrightness)
             {
                 _x = _x,
                 _y = _y,
@@ -47,7 +50,7 @@ namespace GoddamnConsole.Drawing
             var nw = Math.Min(_width - targetArea.X, targetArea.Width);
             var nh = Math.Min(_height - targetArea.Y, targetArea.Height);
             if (nw <= 0 || nh <= 0) return new ImaginaryDrawingContext();
-            return new RealDrawingContext
+            return new RealDrawingContext(_lowBrightness)
             {
                 _x = nx,
                 _y = ny,
@@ -61,15 +64,25 @@ namespace GoddamnConsole.Drawing
             for (var x = 0; x < _width; x++)
                 for (var y = 0; y < _height; y++)
                 {
-                    Console.Provider.PutChar(new Character(' '), x + _x, y + _y);
+                    PutChar(new Point(x, y), ' ', Console.Background, Console.Background, CharAttribute.None);
                 }
+        }
+
+        public static CharColor Darken(CharColor color)
+        {
+            return color == CharColor.Black ? CharColor.Black : CharColor.DarkGray;
         }
 
         public override void PutChar(Point pt, char chr, CharColor foreground, CharColor background, CharAttribute attribute)
         {
             pt = pt.Offset(_scrollX, _scrollY);
             if (pt.X < 0 || pt.Y < 0 || pt.X >= _width || pt.Y >= _height) return;
-            Console.Provider.PutChar(new Character(chr, foreground, background, attribute), 
+            Console.Provider.PutChar(
+                new Character(
+                    chr,
+                    _lowBrightness ? Darken(foreground) : foreground,
+                    _lowBrightness ? Darken(background) : background,
+                    attribute), 
                 pt.X + _x, pt.Y + _y);
         }
 
@@ -80,7 +93,7 @@ namespace GoddamnConsole.Drawing
             for (var x = clippedRect.X; x < clippedRect.X + clippedRect.Width; x++)
                 for (var y = clippedRect.Y; y < clippedRect.Y + clippedRect.Height; y++)
                 {
-                    PutChar(new Point(x, y), fill, opts?.Foreground ?? CharColor.Gray,
+                    PutChar(new Point(x, y), fill, opts?.Foreground ?? CharColor.White,
                         opts?.Background ?? CharColor.Black, opts?.Attributes ?? CharAttribute.None);
                 }
         }
@@ -95,7 +108,7 @@ namespace GoddamnConsole.Drawing
                 PutChar(
                     new Point(x, point.Y), 
                     line[i], 
-                    opts?.Foreground ?? CharColor.Gray, 
+                    opts?.Foreground ?? CharColor.White, 
                     opts?.Background ?? CharColor.Black, 
                     opts?.Attributes ?? CharAttribute.None);
             }
@@ -104,7 +117,7 @@ namespace GoddamnConsole.Drawing
         public override void DrawText(Rectangle rect, string text, TextOptions opts = null)
         {
             var maxWid = Math.Min(rect.Width + rect.X, _width) - rect.X;
-            IEnumerable<string> lines = text.Replace("\r\n", "\n").Split('\n');
+            IEnumerable<string> lines = text.Replace("\r\n", "\n").Split(new[] {'\n'}, StringSplitOptions.None);
             lines = (opts?.TextWrapping ?? TextWrapping.NoWrap) == TextWrapping.Wrap
                 ? lines.SelectMany(x => x.Split(maxWid/* -_scrollX*/)) // wrapped text shouldn't be influenced by scrolling 
                 : lines.Select(x => x.Length > maxWid - _scrollX ? x.Remove(maxWid - _scrollX) : x);
@@ -126,7 +139,7 @@ namespace GoddamnConsole.Drawing
             {
                 Attributes = opts?.Attributes ?? CharAttribute.None,
                 Background = opts?.Background ?? CharColor.Black,
-                Foreground = opts?.Foreground ?? CharColor.Gray
+                Foreground = opts?.Foreground ?? CharColor.White
             };
             DrawRectangle(new Rectangle(rect.X + 1, rect.Y, rect.Width - 2, 1), frame[0], rectOpts);
             DrawRectangle(new Rectangle(rect.X + 1, rect.Y + rect.Height - 1, rect.Width - 2, 1), frame[0], rectOpts);
@@ -146,6 +159,11 @@ namespace GoddamnConsole.Drawing
     {
         public static IEnumerable<string> Split(this string s, int len)
         {
+            if (s == "")
+            {
+                yield return s;
+                yield break;
+            }
             var ofs = 0;
             var slen = s.Length;
             while (slen - ofs >= len)

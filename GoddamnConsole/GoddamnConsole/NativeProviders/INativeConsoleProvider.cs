@@ -29,7 +29,7 @@ namespace GoddamnConsole.NativeProviders
         void FillBlock(Character chr, int x, int y, int width, int height);
         void Refresh();
         void Start();
-        void Clear();
+        void Clear(CharColor background);
         
         event EventHandler<SizeChangedEventArgs> SizeChanged;
         event EventHandler<ConsoleKeyInfo> KeyPressed;

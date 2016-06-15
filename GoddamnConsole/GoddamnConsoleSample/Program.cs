@@ -118,6 +118,17 @@ namespace GoddamnConsoleSample
             tc.TestNestedProperty = new TestClass.TestNestedClass {TestNestedProperty2 = tnc2};
             Debug.Assert(ctl.Width == 50);
             Console.Focused = ctl;
+            var popup = new Border
+            {
+                Width = 30,
+                Height = 5,
+                Content = new TextBox
+                {
+                    Text = "\n  Sample popup window\n"
+                }
+            };
+            Console.IsPopupVisible = true;
+            Console.Popup = popup;
             Console.Start(new WindowsNativeConsoleProvider(), ctl);
         }
     }

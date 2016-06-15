@@ -12,7 +12,7 @@ namespace GoddamnConsole.Controls
         {
             if (key.Key == ConsoleKey.UpArrow && _scrollY < 0) _scrollY++;
             if (key.Key == ConsoleKey.DownArrow && 
-                MeasureChild(Content).Height - ActualHeight >= -_scrollY) _scrollY--;
+                Content.AssumedHeight - ActualHeight >= -_scrollY) _scrollY--;
             if (key.Key == ConsoleKey.LeftArrow && _scrollX < 0)
             {
                 _scrollX++;
@@ -31,29 +31,29 @@ namespace GoddamnConsole.Controls
             if (_scrollY > 0) _scrollY = 0;
             else
             {
-                var textHeight = MeasureChild(Content).Height;
-                if (textHeight < ActualHeight) _scrollY = 0;
-                else if (textHeight - ActualHeight < -_scrollY)
-                    _scrollY = -(textHeight - actHeight);
+                var contentHeight = Content.AssumedHeight;
+                if (contentHeight < ActualHeight) _scrollY = 0;
+                else if (contentHeight - ActualHeight < -_scrollY)
+                    _scrollY = -(contentHeight - actHeight);
             }
             if (_scrollX > 0) _scrollX = 0;
             else
             {
-                var textWidth = MeasureChild(Content).Width;
-                if (textWidth < ActualWidth) _scrollX = 0;
-                else if (textWidth - ActualWidth < -_scrollX)
-                    _scrollX = -(textWidth - actWidth);
+                var contentWidth = Content.AssumedWidth;
+                if (contentWidth < ActualWidth) _scrollX = 0;
+                else if (contentWidth - ActualWidth < -_scrollX)
+                    _scrollX = -(contentWidth - actWidth);
             }
             var scrolled = context.Scroll(new Point(_scrollX, _scrollY));
             Content.Render(scrolled);
         }
 
-        public Size MeasureChild(Control child)
-        {
-            return new Size(Math.Max(0, child.Width), Math.Max(0, child.Height));
-        }
-
         public Control Content { get; set; }
         public event EventHandler<Control> ContentDetached;
+
+        public Size MeasureChild(Control child)
+        {
+            return new Size(child.AssumedWidth, child.AssumedHeight);
+        }
     }
 }

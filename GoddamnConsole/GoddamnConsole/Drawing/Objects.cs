@@ -74,7 +74,7 @@ namespace GoddamnConsole.Drawing
 
     public class CommonOptions
     {
-        public CharColor Foreground { get; set; } = CharColor.Gray;
+        public CharColor Foreground { get; set; } = CharColor.White;
         public CharColor Background { get; set; } = CharColor.Black;
         public CharAttribute Attributes { get; set; } = CharAttribute.None;
     }

@@ -9,9 +9,13 @@ namespace GoddamnConsole.Controls
 {
     public abstract class Control
     {
-        private readonly Dictionary<PropertyInfo, Binding> _bindings 
-            = new Dictionary<PropertyInfo, Binding>();
+        #region Data Binding
 
+        private object _dataContext;
+
+        /// <summary>
+        /// Gets or sets data context that used data binding
+        /// </summary>
         public object DataContext
         {
             get { return _dataContext; }
@@ -22,6 +26,14 @@ namespace GoddamnConsole.Controls
             }
         }
 
+        private readonly Dictionary<PropertyInfo, Binding> _bindings
+            = new Dictionary<PropertyInfo, Binding>();
+
+        /// <summary>
+        /// Binds control property to data context
+        /// </summary>
+        /// <param name="propertyName">Name of control property</param>
+        /// <param name="bindingPath">Path in data context</param>
         public void Bind(string propertyName, string bindingPath)
         {
             var property = GetType().GetProperty(propertyName);
@@ -30,6 +42,10 @@ namespace GoddamnConsole.Controls
             _bindings.Add(property, new Binding(this, property, bindingPath));
         }
 
+        /// <summary>
+        /// Unbinds control property from data context
+        /// </summary>
+        /// <param name="propertyName">Name of control property</param>
         public void Unbind(string propertyName)
         {
             var property = GetType().GetProperty(propertyName);
@@ -40,8 +56,11 @@ namespace GoddamnConsole.Controls
             _bindings.Remove(property);
         }
 
+        #endregion
+
+        #region Parent
+
         private Control _parent;
-        private object _dataContext;
 
         private void OnDetach(object sender, Control ctrl)
         {
@@ -90,6 +109,10 @@ namespace GoddamnConsole.Controls
             catch { /* */ }
         }
 
+        /// <summary>
+        /// Gets or sets control parent
+        /// Child will be added into parent automatically
+        /// </summary>
         public Control Parent
         {
             get
@@ -133,7 +156,14 @@ namespace GoddamnConsole.Controls
             }
         }
 
+        /// <summary>
+        /// Fires when child removed from parent
+        /// </summary>
         public event EventHandler DetachedFromParent;
+
+        #endregion
+
+        #region Virtual methods
 
         internal void OnKeyPressInternal(ConsoleKeyInfo key)
         {
@@ -145,34 +175,80 @@ namespace GoddamnConsole.Controls
             Render(context);
         }
 
+        /// <summary>
+        /// Invoked when keyboard button pressed. Override this to add handling
+        /// </summary>
+        /// <param name="key">Keyboard key info</param>
         protected virtual void OnKeyPress(ConsoleKeyInfo key) { }
+        /// <summary>
+        /// Invoked when Console needs to refresh. Override this to implement control rendering
+        /// </summary>
+        /// <param name="context">Rendering context, used to drawing primitives</param>
         public virtual void Render(DrawingContext context) { }
 
+        #endregion
+
+        #region Control size 
+
+        /// <summary>
+        /// Gets or sets width of control
+        /// If width less than zero, it is assumed as maximum value
+        /// </summary>
         public int Width { get; set; } = int.MaxValue; // max width by default
 
+        /// <summary>
+        /// Assumed width of control
+        /// </summary>
+        public int AssumedWidth => Width < 0 ? int.MaxValue : Width;
+
+        /// <summary>
+        /// Measured width of control
+        /// </summary>
         public int ActualWidth =>
             (_parent as IParentControl)?.MeasureChild(this)?.Width ??
-            (Console.Root == this ? Math.Min(Width, Console.WindowWidth) : 0);
+            (Console.Root == this || Console.Popup == this ? Math.Min(AssumedWidth, Console.WindowWidth) : 0);
 
+        /// <summary>
+        /// Gets or sets height of control
+        /// If height less than zero, it is assumed as maximum value
+        /// </summary>
         public int Height { get; set; } = int.MaxValue; // max height by default
 
+        /// <summary>
+        /// Assumed height of control
+        /// </summary>
+        public int AssumedHeight => Height < 0 ? int.MaxValue : Height;
+
+        /// <summary>
+        /// Measured height of control
+        /// </summary>
         public int ActualHeight =>
             (_parent as IParentControl)?.MeasureChild(this)?.Height ??
-            (Console.Root == this ? Math.Min(Height, Console.WindowHeight) : 0);
+            (Console.Root == this || Console.Popup == this ? Math.Min(AssumedHeight, Console.WindowHeight) : 0);
 
+        #endregion
+
+        /// <summary>
+        /// Used to force redraw console
+        /// Works only if control or its parent attached to console as root or popup element
+        /// </summary>
         public void Invalidate()
         {
             if (Parent != null)
                 Parent.Invalidate();
-            else if (Console.Root == this) Console.Refresh();  
-        } 
-        
+            else if (Console.Root == this && Console.Popup == this) Console.Refresh();
+        }
+
+        /// <summary>
+        /// Gets or sets current cursor position
+        /// Setting working only if control is focused
+        /// </summary>
         public Point CursorPosition
         {
             get { return new Point(Console.Provider.CursorX, Console.Provider.CursorY); }
             set
             {
-                if (this == Console.Focused)
+                if (this == Console.Focused && this == Console.Popup)
                 {
                     Console.Provider.CursorX = value.X;
                     Console.Provider.CursorY = value.Y;
@@ -180,30 +256,62 @@ namespace GoddamnConsole.Controls
             }
         }
 
+        #region Attached Properties
+
+        /// <summary>
+        /// Collection of attached properties
+        /// </summary>
         public ICollection<IAttachedProperty> AttachedProperties { get; } = new List<IAttachedProperty>();
 
+        /// <summary>
+        /// Returns attached property of required type, or null if it ain't exist
+        /// </summary>
+        /// <typeparam name="TAttachedProperty">Required type of attached property</typeparam>
+        /// <returns>Attached property of required type, or null if it ain't exist</returns>
         public TAttachedProperty AttachedProperty<TAttachedProperty>() where TAttachedProperty : class, IAttachedProperty
         {
             return AttachedProperties.FirstOrDefault(x => x is TAttachedProperty) as TAttachedProperty;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Gets or (in derived class) sets a value that indicates whether element can receive focus
+        /// </summary>
         public bool Focusable { get; protected set; } = false;
     }
 
     public interface IParentControl
     {
+        /// <summary>
+        /// Returns size of child control
+        /// </summary>
+        /// <param name="child">Child control</param>
+        /// <returns>Size of child control</returns>
         Size MeasureChild(Control child);
     }
 
     public interface IContentControl : IParentControl
     {
+        /// <summary>
+        /// Gets or sets child control
+        /// </summary>
         Control Content { get; set; }
+        /// <summary>
+        /// Fires after child control is changed
+        /// </summary>
         event EventHandler<Control> ContentDetached;
     }
 
     public interface IChildrenControl : IParentControl
     {
+        /// <summary>
+        /// Returns a collection that contains children
+        /// </summary>
         ICollection<Control> Children { get; }
+        /// <summary>
+        /// Fires after child control removed from children collection
+        /// </summary>
         event EventHandler<Control> ChildRemoved;
     }
 

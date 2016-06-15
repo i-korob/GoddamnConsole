@@ -335,9 +335,10 @@ namespace GoddamnConsole.NativeProviders
                 new COORD(), ref rect);
         }
 
-        public void Clear()
+        public void Clear(CharColor background)
         {
-            Memset(_bufferPtr, 0x00, BufferSize*BufferSize*CHAR_INFO.SizeOf);
+            for (var i = 0; i < BufferSize * BufferSize; i++)
+                _buffer[i].Attributes = (byte) ((int) background + ((int) background << 4));
         }
 
         public void Start()
