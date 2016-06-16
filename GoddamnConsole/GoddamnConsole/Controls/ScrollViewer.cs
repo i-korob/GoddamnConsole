@@ -3,7 +3,7 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public class ScrollViewer : Control, IContentControl
+    public class ScrollViewer : ContentControl
     {
         private int _scrollX;
         private int _scrollY;
@@ -47,11 +47,8 @@ namespace GoddamnConsole.Controls
             var scrolled = context.Scroll(new Point(_scrollX, _scrollY));
             Content.Render(scrolled);
         }
-
-        public Control Content { get; set; }
-        public event EventHandler<Control> ContentDetached;
-
-        public Size MeasureChild(Control child)
+        
+        public override Size MeasureChild(Control child)
         {
             return new Size(child.AssumedWidth, child.AssumedHeight);
         }

@@ -111,6 +111,7 @@ namespace GoddamnConsole.Controls
 
         /// <summary>
         /// Gets or sets control parent
+        /// <para/>
         /// Child will be added into parent automatically
         /// </summary>
         public Control Parent
@@ -192,6 +193,7 @@ namespace GoddamnConsole.Controls
 
         /// <summary>
         /// Gets or sets width of control
+        /// <para/>
         /// If width less than zero, it is assumed as maximum value
         /// </summary>
         public int Width { get; set; } = int.MaxValue; // max width by default
@@ -210,6 +212,7 @@ namespace GoddamnConsole.Controls
 
         /// <summary>
         /// Gets or sets height of control
+        /// <para/>
         /// If height less than zero, it is assumed as maximum value
         /// </summary>
         public int Height { get; set; } = int.MaxValue; // max height by default
@@ -230,17 +233,19 @@ namespace GoddamnConsole.Controls
 
         /// <summary>
         /// Used to force redraw console
+        /// <para/>
         /// Works only if control or its parent attached to console as root or popup element
         /// </summary>
         public void Invalidate()
         {
             if (Parent != null)
                 Parent.Invalidate();
-            else if (Console.Root == this && Console.Popup == this) Console.Refresh();
+            else if (Console.Root == this || Console.Popup == this) Console.Refresh();
         }
 
         /// <summary>
         /// Gets or sets current cursor position
+        /// <para/>
         /// Setting working only if control is focused
         /// </summary>
         public Point CursorPosition

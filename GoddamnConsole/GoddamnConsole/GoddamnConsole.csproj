@@ -46,6 +46,7 @@
     <Compile Include="Character.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Controls\Border.cs" />
+    <Compile Include="Controls\ContentControl.cs" />
     <Compile Include="Controls\Control.cs" />
     <Compile Include="Controls\Grid.cs" />
     <Compile Include="Controls\ScrollViewer.cs" />
