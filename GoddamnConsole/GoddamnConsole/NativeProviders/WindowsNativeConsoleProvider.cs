@@ -200,7 +200,7 @@ namespace GoddamnConsole.NativeProviders
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetConsoleCursorPosition(
             IntPtr consoleHandle,
-            [MarshalAs(UnmanagedType.LPStruct)] COORD coord);
+            COORD coord);
 
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -220,8 +220,11 @@ namespace GoddamnConsole.NativeProviders
             IntPtr consoleHandle,
             [MarshalAs(UnmanagedType.LPStruct)] CONSOLE_CURSOR_INFO bufInfo);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetStdHandle(int handle);
+
+        [DllImport("kernel32.dll")]
+        private static extern int GetLastError();
 
         private static readonly Action<IntPtr, byte, int> Memset;
 
@@ -259,8 +262,8 @@ namespace GoddamnConsole.NativeProviders
             {
                 SetConsoleCursorPosition(_stdout, new COORD
                 {
-                    X = (short) value,
-                    Y = (short) CursorY
+                    X = (short)value,
+                    Y = (short)CursorY
                 });
             }
         }

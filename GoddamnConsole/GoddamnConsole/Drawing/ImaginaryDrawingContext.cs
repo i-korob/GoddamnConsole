@@ -2,6 +2,9 @@
 {
     internal sealed class ImaginaryDrawingContext : DrawingContext
     {
+        public override int RenderOffsetX => 0;
+        public override int RenderOffsetY => 0;
+
         public override DrawingContext Scroll(Point sourceOffset)
         {
             return this;
@@ -17,7 +20,7 @@
             return this;
         }
 
-        public override void Clear()
+        public override void Clear(CharColor background)
         {
 
         }

@@ -61,6 +61,8 @@ namespace GoddamnConsole.Controls
         #region Parent
 
         private Control _parent;
+        private int _width = int.MaxValue;
+        private int _height = int.MaxValue;
 
         private void OnDetach(object sender, Control ctrl)
         {
@@ -187,6 +189,11 @@ namespace GoddamnConsole.Controls
         /// <param name="context">Rendering context, used to drawing primitives</param>
         public virtual void Render(DrawingContext context) { }
 
+        /// <summary>
+        /// Invoked when control actual size was changed. Override this to add handling
+        /// </summary>
+        protected virtual void OnSizeChanged() { }
+
         #endregion
 
         #region Control size 
@@ -196,7 +203,11 @@ namespace GoddamnConsole.Controls
         /// <para/>
         /// If width less than zero, it is assumed as maximum value
         /// </summary>
-        public int Width { get; set; } = int.MaxValue; // max width by default
+        public int Width
+        {
+            get { return _width; }
+            set { _width = value; OnSizeChanged(); }
+        }
 
         /// <summary>
         /// Assumed width of control
@@ -215,7 +226,11 @@ namespace GoddamnConsole.Controls
         /// <para/>
         /// If height less than zero, it is assumed as maximum value
         /// </summary>
-        public int Height { get; set; } = int.MaxValue; // max height by default
+        public int Height
+        {
+            get { return _height; }
+            set { _height = value; OnSizeChanged(); }
+        }
 
         /// <summary>
         /// Assumed height of control
@@ -253,7 +268,7 @@ namespace GoddamnConsole.Controls
             get { return new Point(Console.Provider.CursorX, Console.Provider.CursorY); }
             set
             {
-                if (this == Console.Focused && this == Console.Popup)
+                if (this == Console.Focused || this == Console.Popup)
                 {
                     Console.Provider.CursorX = value.X;
                     Console.Provider.CursorY = value.Y;
@@ -284,6 +299,9 @@ namespace GoddamnConsole.Controls
         /// Gets or (in derived class) sets a value that indicates whether element can receive focus
         /// </summary>
         public bool Focusable { get; protected set; } = false;
+
+        public CharColor Foreground { get; set; } = CharColor.White;
+        public CharColor Background { get; set; } = CharColor.Black;
     }
 
     public interface IParentControl

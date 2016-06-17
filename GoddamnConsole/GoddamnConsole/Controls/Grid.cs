@@ -152,6 +152,7 @@ namespace GoddamnConsole.Controls
             if (widestWidth > maxSize.Width)
             {
                 var remainingAutoWidth = maxSize.Width - fixedWidth;
+                if (remainingAutoWidth < 0) remainingAutoWidth = 0;
                 var decreaseBy = ((double) widestWidth - fixedWidth)/remainingAutoWidth;
                 for (var column = 0; column < ColumnDefinitions.Count; column++)
                 {
@@ -181,6 +182,7 @@ namespace GoddamnConsole.Controls
             if (highestHeight > maxSize.Height)
             {
                 var remainingAutoHeight = maxSize.Height - fixedHeight;
+                if (remainingAutoHeight < 0) remainingAutoHeight = 0;
                 var decreaseBy = ((double) highestHeight - fixedHeight)/remainingAutoHeight;
                 for (var row = 0; row < RowDefinitions.Count; row++)
                 {

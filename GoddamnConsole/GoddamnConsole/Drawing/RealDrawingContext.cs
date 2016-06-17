@@ -7,6 +7,8 @@ namespace GoddamnConsole.Drawing
 {
     internal sealed class RealDrawingContext : DrawingContext
     {
+        public override int RenderOffsetX => _x;
+        public override int RenderOffsetY => _y;
 
         public RealDrawingContext(bool lowBrightness = false)
         {
@@ -59,12 +61,12 @@ namespace GoddamnConsole.Drawing
             };
         }
 
-        public override void Clear()
+        public override void Clear(CharColor background)
         {
             for (var x = 0; x < _width; x++)
                 for (var y = 0; y < _height; y++)
                 {
-                    PutChar(new Point(x, y), ' ', Console.Background, Console.Background, CharAttribute.None);
+                    PutChar(new Point(x, y), ' ', background, background, CharAttribute.None);
                 }
         }
 
@@ -159,6 +161,11 @@ namespace GoddamnConsole.Drawing
     {
         public static IEnumerable<string> Split(this string s, int len)
         {
+            if (len <= 0)
+            {
+                yield return string.Empty;
+                yield break;
+            }
             if (s == "")
             {
                 yield return s;

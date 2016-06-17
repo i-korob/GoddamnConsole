@@ -74,7 +74,13 @@ namespace GoddamnConsole
         public static bool IsPopupVisible
         {
             get { return _isPopupVisible; }
-            set { _isPopupVisible = value; Refresh(); }
+            set
+            {
+                _isPopupVisible = value;
+                _focused = null;
+                FocusNext();
+                Refresh();
+            }
         }
 
         /// <summary>
@@ -134,8 +140,9 @@ namespace GoddamnConsole
         /// </summary>
         public static void FocusNext()
         {
+            if (_isPopupVisible && Popup == null) return;
             var list = new List<Control>();
-            AllFocusableElements(Root, list);
+            AllFocusableElements(_isPopupVisible ? Popup : Root, list);
             Focused =
                 list.Contains(Focused)
                     ? list[(list.IndexOf(Focused) + 1) % list.Count]
@@ -148,8 +155,9 @@ namespace GoddamnConsole
         /// </summary>
         public static void FocusPrev()
         {
+            if (_isPopupVisible && Popup == null) return;
             var list = new List<Control>();
-            AllFocusableElements(Root, list);
+            AllFocusableElements(_isPopupVisible ? Popup : Root, list);
             Focused =
                 list.Contains(Focused)
                     ? list[(list.Count + list.IndexOf(Focused) - 1) % list.Count]
@@ -177,7 +185,7 @@ namespace GoddamnConsole
                                       Popup.AssumedWidth,
                                       Popup.AssumedHeight
                                       ));
-                rdc.Clear();
+                rdc.Clear(Background);
                 Popup?.OnRenderInternal(rdc);
             }
             Provider?.Refresh();

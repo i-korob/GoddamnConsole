@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using GoddamnConsole;
 using GoddamnConsole.Controls;
 using GoddamnConsole.Drawing;
 using GoddamnConsole.NativeProviders;
@@ -21,7 +22,7 @@ namespace GoddamnConsoleSample
             "i officia deserunt mollit anim id est laborum.";
 
         private static readonly string LongLorem = string.Join("\n", Enumerable.Repeat(Lorem, 3));
-
+        
         private static void Main()
         {
             var ctl = new Grid
@@ -42,7 +43,7 @@ namespace GoddamnConsoleSample
                     new Border
                     {
                         Content =
-                            new TextBox
+                            new TextView
                             {
                                 Text = LongLorem,
                                 TextWrapping = TextWrapping.Wrap
@@ -51,12 +52,13 @@ namespace GoddamnConsoleSample
                         {
                             new GridRowProperty {Row = 0, RowSpan = 2},
                             new GridColumnProperty {Column = 0},
-                        }
+                        },
+                        FrameStyle = FrameStyle.Double
                     },
                     new Border
                     {
                         Content =
-                            new TextBox
+                            new TextView
                             {
                                 Text = LongLorem,
                                 TextWrapping = TextWrapping.Wrap
@@ -65,12 +67,13 @@ namespace GoddamnConsoleSample
                         {
                             new GridRowProperty {Row = 0},
                             new GridColumnProperty {Column = 1, ColumnSpan = 2},
-                        }
+                        },
+                        FrameStyle = FrameStyle.Fill
                     },
                     new Border
                     {
                         Content =
-                            new TextBox
+                            new TextView
                             {
                                 Text = LongLorem,
                                 TextWrapping = TextWrapping.Wrap
@@ -79,12 +82,13 @@ namespace GoddamnConsoleSample
                         {
                             new GridRowProperty {Row = 1},
                             new GridColumnProperty {Column = 1},
-                        }
+                        },
+                        FrameStyle = FrameStyle.Simple
                     },
                     new Border
                     {
                         Content =
-                            new TextBox
+                            new TextView
                             {
                                 Text = LongLorem,
                                 TextWrapping = TextWrapping.Wrap
@@ -120,12 +124,49 @@ namespace GoddamnConsoleSample
             Console.Focused = ctl;
             var popup = new Border
             {
-                Width = 30,
-                Height = 5,
-                Content = new TextBox
+                Width = 25,
+                Height = 12,
+                Content = new Grid
                 {
-                    Text = "\n  Sample popup window\n"
-                }
+                    RowDefinitions =
+                    {
+                        new GridSize(GridUnitType.Auto, 0),
+                        new GridSize(GridUnitType.Fixed, 7),
+                    },
+                    ColumnDefinitions =
+                    {
+                        new GridSize(GridUnitType.Auto, 0)
+                    },
+                    Children =
+                    {
+                        new TextView
+                        {
+                            Text = "\n  Sample popup window  \n",
+                            Background = CharColor.White,
+                            Foreground = CharColor.Red,
+                            AttachedProperties =
+                            {
+                                new GridRowProperty { Row = 0 },
+                                new GridColumnProperty { Column = 0 }
+                            },
+                            Width = 23,
+                            Height = 3
+                        },
+                        new Border
+                        {
+                            Content = new TextBox
+                            {
+                                Text = "Editable text\n\n\nVery very very long line ____________________\nOther line ____________\n\nAnother line\n\n\nYet another line"
+                            },
+                            AttachedProperties =
+                            {
+                                new GridRowProperty { Row = 1 },
+                                new GridColumnProperty { Column = 0 }
+                            }
+                        }
+                    }
+                },
+                FrameColor = CharColor.LightGreen
             };
             Console.IsPopupVisible = true;
             Console.Popup = popup;
