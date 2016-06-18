@@ -8,6 +8,11 @@ namespace GoddamnConsole.Controls
         private Control _content;
         public abstract Size MeasureChild(Control child);
 
+        public virtual Size MeasureMaxRealSize()
+        {
+            return new Size(ActualWidth, ActualHeight);
+        }
+
         public Control Content
         {
             get { return _content; }
@@ -17,7 +22,7 @@ namespace GoddamnConsole.Controls
                 {
                     var pc = _content;
                     _content = null;
-                    ContentDetached?.Invoke(this, pc);
+                    ContentDetached?.Invoke(this, new ChildRemovedEventArgs(pc));
                 }
                 if (value == null || value.Parent == this) _content = value;
                 else value.Parent = this;
@@ -25,6 +30,6 @@ namespace GoddamnConsole.Controls
             }
         }
 
-        public event EventHandler<Control> ContentDetached;
+        public event EventHandler<ChildRemovedEventArgs> ContentDetached;
     }
 }

@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Threading;
 using GoddamnConsole.Drawing;
+using static GoddamnConsole.NativeProviders.Windows.NativeMethods;
 
-namespace GoddamnConsole.NativeProviders
+namespace GoddamnConsole.NativeProviders.Windows
 {
     public sealed unsafe class WindowsNativeConsoleProvider : INativeConsoleProvider
     {
         // ReSharper disable once InconsistentNaming
         [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Unicode)]
-        private struct KEY_EVENT_RECORD
+        internal struct KEY_EVENT_RECORD
         {
             // ReSharper disable MemberCanBePrivate.Local
             // ReSharper disable FieldCanBeMadeReadOnly.Local
@@ -34,7 +36,7 @@ namespace GoddamnConsole.NativeProviders
 
         // ReSharper disable once InconsistentNaming
         [StructLayout(LayoutKind.Sequential)]
-        private struct INPUT_RECORD
+        internal struct INPUT_RECORD
         {
             // ReSharper disable once MemberCanBePrivate.Local
             // ReSharper disable once FieldCanBeMadeReadOnly.Local
@@ -44,7 +46,7 @@ namespace GoddamnConsole.NativeProviders
 
         // ReSharper disable once InconsistentNaming
         [StructLayout(LayoutKind.Sequential)]
-        private struct COORD
+        internal struct COORD
         {
             public short X;
             public short Y;
@@ -52,7 +54,7 @@ namespace GoddamnConsole.NativeProviders
 
         // ReSharper disable once InconsistentNaming
         [StructLayout(LayoutKind.Sequential)]
-        private struct SMALL_RECT
+        internal struct SMALL_RECT
         {
             public short Left;
             public short Top;
@@ -62,7 +64,7 @@ namespace GoddamnConsole.NativeProviders
 
         // ReSharper disable once InconsistentNaming
         [StructLayout(LayoutKind.Sequential)]
-        private struct CHAR_INFO
+        internal struct CHAR_INFO
         {
             public char Char;
             public short Attributes;
@@ -72,7 +74,7 @@ namespace GoddamnConsole.NativeProviders
 
         // ReSharper disable once InconsistentNaming
         [StructLayout(LayoutKind.Sequential)]
-        private struct CONSOLE_SCREEN_BUFFER_INFO
+        internal struct CONSOLE_SCREEN_BUFFER_INFO
         {
             // ReSharper disable MemberCanBePrivate.Local
             // ReSharper disable FieldCanBeMadeReadOnly.Local
@@ -87,7 +89,7 @@ namespace GoddamnConsole.NativeProviders
 
         // ReSharper disable once InconsistentNaming
         [StructLayout(LayoutKind.Sequential)]
-        private struct CONSOLE_CURSOR_INFO
+        internal struct CONSOLE_CURSOR_INFO
         {
             // ReSharper disable MemberCanBePrivate.Local
             // ReSharper disable FieldCanBeMadeReadOnly.Local
@@ -167,61 +169,17 @@ namespace GoddamnConsole.NativeProviders
                     {
                         KeyPressed?.Invoke(
                             this,
-                            new ConsoleKeyInfo(
-                                charBuf->KeyEvent.Char,
-                                (ConsoleKey) charBuf->KeyEvent.KeyCode,
-                                (charBuf->KeyEvent.ControlKeyState & 0x10) > 0,
-                                (charBuf->KeyEvent.ControlKeyState & 0x03) > 0,
-                                (charBuf->KeyEvent.ControlKeyState & 0x0c) > 0
-                                ));
+                            new KeyPressedEventArgs(new ConsoleKeyInfo(
+                                                        charBuf->KeyEvent.Char,
+                                                        (ConsoleKey) charBuf->KeyEvent.KeyCode,
+                                                        (charBuf->KeyEvent.ControlKeyState & 0x10) > 0,
+                                                        (charBuf->KeyEvent.ControlKeyState & 0x03) > 0,
+                                                        (charBuf->KeyEvent.ControlKeyState & 0x0c) > 0
+                                                        )));
                     }
                 }
             }).Start();
         }
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool WriteConsoleOutputW(
-            IntPtr consoleHandle,
-            IntPtr buffer,
-            COORD bufferSize,
-            COORD bufferCoord,
-            ref SMALL_RECT writeRegion);
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool ReadConsoleInputW(
-            IntPtr consoleHandle,
-            IntPtr buffer,
-            uint length,
-            ref uint readChars);
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetConsoleCursorPosition(
-            IntPtr consoleHandle,
-            COORD coord);
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetConsoleScreenBufferInfo(
-            IntPtr consoleHandle,
-            ref CONSOLE_SCREEN_BUFFER_INFO bufInfo);
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetConsoleCursorInfo(
-            IntPtr consoleHandle,
-            ref CONSOLE_CURSOR_INFO bufInfo);
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetConsoleCursorInfo(
-            IntPtr consoleHandle,
-            ref CONSOLE_CURSOR_INFO bufInfo);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr GetStdHandle(int handle);
 
         private static readonly Action<IntPtr, byte, int> Memset;
 
@@ -354,11 +312,14 @@ namespace GoddamnConsole.NativeProviders
         }
 
         public event EventHandler<SizeChangedEventArgs> SizeChanged;
-        public event EventHandler<ConsoleKeyInfo> KeyPressed;
+        public event EventHandler<KeyPressedEventArgs> KeyPressed;
 
+        [SuppressMessage("Microsoft.Usage", "CA2216:DisposableTypesShouldDeclareFinalizer")]
         public void Dispose()
         {
+            _shutdownEvent.Dispose();
             _threadToken.Cancel();
+            _threadToken.Dispose();
         }
     }
 }

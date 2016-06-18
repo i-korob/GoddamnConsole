@@ -4,6 +4,7 @@ using System.Linq;
 using GoddamnConsole.Controls;
 using GoddamnConsole.Drawing;
 using GoddamnConsole.NativeProviders;
+using GoddamnConsole.NativeProviders.Windows;
 
 namespace GoddamnConsole
 {
@@ -102,19 +103,19 @@ namespace GoddamnConsole
             provider.Clear(_background);
             provider.KeyPressed += (o, e) =>
             {
-                if (CanChangeFocus && e.Key == ConsoleKey.Tab && e.Modifiers == 0)
+                if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == 0)
                 {
                     FocusNext();
                     Refresh();
                     return;
                 }
-                if (CanChangeFocus && e.Key == ConsoleKey.Tab && e.Modifiers == ConsoleModifiers.Shift)
+                if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == ConsoleModifiers.Shift)
                 {
                     FocusPrev();
                     Refresh();
                     return;
                 }
-                Focused?.OnKeyPressInternal(e);
+                Focused?.OnKeyPressInternal(e.Info);
             };
             provider.SizeChanged += (o, e) =>
             {

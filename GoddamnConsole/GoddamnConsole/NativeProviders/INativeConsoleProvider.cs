@@ -16,6 +16,16 @@ namespace GoddamnConsole.NativeProviders
         public Size After { get; }
     }
 
+    public class KeyPressedEventArgs : EventArgs
+    {
+        public KeyPressedEventArgs(ConsoleKeyInfo info)
+        {
+            Info = info;
+        }
+
+        public ConsoleKeyInfo Info { get; }
+    }
+
     public interface INativeConsoleProvider : IDisposable
     {
         int WindowWidth { get; }
@@ -32,6 +42,6 @@ namespace GoddamnConsole.NativeProviders
         void Clear(CharColor background);
         
         event EventHandler<SizeChangedEventArgs> SizeChanged;
-        event EventHandler<ConsoleKeyInfo> KeyPressed;
+        event EventHandler<KeyPressedEventArgs> KeyPressed;
     }
 }

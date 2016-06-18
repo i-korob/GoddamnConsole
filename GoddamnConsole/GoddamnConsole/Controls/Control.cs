@@ -119,11 +119,12 @@ namespace GoddamnConsole.Controls
         #region Parent
 
         private Control _parent;
-        private int _width = int.MaxValue;
-        private int _height = int.MaxValue;
+        private int _width = -1;
+        private int _height = -1;
 
-        private void OnDetach(object sender, Control ctrl)
+        private void OnDetach(object sender, ChildRemovedEventArgs args)
         {
+            var ctrl = args?.Child;
             if (sender != _parent || ctrl != this) return;
             var cctl = sender as IContentControl;
             if (cctl != null && cctl.Content != this)
@@ -291,7 +292,13 @@ namespace GoddamnConsole.Controls
         /// <summary>
         /// Assumed width of control
         /// </summary>
-        public int AssumedWidth => Width < 0 ? int.MaxValue : Width;
+        public int AssumedWidth =>
+            Width >= 0
+                ? Width
+                : Width == -1
+                      ? (Parent as IParentControl)?.MeasureMaxRealSize().Width ??
+                        (Console.Root == this || Console.Popup == this ? Console.WindowWidth : 0)
+                      : int.MaxValue;
 
         private readonly Lazy<int> _actualWidth;
 
@@ -314,7 +321,13 @@ namespace GoddamnConsole.Controls
         /// <summary>
         /// Assumed height of control
         /// </summary>
-        public int AssumedHeight => Height < 0 ? int.MaxValue : Height;
+        public int AssumedHeight =>
+            Height >= 0
+                ? Height
+                : Height == -1
+                      ? (Parent as IParentControl)?.MeasureMaxRealSize().Height ??
+                        (Console.Root == this || Console.Popup == this ? Console.WindowHeight : 0)
+                      : int.MaxValue;
 
         private readonly Lazy<int> _actualHeight;
         private CharColor _foreground = CharColor.White;
@@ -412,6 +425,18 @@ namespace GoddamnConsole.Controls
         /// <param name="child">Child control</param>
         /// <returns>Size of child control</returns>
         Size MeasureChild(Control child);
+
+        Size MeasureMaxRealSize();
+    }
+
+    public class ChildRemovedEventArgs : EventArgs
+    {
+        public ChildRemovedEventArgs(Control child)
+        {
+            Child = child;
+        }
+
+        public Control Child { get; }
     }
 
     public interface IContentControl : IParentControl
@@ -423,7 +448,7 @@ namespace GoddamnConsole.Controls
         /// <summary>
         /// Fires after child control is changed
         /// </summary>
-        event EventHandler<Control> ContentDetached;
+        event EventHandler<ChildRemovedEventArgs> ContentDetached;
     }
 
     public interface IChildrenControl : IParentControl
@@ -439,7 +464,7 @@ namespace GoddamnConsole.Controls
         /// <summary>
         /// Fires after child control removed from children collection
         /// </summary>
-        event EventHandler<Control> ChildRemoved;
+        event EventHandler<ChildRemovedEventArgs> ChildRemoved;
     }
 
     public interface IAttachedProperty

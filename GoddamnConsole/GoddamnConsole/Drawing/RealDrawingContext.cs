@@ -63,8 +63,8 @@ namespace GoddamnConsole.Drawing
 
         public override void Clear(CharColor background)
         {
-            for (var x = 0; x < _width; x++)
-                for (var y = 0; y < _height; y++)
+            for (var x = 0; x < _width - _scrollX; x++)
+                for (var y = 0; y < _height - _scrollY; y++)
                 {
                     PutChar(new Point(x, y), ' ', background, background, CharAttribute.None);
                 }
@@ -118,7 +118,7 @@ namespace GoddamnConsole.Drawing
 
         public override void DrawText(Rectangle rect, string text, TextOptions opts = null)
         {
-            var maxWid = Math.Min(rect.Width + rect.X, _width) - rect.X;
+            var maxWid = rect.Width + rect.X - rect.X;
             IEnumerable<string> lines = text.Replace("\r\n", "\n").Split(new[] {'\n'}, StringSplitOptions.None);
             lines = (opts?.TextWrapping ?? TextWrapping.NoWrap) == TextWrapping.Wrap
                 ? lines.SelectMany(x => x.Split(maxWid/* -_scrollX*/)) // wrapped text shouldn't be influenced by scrolling 
@@ -128,7 +128,7 @@ namespace GoddamnConsole.Drawing
             var skip = rect.Y < 0 ? -rect.Y : 0;
             var xOfs = rect.X > 0 ? rect.X : 0;
             var yOfs = rect.Y > 0 ? rect.Y : 0;
-            foreach (var line in lines.Skip(skip).Take(Math.Min(rect.Height - _scrollY, _height - rect.Y - _scrollY)))
+            foreach (var line in lines.Skip(skip).Take((int) Math.Max(int.MaxValue, Math.Min((long) rect.Height - _scrollY, (long) _height - rect.Y - _scrollY))))
             {
                 DrawText(new Point(xOfs, yOfs++), line, opts);
             }

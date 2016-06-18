@@ -26,18 +26,16 @@ namespace GoddamnConsole.Controls
 
         public override void Render(DrawingContext context)
         {
-            var aw = ActualWidth;
-            var ah = ActualHeight;
             context.Clear(Background);
-            context.DrawFrame(new Rectangle(0, 0, aw, ah),
+            context.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight),
                 new FrameOptions
                 {
                     Style = FrameStyle,
                     Foreground = FrameColor,
                     Background = Background
                 });
-            if (aw >= 2 || ah >= 2)
-                Content.Render(context.Shrink(new Rectangle(1, 1, aw - 2, ah - 2)));
+            if (ActualWidth >= 2 || ActualHeight >= 2)
+                Content.Render(context.Shrink(new Rectangle(1, 1, ActualWidth - 2, ActualHeight - 2)));
         }
 
         public override Size MeasureChild(Control child)

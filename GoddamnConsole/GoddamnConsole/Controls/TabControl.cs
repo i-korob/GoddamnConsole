@@ -46,7 +46,7 @@ namespace GoddamnConsole.Controls
                 _internal.Clear();
                 foreach (var item in copy)
                 {
-                    _tabControl.ChildRemoved?.Invoke(_tabControl, item);
+                    _tabControl.ChildRemoved?.Invoke(_tabControl, new ChildRemovedEventArgs(item));
                 }
                 _tabControl.Invalidate();
             }
@@ -65,7 +65,7 @@ namespace GoddamnConsole.Controls
             {
                 if (!Contains(item)) return false;
                 _internal.Remove(item);
-                _tabControl.ChildRemoved?.Invoke(_tabControl, item);
+                _tabControl.ChildRemoved?.Invoke(_tabControl, new ChildRemovedEventArgs(item));
                 _tabControl.Invalidate();
                 return true;
             }
@@ -106,6 +106,11 @@ namespace GoddamnConsole.Controls
             return child == SelectedTab?.Content 
                 ? new Size(0, 0) 
                 : new Size(Math.Min(ActualWidth - 2, child.AssumedWidth), Math.Min(ActualHeight - 4, child.AssumedHeight));
+        }
+
+        public Size MeasureMaxRealSize()
+        {
+            return new Size(ActualWidth - 2, ActualHeight - 4);
         }
 
         protected override void OnKeyPress(ConsoleKeyInfo key)
@@ -185,7 +190,7 @@ namespace GoddamnConsole.Controls
         public ICollection<Control> Children { get; }
         public ICollection<Control> FocusableChildren
             => SelectedTab != null ? new List<Control> { SelectedTab } : new List<Control>();
-        public event EventHandler<Control> ChildRemoved;
+        public event EventHandler<ChildRemovedEventArgs> ChildRemoved;
     }
 
     public class Tab : ContentControl

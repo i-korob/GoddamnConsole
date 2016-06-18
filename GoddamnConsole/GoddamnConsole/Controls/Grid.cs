@@ -46,7 +46,7 @@ namespace GoddamnConsole.Controls
                 _internal.Clear();
                 foreach (var item in copy)
                 {
-                    _grid.ChildRemoved?.Invoke(_grid, item);
+                    _grid.ChildRemoved?.Invoke(_grid, new ChildRemovedEventArgs(item));
                 }
                 _grid.Invalidate();
             }
@@ -65,7 +65,7 @@ namespace GoddamnConsole.Controls
             {
                 if (!Contains(item)) return false;
                 _internal.Remove(item);
-                _grid.ChildRemoved?.Invoke(_grid, item);
+                _grid.ChildRemoved?.Invoke(_grid, new ChildRemovedEventArgs(item));
                 _grid.Invalidate();
                 return true;
             }
@@ -210,6 +210,7 @@ namespace GoddamnConsole.Controls
 
         public override void Render(DrawingContext context)
         {
+            if (RowDefinitions.Count == 0 || ColumnDefinitions.Count == 0) return;
             var sizes = MeasureGrid(new Size(ActualWidth, ActualHeight));
             foreach (var child in Children)
             {
@@ -230,6 +231,7 @@ namespace GoddamnConsole.Controls
 
         public Size MeasureChild(Control child)
         {
+            if (RowDefinitions.Count == 0 || ColumnDefinitions.Count == 0) return new Size(0, 0);
             var sizes = MeasureGrid(new Size(ActualWidth, ActualHeight));
             var grp = child.AttachedProperties.FirstOrDefault(x => x is GridRowProperty) as GridRowProperty;
             var gcp = child.AttachedProperties.FirstOrDefault(x => x is GridColumnProperty) as GridColumnProperty;
@@ -242,13 +244,18 @@ namespace GoddamnConsole.Controls
                 Math.Min(child.AssumedHeight, sizes.Item2.Skip(row).Take(rowSpan).Sum()));
         }
 
+        public Size MeasureMaxRealSize()
+        {
+            return new Size(ActualWidth, ActualHeight);
+        }
+
         public IList<GridSize> RowDefinitions { get; }
         public IList<GridSize> ColumnDefinitions { get; }
 
         public ICollection<Control> Children { get; }
         public ICollection<Control> FocusableChildren => Children;
 
-        public event EventHandler<Control> ChildRemoved;
+        public event EventHandler<ChildRemovedEventArgs> ChildRemoved;
     }
 
     public class GridRowProperty : IAttachedProperty

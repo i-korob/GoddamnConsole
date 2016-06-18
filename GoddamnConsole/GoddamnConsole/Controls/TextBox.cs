@@ -65,7 +65,7 @@ namespace GoddamnConsole.Controls
                         return prevOffs + (prevEol ? -1 : 0) +
                                Math.Min(
                                    LineWidths[wln - 1] +
-                                   (prevEol && !eol && (diff % _maxWidth) == 0 ? 1 : 0),
+                                   (prevEol && !eol && diff % _maxWidth == 0 ? 1 : 0),
                                    diff);
                     }
                     if (eol)
@@ -154,8 +154,6 @@ namespace GoddamnConsole.Controls
         {
             if (key.Modifiers.HasFlag(ConsoleModifiers.Control) || key.Modifiers.HasFlag(ConsoleModifiers.Alt))
                 return;
-            var actw = ActualWidth;
-            var acth = ActualHeight;
             var prevPos = _caretPos;
             switch (key.Key)
             {
@@ -197,13 +195,13 @@ namespace GoddamnConsole.Controls
             {
                 var point = _measurement.CaretPosition(_caretPos);
                 var prevPoint = _measurement.CaretPosition(prevPos);
-                var indent = Math.Min(2, Math.Max(0, prevPoint.X - point.X - actw + 3));
-                if (actw - point.X > 0) indent = 0;
+                var indent = Math.Min(2, Math.Max(0, prevPoint.X - point.X - ActualWidth + 3));
+                if (ActualWidth - point.X > 0) indent = 0;
                 if (point.X + _scrollX < 0) _scrollX = -point.X;
-                if (point.X + _scrollX >= actw) _scrollX = actw - point.X - 1;
+                if (point.X + _scrollX >= ActualWidth) _scrollX = ActualWidth - point.X - 1;
                 _scrollX += indent;
                 if (point.Y + _scrollY < 0) _scrollY = -point.Y;
-                if (point.Y + _scrollY >= acth) _scrollY = acth - point.Y - 1;
+                if (point.Y + _scrollY >= ActualHeight) _scrollY = ActualHeight - point.Y - 1;
             }
             Invalidate();
         }
@@ -211,8 +209,6 @@ namespace GoddamnConsole.Controls
         public override void Render(DrawingContext context)
         {
             OnSizeChanged();
-            var actw = ActualWidth;
-            var acth = ActualHeight;
             var so = new Point(_scrollX, _scrollY);
             CursorPosition =
                 _measurement.CaretPosition(_caretPos)
@@ -221,7 +217,7 @@ namespace GoddamnConsole.Controls
             context = context.Scroll(so);
             context.Clear(Background);
             context.DrawText(
-                new Rectangle(0, 0, actw, acth),
+                new Rectangle(0, 0, ActualWidth, ActualHeight),
                 Text,
                 new TextOptions
                 {

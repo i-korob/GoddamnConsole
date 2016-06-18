@@ -1,5 +1,4 @@
-﻿using System;
-using GoddamnConsole.Drawing;
+﻿using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
