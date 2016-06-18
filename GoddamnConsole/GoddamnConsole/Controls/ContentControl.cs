@@ -21,6 +21,7 @@ namespace GoddamnConsole.Controls
                 }
                 if (value == null || value.Parent == this) _content = value;
                 else value.Parent = this;
+                OnPropertyChanged();
             }
         }
 

@@ -1,14 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using GoddamnConsole.DataBinding;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public abstract class Control
+    public abstract class Control : INotifyPropertyChanged
     {
+        private class Lazy<T>
+        {
+            private readonly Control _owner;
+            private readonly Func<T> _generator;
+            private readonly string _propertyName;
+
+            public Lazy(Control owner, Func<T> generator, string propertyName)
+            {
+                _owner = owner;
+                _generator = generator;
+                _propertyName = propertyName;
+            }
+
+            private bool _generated;
+            private T _value;
+
+            public void Reset()
+            {
+                _generated = false;
+                // ReSharper disable once ExplicitCallerInfoArgument
+                _owner.OnPropertyChanged(_propertyName);
+            }
+
+            public T Value
+            {
+                get
+                {
+                    if (_generated) return _value;
+                    _value = _generator();
+                    _generated = true;
+                    return _value;
+                }
+            }
+        }
+
+        protected Control()
+        {
+            _actualWidth = new Lazy<int>(
+                this,
+                () =>
+                (_parent as IParentControl)?.MeasureChild(this)?.Width ??
+                (Console.Root == this || Console.Popup == this
+                     ? Math.Min(AssumedWidth, Console.WindowWidth)
+                     : 0),
+                nameof(ActualWidth));
+            _actualHeight = new Lazy<int>(
+                this,
+                () =>
+                (_parent as IParentControl)?.MeasureChild(this)?.Height ??
+                (Console.Root == this || Console.Popup == this
+                     ? Math.Min(AssumedHeight, Console.WindowHeight)
+                     : 0),
+                nameof(ActualHeight));
+        }
+
         #region Data Binding
 
         private object _dataContext;
@@ -23,6 +80,7 @@ namespace GoddamnConsole.Controls
             {
                 _dataContext = value;
                 foreach (var binding in _bindings.Values) binding.Refresh();
+                OnPropertyChanged();
             }
         }
 
@@ -150,6 +208,7 @@ namespace GoddamnConsole.Controls
                         }
                         else throw new NotSupportedException($"{value.GetType().Name} can not have child");
                     }
+                    OnPropertyChanged();
                 }
                 catch
                 {
@@ -176,6 +235,26 @@ namespace GoddamnConsole.Controls
         internal void OnRenderInternal(DrawingContext context)
         {
             Render(context);
+        }
+
+        internal void OnSizeChangedInternal()
+        {
+            _actualWidth.Reset();
+            _actualHeight.Reset();
+            OnSizeChanged();
+            var cctl = this as IContentControl;
+            if (cctl != null)
+            {
+                cctl.Content?.OnSizeChangedInternal();
+            }
+            else
+            {
+                var pctl = this as IChildrenControl;
+                if (pctl != null)
+                {
+                    foreach (var child in pctl.Children) child.OnSizeChangedInternal();
+                }
+            }
         }
 
         /// <summary>
@@ -206,7 +285,7 @@ namespace GoddamnConsole.Controls
         public int Width
         {
             get { return _width; }
-            set { _width = value; OnSizeChanged(); }
+            set { _width = value; OnSizeChanged(); OnPropertyChanged(); }
         }
 
         /// <summary>
@@ -214,12 +293,12 @@ namespace GoddamnConsole.Controls
         /// </summary>
         public int AssumedWidth => Width < 0 ? int.MaxValue : Width;
 
+        private readonly Lazy<int> _actualWidth;
+
         /// <summary>
         /// Measured width of control
         /// </summary>
-        public int ActualWidth =>
-            (_parent as IParentControl)?.MeasureChild(this)?.Width ??
-            (Console.Root == this || Console.Popup == this ? Math.Min(AssumedWidth, Console.WindowWidth) : 0);
+        public int ActualWidth => _actualWidth.Value;
 
         /// <summary>
         /// Gets or sets height of control
@@ -229,7 +308,7 @@ namespace GoddamnConsole.Controls
         public int Height
         {
             get { return _height; }
-            set { _height = value; OnSizeChanged(); }
+            set { _height = value; OnSizeChanged(); OnPropertyChanged(); }
         }
 
         /// <summary>
@@ -237,12 +316,14 @@ namespace GoddamnConsole.Controls
         /// </summary>
         public int AssumedHeight => Height < 0 ? int.MaxValue : Height;
 
+        private readonly Lazy<int> _actualHeight;
+        private CharColor _foreground = CharColor.White;
+        private CharColor _background = CharColor.Black;
+
         /// <summary>
         /// Measured height of control
         /// </summary>
-        public int ActualHeight =>
-            (_parent as IParentControl)?.MeasureChild(this)?.Height ??
-            (Console.Root == this || Console.Popup == this ? Math.Min(AssumedHeight, Console.WindowHeight) : 0);
+        public int ActualHeight => _actualHeight.Value;
 
         #endregion
 
@@ -272,6 +353,7 @@ namespace GoddamnConsole.Controls
                 {
                     Console.Provider.CursorX = value.X;
                     Console.Provider.CursorY = value.Y;
+                    OnPropertyChanged(noInvalidate: true);
                 }
             }
         }
@@ -300,8 +382,26 @@ namespace GoddamnConsole.Controls
         /// </summary>
         public bool Focusable { get; protected set; } = false;
 
-        public CharColor Foreground { get; set; } = CharColor.White;
-        public CharColor Background { get; set; } = CharColor.Black;
+        public CharColor Foreground
+        {
+            get { return _foreground; }
+            set { _foreground = value; OnPropertyChanged(); }
+        }
+
+        public CharColor Background
+        {
+            get { return _background; }
+            set { _background = value; OnPropertyChanged(); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null, bool noInvalidate = false)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (noInvalidate) return;
+            Invalidate();
+        }
     }
 
     public interface IParentControl
@@ -332,6 +432,10 @@ namespace GoddamnConsole.Controls
         /// Returns a collection that contains children
         /// </summary>
         ICollection<Control> Children { get; }
+        /// <summary>
+        /// Returns a collection that contains children
+        /// </summary>
+        ICollection<Control> FocusableChildren { get; }
         /// <summary>
         /// Fires after child control removed from children collection
         /// </summary>

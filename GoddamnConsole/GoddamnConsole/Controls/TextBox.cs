@@ -119,6 +119,7 @@ namespace GoddamnConsole.Controls
                     _measurement = new TextMeasurement
                         (value,
                          _textWrapping == TextWrapping.Wrap ? ActualWidth : int.MaxValue);
+                OnPropertyChanged();
             }
         }
 
@@ -130,6 +131,7 @@ namespace GoddamnConsole.Controls
                     _measurement = new TextMeasurement
                         (_text,
                          value == TextWrapping.Wrap ? ActualWidth : int.MaxValue);
+                OnPropertyChanged();
             }
         }
 

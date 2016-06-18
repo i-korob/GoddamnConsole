@@ -50,6 +50,7 @@
     <Compile Include="Controls\Control.cs" />
     <Compile Include="Controls\Grid.cs" />
     <Compile Include="Controls\ScrollViewer.cs" />
+    <Compile Include="Controls\TabControl.cs" />
     <Compile Include="Controls\TextBox.cs" />
     <Compile Include="Controls\TextView.cs" />
     <Compile Include="DataBinding\Binding.cs" />

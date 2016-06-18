@@ -116,7 +116,12 @@ namespace GoddamnConsole
                 }
                 Focused?.OnKeyPressInternal(e);
             };
-            provider.SizeChanged += (o, e) => Refresh();
+            provider.SizeChanged += (o, e) =>
+            {
+                Root?.OnSizeChangedInternal();
+                Popup?.OnSizeChangedInternal();
+                Refresh();
+            };
             FocusNext();
         }
 
@@ -130,7 +135,7 @@ namespace GoddamnConsole
             {
                 var childrenControl = current as IChildrenControl;
                 if (childrenControl == null) return;
-                foreach (var element in childrenControl.Children)
+                foreach (var element in childrenControl.FocusableChildren)
                     AllFocusableElements(element, elements);
             }
         }
@@ -170,7 +175,9 @@ namespace GoddamnConsole
         /// </summary>
         public static void Refresh()
         {
-            Provider?.Clear(_background);
+            if (Provider == null) return;
+            Provider.CursorVisible = false;
+            Provider.Clear(_background);
             Root?.OnRenderInternal(new RealDrawingContext(_isPopupVisible));
             if (_isPopupVisible && Popup != null)
             {

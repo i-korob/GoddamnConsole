@@ -25,151 +25,180 @@ namespace GoddamnConsoleSample
         
         private static void Main()
         {
-            var ctl = new Grid
+            //var ctl = new Grid
+            //{
+            //    ColumnDefinitions =
+            //    {
+            //        new GridSize(GridUnitType.Fixed, 10),
+            //        new GridSize(GridUnitType.Grow, 1),
+            //        new GridSize(GridUnitType.Grow, 2)
+            //    },
+            //    RowDefinitions =
+            //    {
+            //        new GridSize(GridUnitType.Fixed, 5),
+            //        new GridSize(GridUnitType.Auto, 0)
+            //    },
+            //    Children =
+            //    {
+            //        new Border
+            //        {
+            //            Content =
+            //                new TextView
+            //                {
+            //                    Text = LongLorem,
+            //                    TextWrapping = TextWrapping.Wrap
+            //                },
+            //            AttachedProperties =
+            //            {
+            //                new GridRowProperty {Row = 0, RowSpan = 2},
+            //                new GridColumnProperty {Column = 0},
+            //            },
+            //            FrameStyle = FrameStyle.Double
+            //        },
+            //        new Border
+            //        {
+            //            Content =
+            //                new TextView
+            //                {
+            //                    Text = LongLorem,
+            //                    TextWrapping = TextWrapping.Wrap
+            //                },
+            //            AttachedProperties =
+            //            {
+            //                new GridRowProperty {Row = 0},
+            //                new GridColumnProperty {Column = 1, ColumnSpan = 2},
+            //            },
+            //            FrameStyle = FrameStyle.Fill
+            //        },
+            //        new Border
+            //        {
+            //            Content =
+            //                new TextView
+            //                {
+            //                    Text = LongLorem,
+            //                    TextWrapping = TextWrapping.Wrap
+            //                },
+            //            AttachedProperties =
+            //            {
+            //                new GridRowProperty {Row = 1},
+            //                new GridColumnProperty {Column = 1},
+            //            },
+            //            FrameStyle = FrameStyle.Simple
+            //        },
+            //        new Border
+            //        {
+            //            Content =
+            //                new TextView
+            //                {
+            //                    Text = LongLorem,
+            //                    TextWrapping = TextWrapping.Wrap
+            //                },
+            //            AttachedProperties =
+            //            {
+            //                new GridRowProperty {Row = 1},
+            //                new GridColumnProperty {Column = 2},
+            //            },
+            //            Height = 10
+            //        }
+            //    }
+            //};
+            //var tc = new TestClass();
+            //var tnc = new TestClass.TestNestedClass();
+            //var tnc2 = new TestClass.TestNestedClass.TestNestedClass2();
+            //tc.TestNestedProperty = tnc;
+            //tnc.TestNestedProperty2 = tnc2;
+            //tnc2.TestProperty = 20;
+            //ctl.DataContext = tc;
+            //ctl.Bind(nameof(ctl.Width), "TestNestedProperty.TestNestedProperty2.TestProperty");
+            //Debug.Assert(ctl.Width == 20);
+            //tnc2.TestProperty = 30;
+            //Debug.Assert(ctl.Width == 30);
+            //tnc.TestNestedProperty2 = new TestClass.TestNestedClass.TestNestedClass2
+            //{
+            //    TestProperty = 40
+            //};
+            //Debug.Assert(ctl.Width == 40);
+            //tnc2.TestProperty = 50;
+            //tc.TestNestedProperty = new TestClass.TestNestedClass {TestNestedProperty2 = tnc2};
+            //Debug.Assert(ctl.Width == 50);
+            //Console.Focused = ctl;
+            //var popup = new Border
+            //{
+            //    Width = 25,
+            //    Height = 12,
+            //    Content = new Grid
+            //    {
+            //        RowDefinitions =
+            //        {
+            //            new GridSize(GridUnitType.Auto, 0),
+            //            new GridSize(GridUnitType.Fixed, 7),
+            //        },
+            //        ColumnDefinitions =
+            //        {
+            //            new GridSize(GridUnitType.Auto, 0)
+            //        },
+            //        Children =
+            //        {
+            //            new TextView
+            //            {
+            //                Text = "\n  Sample popup window  \n",
+            //                Background = CharColor.White,
+            //                Foreground = CharColor.Red,
+            //                AttachedProperties =
+            //                {
+            //                    new GridRowProperty { Row = 0 },
+            //                    new GridColumnProperty { Column = 0 }
+            //                },
+            //                Width = 23,
+            //                Height = 3
+            //            },
+            //            new Border
+            //            {
+            //                Content = new TextBox
+            //                {
+            //                    Text = "Editable text\n\n\nVery very very long line ____________________\nOther line ____________\n\nAnother line\n\n\nYet another line"
+            //                },
+            //                AttachedProperties =
+            //                {
+            //                    new GridRowProperty { Row = 1 },
+            //                    new GridColumnProperty { Column = 0 }
+            //                }
+            //            }
+            //        }
+            //    },
+            //    FrameColor = CharColor.LightGreen
+            //};
+            //Console.IsPopupVisible = true;
+            //Console.Popup = popup;
+            var ctl = new TabControl();
+            var tab1 = new Tab
             {
-                ColumnDefinitions =
+                Name = "tab 1",
+                Content = new TextBox
                 {
-                    new GridSize(GridUnitType.Fixed, 10),
-                    new GridSize(GridUnitType.Grow, 1),
-                    new GridSize(GridUnitType.Grow, 2)
-                },
-                RowDefinitions =
-                {
-                    new GridSize(GridUnitType.Fixed, 5),
-                    new GridSize(GridUnitType.Auto, 0)
-                },
-                Children =
-                {
-                    new Border
-                    {
-                        Content =
-                            new TextView
-                            {
-                                Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap
-                            },
-                        AttachedProperties =
-                        {
-                            new GridRowProperty {Row = 0, RowSpan = 2},
-                            new GridColumnProperty {Column = 0},
-                        },
-                        FrameStyle = FrameStyle.Double
-                    },
-                    new Border
-                    {
-                        Content =
-                            new TextView
-                            {
-                                Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap
-                            },
-                        AttachedProperties =
-                        {
-                            new GridRowProperty {Row = 0},
-                            new GridColumnProperty {Column = 1, ColumnSpan = 2},
-                        },
-                        FrameStyle = FrameStyle.Fill
-                    },
-                    new Border
-                    {
-                        Content =
-                            new TextView
-                            {
-                                Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap
-                            },
-                        AttachedProperties =
-                        {
-                            new GridRowProperty {Row = 1},
-                            new GridColumnProperty {Column = 1},
-                        },
-                        FrameStyle = FrameStyle.Simple
-                    },
-                    new Border
-                    {
-                        Content =
-                            new TextView
-                            {
-                                Text = LongLorem,
-                                TextWrapping = TextWrapping.Wrap
-                            },
-                        AttachedProperties =
-                        {
-                            new GridRowProperty {Row = 1},
-                            new GridColumnProperty {Column = 2},
-                        },
-                        Height = 10
-                    }
+                    Text = "asdasd"
                 }
             };
-            var tc = new TestClass();
-            var tnc = new TestClass.TestNestedClass();
-            var tnc2 = new TestClass.TestNestedClass.TestNestedClass2();
-            tc.TestNestedProperty = tnc;
-            tnc.TestNestedProperty2 = tnc2;
-            tnc2.TestProperty = 20;
-            ctl.DataContext = tc;
-            ctl.Bind(nameof(ctl.Width), "TestNestedProperty.TestNestedProperty2.TestProperty");
-            Debug.Assert(ctl.Width == 20);
-            tnc2.TestProperty = 30;
-            Debug.Assert(ctl.Width == 30);
-            tnc.TestNestedProperty2 = new TestClass.TestNestedClass.TestNestedClass2
+            var tab2 = new Tab
             {
-                TestProperty = 40
-            };
-            Debug.Assert(ctl.Width == 40);
-            tnc2.TestProperty = 50;
-            tc.TestNestedProperty = new TestClass.TestNestedClass {TestNestedProperty2 = tnc2};
-            Debug.Assert(ctl.Width == 50);
-            Console.Focused = ctl;
-            var popup = new Border
-            {
-                Width = 25,
-                Height = 12,
-                Content = new Grid
+                Name = "tab 2",
+                Content = new TextBox
                 {
-                    RowDefinitions =
-                    {
-                        new GridSize(GridUnitType.Auto, 0),
-                        new GridSize(GridUnitType.Fixed, 7),
-                    },
-                    ColumnDefinitions =
-                    {
-                        new GridSize(GridUnitType.Auto, 0)
-                    },
-                    Children =
-                    {
-                        new TextView
-                        {
-                            Text = "\n  Sample popup window  \n",
-                            Background = CharColor.White,
-                            Foreground = CharColor.Red,
-                            AttachedProperties =
-                            {
-                                new GridRowProperty { Row = 0 },
-                                new GridColumnProperty { Column = 0 }
-                            },
-                            Width = 23,
-                            Height = 3
-                        },
-                        new Border
-                        {
-                            Content = new TextBox
-                            {
-                                Text = "Editable text\n\n\nVery very very long line ____________________\nOther line ____________\n\nAnother line\n\n\nYet another line"
-                            },
-                            AttachedProperties =
-                            {
-                                new GridRowProperty { Row = 1 },
-                                new GridColumnProperty { Column = 0 }
-                            }
-                        }
-                    }
-                },
-                FrameColor = CharColor.LightGreen
+                    Text = "asdasd"
+                }
             };
-            Console.IsPopupVisible = true;
-            Console.Popup = popup;
+            var tab3 = new Tab
+            {
+                Name = "tab 3",
+                Content = new TextBox
+                {
+                    Text = "asdasd"
+                }
+            };
+            ctl.Children.Add(tab1);
+            ctl.Children.Add(tab2);
+            ctl.Children.Add(tab3);
+            ctl.SelectedTab = tab2;
             Console.Start(new WindowsNativeConsoleProvider(), ctl);
         }
     }

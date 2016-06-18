@@ -218,13 +218,10 @@ namespace GoddamnConsole.NativeProviders
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetConsoleCursorInfo(
             IntPtr consoleHandle,
-            [MarshalAs(UnmanagedType.LPStruct)] CONSOLE_CURSOR_INFO bufInfo);
+            ref CONSOLE_CURSOR_INFO bufInfo);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetStdHandle(int handle);
-
-        [DllImport("kernel32.dll")]
-        private static extern int GetLastError();
 
         private static readonly Action<IntPtr, byte, int> Memset;
 
@@ -242,11 +239,12 @@ namespace GoddamnConsole.NativeProviders
             }
             set
             {
-                SetConsoleCursorInfo(_stdout, new CONSOLE_CURSOR_INFO
+                var cci = new CONSOLE_CURSOR_INFO
                 {
                     Visible = value,
                     Size = 1
-                });
+                };
+                SetConsoleCursorInfo(_stdout, ref cci);
             }
         }
 
@@ -260,6 +258,7 @@ namespace GoddamnConsole.NativeProviders
             }
             set
             {
+                CursorVisible = true;
                 SetConsoleCursorPosition(_stdout, new COORD
                 {
                     X = (short)value,
@@ -272,16 +271,21 @@ namespace GoddamnConsole.NativeProviders
         {
             get
             {
+                var cinfo = new CONSOLE_SCREEN_BUFFER_INFO();
+                GetConsoleScreenBufferInfo(_stdout, ref cinfo);
                 var info = new CONSOLE_SCREEN_BUFFER_INFO();
                 GetConsoleScreenBufferInfo(_stdout, ref info);
-                return info.CursorPosition.Y;
+                return info.CursorPosition.Y - cinfo.Window.Top;
             }
             set
             {
+                CursorVisible = true;
+                var cinfo = new CONSOLE_SCREEN_BUFFER_INFO();
+                GetConsoleScreenBufferInfo(_stdout, ref cinfo);
                 SetConsoleCursorPosition(_stdout, new COORD
                 {
-                    X = (short)CursorX,
-                    Y = (short)value
+                    X = (short) CursorX,
+                    Y = (short) (value + cinfo.Window.Top)
                 });
             }
         }

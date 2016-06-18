@@ -5,8 +5,24 @@ namespace GoddamnConsole.Controls
 {
     public class Border : ContentControl
     {
-        public FrameStyle FrameStyle { get; set; } = FrameStyle.Single;
-        public CharColor FrameColor { get; set; } = CharColor.White;
+        private FrameStyle _frameStyle = FrameStyle.Single;
+        private CharColor _frameColor = CharColor.White;
+
+        public FrameStyle FrameStyle
+        {
+            get { return _frameStyle; }
+            set { _frameStyle = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public CharColor FrameColor
+        {
+            get { return _frameColor; }
+            set { _frameColor = value;
+                OnPropertyChanged();
+            }
+        }
 
         public override void Render(DrawingContext context)
         {

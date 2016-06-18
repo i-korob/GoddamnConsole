@@ -246,6 +246,7 @@ namespace GoddamnConsole.Controls
         public IList<GridSize> ColumnDefinitions { get; }
 
         public ICollection<Control> Children { get; }
+        public ICollection<Control> FocusableChildren => Children;
 
         public event EventHandler<Control> ChildRemoved;
     }
