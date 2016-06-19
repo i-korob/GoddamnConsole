@@ -1,5 +1,4 @@
-﻿using System;
-using GoddamnConsole.Drawing;
+﻿using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
@@ -38,10 +37,9 @@ namespace GoddamnConsole.Controls
                 Content.Render(context.Shrink(new Rectangle(1, 1, ActualWidth - 2, ActualHeight - 2)));
         }
 
-        public override Size MeasureChild(Control child)
+        public override Size MeasureBoundingBox(Control child)
         {
-            return new Size(Math.Min(child.AssumedWidth, ActualWidth - 2),
-                Math.Min(child.AssumedHeight, ActualHeight - 2));
+            return new Size(ActualWidth - 2, ActualHeight - 2);
         }
     }
 }

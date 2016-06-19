@@ -6,12 +6,6 @@ namespace GoddamnConsole.Controls
     public abstract class ContentControl : Control, IContentControl
     {
         private Control _content;
-        public abstract Size MeasureChild(Control child);
-
-        public virtual Size MeasureMaxRealSize()
-        {
-            return new Size(ActualWidth, ActualHeight);
-        }
 
         public Control Content
         {
@@ -31,5 +25,7 @@ namespace GoddamnConsole.Controls
         }
 
         public event EventHandler<ChildRemovedEventArgs> ContentDetached;
+
+        public virtual Size MeasureBoundingBox(Control child) => new Size(ActualWidth, ActualHeight);
     }
 }

@@ -137,8 +137,8 @@ namespace GoddamnConsole.Controls
 
         private TextMeasurement _measurement;
         private int _caretPos;
-        private int _scrollX;
-        private int _scrollY;
+        private long _scrollX;
+        private long _scrollY;
         private string _text;
         private TextWrapping _textWrapping = TextWrapping.NoWrap;
 
@@ -209,7 +209,7 @@ namespace GoddamnConsole.Controls
         public override void Render(DrawingContext context)
         {
             OnSizeChanged();
-            var so = new Point(_scrollX, _scrollY);
+            var so = new Point((int) _scrollX, (int) _scrollY);
             CursorPosition =
                 _measurement.CaretPosition(_caretPos)
                             .Offset(so.X, so.Y)

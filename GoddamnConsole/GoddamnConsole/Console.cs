@@ -183,15 +183,15 @@ namespace GoddamnConsole
             if (_isPopupVisible && Popup != null)
             {
                 var rdc =
-                    Popup.AssumedWidth > WindowWidth || Popup.AssumedHeight > WindowHeight
+                    Popup.ActualWidth > WindowWidth || Popup.ActualHeight > WindowHeight
                         ? new RealDrawingContext()
                         : new RealDrawingContext()
                               .Shrink(
                                   new Rectangle(
-                                      (WindowWidth - Popup.AssumedWidth) / 2,
-                                      (WindowHeight - Popup.AssumedHeight) / 2,
-                                      Popup.AssumedWidth,
-                                      Popup.AssumedHeight
+                                      (WindowWidth - Popup.ActualWidth) / 2,
+                                      (WindowHeight - Popup.ActualHeight) / 2,
+                                      Popup.ActualWidth,
+                                      Popup.ActualHeight
                                       ));
                 rdc.Clear(Background);
                 Popup?.OnRenderInternal(rdc);

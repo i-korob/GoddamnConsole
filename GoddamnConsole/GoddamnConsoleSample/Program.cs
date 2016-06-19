@@ -3,7 +3,6 @@ using System.Linq;
 using GoddamnConsole;
 using GoddamnConsole.Controls;
 using GoddamnConsole.Drawing;
-using GoddamnConsole.NativeProviders;
 using GoddamnConsole.NativeProviders.Windows;
 using Console = GoddamnConsole.Console;
 
@@ -54,8 +53,10 @@ namespace GoddamnConsoleSample
                                 },
                             AttachedProperties =
                             {
-                                new GridRowProperty {Row = 0, RowSpan = 2},
-                                new GridColumnProperty {Column = 0},
+                                new GridProperties
+                                {
+                                    RowSpan = 2
+                                }
                             },
                             FrameStyle = FrameStyle.Double
                         },
@@ -69,8 +70,11 @@ namespace GoddamnConsoleSample
                                 },
                             AttachedProperties =
                             {
-                                new GridRowProperty {Row = 0},
-                                new GridColumnProperty {Column = 1, ColumnSpan = 2},
+                                new GridProperties
+                                {
+                                    Column = 1,
+                                    ColumnSpan = 2
+                                }
                             },
                             FrameStyle = FrameStyle.Fill
                         },
@@ -84,8 +88,11 @@ namespace GoddamnConsoleSample
                                 },
                             AttachedProperties =
                             {
-                                new GridRowProperty {Row = 1},
-                                new GridColumnProperty {Column = 1},
+                                new GridProperties
+                                {
+                                    Row = 1,
+                                    Column = 1
+                                }
                             },
                             FrameStyle = FrameStyle.Simple
                         },
@@ -99,8 +106,11 @@ namespace GoddamnConsoleSample
                                 },
                             AttachedProperties =
                             {
-                                new GridRowProperty {Row = 1},
-                                new GridColumnProperty {Column = 2},
+                                new GridProperties
+                                {
+                                    Row = 1,
+                                    Column = 2
+                                }
                             },
                             Height = 10
                         }
@@ -112,7 +122,7 @@ namespace GoddamnConsoleSample
                 Name = "TextBox",
                 Content = new TextBox
                 {
-                    Text = "asdasd"
+                    Text = "You can write here!"
                 }
             };
             var tab3 = new Tab
@@ -125,7 +135,7 @@ namespace GoddamnConsoleSample
                         Text = LongLorem,
                         Background = CharColor.Blue,
                         Foreground = CharColor.LightYellow,
-                        Height = -2
+                        Height = ControlSizeType.MaxByContent
                     }
                 }
             };

@@ -1,4 +1,5 @@
-﻿using GoddamnConsole.Drawing;
+﻿using System.Linq;
+using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
@@ -6,6 +7,14 @@ namespace GoddamnConsole.Controls
     {
         private TextWrapping _textWrapping = TextWrapping.Wrap;
         private string _text;
+
+        public override int MaxWidth
+            => DrawingContext.MeasureText(_text ?? "").Max();
+
+        public override int MaxHeight
+            => _textWrapping == TextWrapping.Wrap
+                   ? DrawingContext.MeasureWrappedText(_text ?? "", ActualWidth).Height
+                   : DrawingContext.MeasureText(_text ?? "").Count();
 
         public string Text
         {

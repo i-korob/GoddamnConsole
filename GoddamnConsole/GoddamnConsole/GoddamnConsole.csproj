@@ -47,9 +47,12 @@
     <Compile Include="Character.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Controls\Border.cs" />
+    <Compile Include="Controls\ChildrenControl.cs" />
     <Compile Include="Controls\ContentControl.cs" />
     <Compile Include="Controls\Control.cs" />
     <Compile Include="Controls\Grid.cs" />
+    <Compile Include="Controls\OldGrid.cs" />
+    <Compile Include="Controls\Interfaces.cs" />
     <Compile Include="Controls\ScrollViewer.cs" />
     <Compile Include="Controls\TabControl.cs" />
     <Compile Include="Controls\TextBox.cs" />
