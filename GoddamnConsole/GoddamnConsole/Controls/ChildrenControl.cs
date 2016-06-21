@@ -99,7 +99,12 @@ namespace GoddamnConsole.Controls
         }
         
         public virtual void OnChildrenUpdated() { }
-        public virtual Size MeasureBoundingBox(Control child) => new Size(ActualWidth, ActualHeight);
+        public virtual Rectangle MeasureBoundingBox(Control child) 
+            => new Rectangle(0, 0, ActualWidth, ActualHeight);
+
+        public virtual Point GetScrollOffset(Control child) => new Point(0, 0);
+
+        public virtual bool IsChildVisible(Control child) => true;
 
         public IList<Control> Children { get; }
         public virtual IList<Control> FocusableChildren => Children;

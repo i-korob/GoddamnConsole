@@ -142,7 +142,7 @@ namespace GoddamnConsole.Controls
         private string _text;
         private TextWrapping _textWrapping = TextWrapping.NoWrap;
 
-        protected override void OnSizeChanged()
+        protected override void OnSizeChanged(Size prevSize, Size newSize)
         {
             if (_text != null)
                 _measurement = new TextMeasurement
@@ -150,7 +150,7 @@ namespace GoddamnConsole.Controls
                      _textWrapping == TextWrapping.Wrap ? ActualWidth : int.MaxValue);
         }
 
-        protected override void OnKeyPress(ConsoleKeyInfo key)
+        protected override void OnKeyPressed(ConsoleKeyInfo key)
         {
             if (key.Modifiers.HasFlag(ConsoleModifiers.Control) || key.Modifiers.HasFlag(ConsoleModifiers.Alt))
                 return;
@@ -206,9 +206,9 @@ namespace GoddamnConsole.Controls
             Invalidate();
         }
 
-        public override void Render(DrawingContext context)
+        protected override void OnRender(DrawingContext context)
         {
-            OnSizeChanged();
+            OnSizeChanged(new Size(0, 0), new Size(0, 0)); // todo переписать это дерьмо
             var so = new Point((int) _scrollX, (int) _scrollY);
             CursorPosition =
                 _measurement.CaretPosition(_caretPos)

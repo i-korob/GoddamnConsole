@@ -23,7 +23,7 @@ namespace GoddamnConsole.Controls
             }
         }
 
-        public override void Render(DrawingContext context)
+        protected override void OnRender(DrawingContext context)
         {
             context.Clear(Background);
             context.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight),
@@ -33,13 +33,13 @@ namespace GoddamnConsole.Controls
                     Foreground = FrameColor,
                     Background = Background
                 });
-            if (ActualWidth >= 2 || ActualHeight >= 2)
-                Content.Render(context.Shrink(new Rectangle(1, 1, ActualWidth - 2, ActualHeight - 2)));
+            //if (ActualWidth >= 2 || ActualHeight >= 2)
+            //    Content.Render(context.Shrink(new Rectangle(1, 1, ActualWidth - 2, ActualHeight - 2)));
         }
 
-        public override Size MeasureBoundingBox(Control child)
+        public override Rectangle MeasureBoundingBox(Control child)
         {
-            return new Size(ActualWidth - 2, ActualHeight - 2);
+            return new Rectangle(1, 1, ActualWidth - 2, ActualHeight - 2);
         }
     }
 }

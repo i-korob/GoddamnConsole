@@ -50,8 +50,11 @@
     <Compile Include="Controls\ChildrenControl.cs" />
     <Compile Include="Controls\ContentControl.cs" />
     <Compile Include="Controls\Control.cs" />
+    <Compile Include="Controls\ControlDataBinding.cs" />
+    <Compile Include="Controls\ControlEvents.cs" />
+    <Compile Include="Controls\ControlParentProcessing.cs" />
+    <Compile Include="Controls\ControlSizeMeasurement.cs" />
     <Compile Include="Controls\Grid.cs" />
-    <Compile Include="Controls\OldGrid.cs" />
     <Compile Include="Controls\Interfaces.cs" />
     <Compile Include="Controls\ScrollViewer.cs" />
     <Compile Include="Controls\TabControl.cs" />

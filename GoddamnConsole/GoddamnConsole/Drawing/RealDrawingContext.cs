@@ -28,6 +28,7 @@ namespace GoddamnConsole.Drawing
 
         public override DrawingContext Scroll(Point sourceOffset)
         {
+            if (_width - sourceOffset.X <= 0 || _height - sourceOffset.Y <= 0) return new ImaginaryDrawingContext();
             return new RealDrawingContext(_lowBrightness)
             {
                 _x = _x,

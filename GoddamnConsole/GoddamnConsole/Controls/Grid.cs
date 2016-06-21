@@ -92,29 +92,29 @@ namespace GoddamnConsole.Controls
             return sizes.Select(x => (int) x).ToArray();
         }
 
-        public override void Render(DrawingContext context)
+        protected override void OnRender(DrawingContext context)
         {
-            foreach (var child in Children)
-            {
-                var rows = MeasureSizes(false);
-                var columns = MeasureSizes(true);
-                var props = child.AttachedProperty<GridProperties>() ?? new GridProperties();
-                var row = Math.Max(0, Math.Min(props.Row, rows.Length));
-                var column = Math.Max(0, Math.Min(props.Column, columns.Length));
-                var rowSpan = Math.Max(1, Math.Min(props.RowSpan, rows.Length - row));
-                var columnSpan = Math.Max(1, Math.Min(props.ColumnSpan, columns.Length - column));
-                child.Render(context.Shrink(
-                    new Rectangle(
-                        columns.Take(column).Sum(),
-                        rows.Take(row).Sum(),
-                        columns.Skip(column).Take(columnSpan).Sum(),
-                        rows.Skip(row).Take(rowSpan).Sum())));
-            }
+            //foreach (var child in Children)
+            //{
+            //    var rows = MeasureSizes(false);
+            //    var columns = MeasureSizes(true);
+            //    var props = child.AttachedProperty<GridProperties>() ?? new GridProperties();
+            //    //var row = Math.Max(0, Math.Min(props.Row, rows.Length));
+            //    //var column = Math.Max(0, Math.Min(props.Column, columns.Length));
+            //    //var rowSpan = Math.Max(1, Math.Min(props.RowSpan, rows.Length - row));
+            //    //var columnSpan = Math.Max(1, Math.Min(props.ColumnSpan, columns.Length - column));
+            //    //child.Render(context.Shrink(
+            //    //    new Rectangle(
+            //    //        columns.Take(column).Sum(),
+            //    //        rows.Take(row).Sum(),
+            //    //        columns.Skip(column).Take(columnSpan).Sum(),
+            //    //        rows.Skip(row).Take(rowSpan).Sum())));
+            //}
         }
 
-        public override Size MeasureBoundingBox(Control child)
+        public override Rectangle MeasureBoundingBox(Control child)
         {
-            if (!Children.Contains(child)) return new Size(0, 0);
+            if (!Children.Contains(child)) return new Rectangle(0, 0, 0, 0);
             var rows = MeasureSizes(false);
             var columns = MeasureSizes(true);
             var props = child.AttachedProperty<GridProperties>() ?? new GridProperties();
@@ -122,7 +122,9 @@ namespace GoddamnConsole.Controls
             var column = Math.Max(0, Math.Min(props.Column, columns.Length));
             var rowSpan = Math.Max(1, Math.Min(props.RowSpan, rows.Length - row));
             var columnSpan = Math.Max(1, Math.Min(props.ColumnSpan, columns.Length - column));
-            return new Size(
+            return new Rectangle(
+                columns.Take(column).Sum(),
+                rows.Take(row).Sum(),
                 columns.Skip(column).Take(columnSpan).Sum(),
                 rows.Skip(row).Take(rowSpan).Sum());
         }

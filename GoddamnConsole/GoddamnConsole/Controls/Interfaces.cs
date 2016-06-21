@@ -4,9 +4,16 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public interface IParentControl
+    public interface IControl
     {
-        Size MeasureBoundingBox(Control child);
+        void Invalidate();
+    }
+
+    public interface IParentControl : IControl
+    {
+        Rectangle MeasureBoundingBox(Control child);
+        Point GetScrollOffset(Control child);
+        bool IsChildVisible(Control child);
     }
 
     public interface IAttachedProperty

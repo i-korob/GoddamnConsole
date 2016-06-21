@@ -16,23 +16,31 @@ namespace GoddamnConsole.Controls
                    ? DrawingContext.MeasureWrappedText(_text ?? "", ActualWidth).Height
                    : DrawingContext.MeasureText(_text ?? "").Count();
 
+        [AlsoNotifyFor(nameof(MaxWidth))]
+        [AlsoNotifyFor(nameof(MaxHeight))]
         public string Text
         {
             get { return _text; }
-            set { _text = value;
+            set
+            {
+                _text = value;
                 OnPropertyChanged();
             }
         }
 
+        [AlsoNotifyFor(nameof(MaxWidth))]
+        [AlsoNotifyFor(nameof(MaxHeight))]
         public TextWrapping TextWrapping
         {
             get { return _textWrapping; }
-            set { _textWrapping = value;
+            set
+            {
+                _textWrapping = value;
                 OnPropertyChanged();
             }
         }
 
-        public override void Render(DrawingContext context)
+        protected override void OnRender(DrawingContext context)
         {
             context.Clear(Background);
             context.DrawText(

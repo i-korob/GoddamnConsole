@@ -15,14 +15,14 @@ namespace GoddamnConsole.Controls
         public override IList<Control> FocusableChildren
             => SelectedTab == null ? new Control[0] : new Control[] {SelectedTab};
 
-        public override Size MeasureBoundingBox(Control child)
+        public override Rectangle MeasureBoundingBox(Control child)
         {
-            return child == SelectedTab?.Content 
-                ? new Size(0, 0) 
-                : new Size(ActualWidth - 2, ActualHeight - 4);
+            return child == SelectedTab
+                ? new Rectangle(1, 3, ActualWidth - 2, ActualHeight - 4)
+                : new Rectangle(0, 0, 0, 0) ;
         }
         
-        protected override void OnKeyPress(ConsoleKeyInfo key)
+        protected override void OnKeyPressed(ConsoleKeyInfo key)
         {
             if (key.Key == ConsoleKey.LeftArrow)
             {
@@ -43,7 +43,7 @@ namespace GoddamnConsole.Controls
             }
         }
 
-        public override void Render(DrawingContext context)
+        protected override void OnRender(DrawingContext context)
         {
             var style = Console.Focused == this
                             ? "║╠╣╩═╦"
@@ -83,7 +83,7 @@ namespace GoddamnConsole.Controls
                     Foreground = CharColor.Black
                 });
             }
-            SelectedTab?.Content?.Render(context.Shrink(new Rectangle(1, 3, ActualWidth - 2, ActualHeight - 4)));
+            // SelectedTab?.Content?.OnRender(context.Shrink(new Rectangle(1, 3, ActualWidth - 2, ActualHeight - 4)));
         }
 
         public Tab SelectedTab
@@ -95,6 +95,8 @@ namespace GoddamnConsole.Controls
         }
         
         private Tab _selectedTab;
+
+        public override bool IsChildVisible(Control child) => child == SelectedTab;
     }
 
     public class Tab : ContentControl
@@ -109,9 +111,9 @@ namespace GoddamnConsole.Controls
             }
         }
 
-        public override Size MeasureBoundingBox(Control child)
+        public override Rectangle MeasureBoundingBox(Control child)
         {
-            return new Size(ActualWidth, ActualHeight);
+            return new Rectangle(0, 0, ActualWidth, ActualHeight);
         }
     }
 }

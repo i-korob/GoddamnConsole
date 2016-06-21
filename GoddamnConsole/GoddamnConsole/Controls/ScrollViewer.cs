@@ -13,7 +13,7 @@ namespace GoddamnConsole.Controls
         private int _scrollX;
         private int _scrollY;
 
-        protected override void OnKeyPress(ConsoleKeyInfo key)
+        protected override void OnKeyPressed(ConsoleKeyInfo key)
         {
             if (key.Key == ConsoleKey.UpArrow && _scrollY < 0) _scrollY++;
             if (key.Key == ConsoleKey.DownArrow && 
@@ -30,7 +30,7 @@ namespace GoddamnConsole.Controls
             Invalidate();
         }
 
-        public override void Render(DrawingContext context)
+        protected override void OnRender(DrawingContext context)
         {
             if (_scrollY > 0) _scrollY = 0;
             else
@@ -48,8 +48,10 @@ namespace GoddamnConsole.Controls
                 else if (contentWidth - ActualWidth < -_scrollX)
                     _scrollX = -(contentWidth - ActualWidth);
             }
-            var scrolled = context.Scroll(new Point(_scrollX, _scrollY));
-            Content.Render(scrolled);
+            //var scrolled = context.Scroll(new Point(_scrollX, _scrollY));
+            //Content.Render(scrolled);
         }
+
+        public override Point GetScrollOffset(Control child) => new Point(_scrollX, _scrollY);
     }
 }

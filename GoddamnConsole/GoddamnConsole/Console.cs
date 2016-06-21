@@ -55,7 +55,13 @@ namespace GoddamnConsole
         public static Control Focused
         {
             get { return _focused; }
-            set { _focused = value; Refresh(); }
+            set
+            {
+                _focused?.OnLostFocusInternal();
+                _focused = value;
+                _focused?.OnGotFocusInternal();
+                Refresh();
+            }
         }
 
         /// <summary>
@@ -115,12 +121,12 @@ namespace GoddamnConsole
                     Refresh();
                     return;
                 }
-                Focused?.OnKeyPressInternal(e.Info);
+                Focused?.OnKeyPressedInternal(e.Info);
             };
             provider.SizeChanged += (o, e) =>
             {
-                Root?.OnSizeChangedInternal();
-                Popup?.OnSizeChangedInternal();
+                Root?.OnSizeChangedInternal(e.Before, e.After);
+                Popup?.OnSizeChangedInternal(e.Before, e.After);
                 Refresh();
             };
             FocusNext();
