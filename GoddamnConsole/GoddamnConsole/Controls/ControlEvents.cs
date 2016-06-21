@@ -113,13 +113,21 @@ namespace GoddamnConsole.Controls
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            var cancelInvalidation = false;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            var prop = GetType().GetProperty(propertyName ?? "");
+            cancelInvalidation |=
+                prop?.CustomAttributes.Any(x => x.AttributeType == typeof(NoInvalidateOnChangeAttribute)) ?? false;
             foreach (var alsoNotifyFor in
-                (GetType().GetProperty(propertyName ?? "")?.GetCustomAttributes(typeof (AlsoNotifyForAttribute), true) ??
+                (prop?.GetCustomAttributes(typeof (AlsoNotifyForAttribute), true) ??
                  new object[0]).Cast<AlsoNotifyForAttribute>())
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(alsoNotifyFor.PropertyName));
+                prop = GetType().GetProperty(alsoNotifyFor.PropertyName ?? "");
+                cancelInvalidation |=
+                    prop?.CustomAttributes.Any(x => x.AttributeType == typeof(NoInvalidateOnChangeAttribute)) ?? false;
             }
+            if (!cancelInvalidation) Invalidate();
         }
     }
 
@@ -129,8 +137,11 @@ namespace GoddamnConsole.Controls
         public AlsoNotifyForAttribute(string propertyName)
         {
             PropertyName = propertyName;
-        }   
+        }
 
         public string PropertyName { get; }
     }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public class NoInvalidateOnChangeAttribute : Attribute {}
 }

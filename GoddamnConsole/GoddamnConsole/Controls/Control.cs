@@ -5,12 +5,13 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public abstract partial class Control : IControl
+    public abstract partial class Control
     {
         private bool _focusable;
         private CharColor _foreground = CharColor.White;
         private CharColor _background = CharColor.Black;
 
+        [NoInvalidateOnChange]
         public Point CursorPosition
         {
             get { return new Point(Console.Provider.CursorX, Console.Provider.CursorY); }

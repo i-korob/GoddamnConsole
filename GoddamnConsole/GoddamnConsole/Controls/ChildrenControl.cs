@@ -5,7 +5,7 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public class ChildrenControl : Control, IChildrenControl
+    public class ChildrenControl : ParentControl, IChildrenControl
     {
         private class ChildrenCollection : IList<Control>
         {
@@ -99,12 +99,12 @@ namespace GoddamnConsole.Controls
         }
         
         public virtual void OnChildrenUpdated() { }
-        public virtual Rectangle MeasureBoundingBox(Control child) 
+        public override Rectangle MeasureBoundingBox(Control child) 
             => new Rectangle(0, 0, ActualWidth, ActualHeight);
 
-        public virtual Point GetScrollOffset(Control child) => new Point(0, 0);
+        public override Point GetScrollOffset(Control child) => new Point(0, 0);
 
-        public virtual bool IsChildVisible(Control child) => true;
+        public override bool IsChildVisible(Control child) => true;
 
         public IList<Control> Children { get; }
         public virtual IList<Control> FocusableChildren => Children;

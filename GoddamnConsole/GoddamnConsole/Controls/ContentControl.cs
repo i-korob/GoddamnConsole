@@ -3,7 +3,7 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public abstract class ContentControl : Control, IContentControl
+    public abstract class ContentControl : ParentControl, IContentControl
     {
         private Control _content;
 
@@ -26,11 +26,11 @@ namespace GoddamnConsole.Controls
 
         public event EventHandler<ChildRemovedEventArgs> ContentDetached;
 
-        public virtual Rectangle MeasureBoundingBox(Control child) 
+        public override Rectangle MeasureBoundingBox(Control child) 
             => new Rectangle(0, 0, ActualWidth, ActualHeight);
 
-        public virtual Point GetScrollOffset(Control child) => new Point(0, 0);
+        public override Point GetScrollOffset(Control child) => new Point(0, 0);
                 
-        public virtual bool IsChildVisible(Control child) => true;
+        public override bool IsChildVisible(Control child) => true;
     }
 }

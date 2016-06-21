@@ -4,12 +4,12 @@ namespace GoddamnConsole.Controls
 {
     public abstract partial class Control
     {
-        private IParentControl _parent;
+        private ParentControl _parent;
 
         [AlsoNotifyFor(nameof(ActualWidth))]
         [AlsoNotifyFor(nameof(ActualHeight))]
         [AlsoNotifyFor(nameof(ActualVisibility))]
-        public IParentControl Parent
+        public ParentControl Parent
         {
             get { return _parent; }
             set

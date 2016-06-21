@@ -4,12 +4,7 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    public interface IControl
-    {
-        void Invalidate();
-    }
-
-    public interface IParentControl : IControl
+    public interface IParentControl
     {
         Rectangle MeasureBoundingBox(Control child);
         Point GetScrollOffset(Control child);
