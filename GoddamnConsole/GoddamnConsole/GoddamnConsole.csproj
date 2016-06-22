@@ -61,6 +61,7 @@
     <Compile Include="Controls\TabControl.cs" />
     <Compile Include="Controls\TextBox.cs" />
     <Compile Include="Controls\TextView.cs" />
+    <Compile Include="Controls\Window.cs" />
     <Compile Include="DataBinding\Binding.cs" />
     <Compile Include="Drawing\DrawingContext.cs" />
     <Compile Include="Drawing\ImaginaryDrawingContext.cs" />

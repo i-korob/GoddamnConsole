@@ -9,7 +9,7 @@ namespace GoddamnConsole.Controls
         [AlsoNotifyFor(nameof(ActualWidth))]
         [AlsoNotifyFor(nameof(ActualHeight))]
         [AlsoNotifyFor(nameof(ActualVisibility))]
-        public ParentControl Parent
+        public virtual ParentControl Parent
         {
             get { return _parent; }
             set

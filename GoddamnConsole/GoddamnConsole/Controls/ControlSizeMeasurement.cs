@@ -38,7 +38,7 @@ namespace GoddamnConsole.Controls
                         return int.MaxValue;
                     case ControlSizeType.BoundingBoxSize:
                         return Parent?.MeasureBoundingBox(this)?.Width
-                            ?? (this == Console.Root ? Console.WindowWidth : 0);
+                            ?? Console.WindowWidth;
                     case ControlSizeType.MinByContent:
                         return MinWidth;
                     case ControlSizeType.MaxByContent:
@@ -61,7 +61,7 @@ namespace GoddamnConsole.Controls
                         return int.MaxValue;
                     case ControlSizeType.BoundingBoxSize:
                         return Parent?.MeasureBoundingBox(this)?.Height
-                            ?? (this == Console.Root ? Console.WindowHeight : 0);
+                            ?? Console.WindowHeight;
                     case ControlSizeType.MinByContent:
                         return MinHeight;
                     case ControlSizeType.MaxByContent:

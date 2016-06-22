@@ -143,7 +143,27 @@ namespace GoddamnConsoleSample
             ctl.Children.Add(tab2);
             ctl.Children.Add(tab3);
             ctl.SelectedTab = tab2;
-            Console.Start(new WindowsNativeConsoleProvider(), ctl);
+            Console.Windows.Add(new Window
+            {
+                Content = ctl,
+                Title = "First Window",
+                Width = 80
+            });
+            Console.Windows.Add(new Window
+            {
+                Content = new TextView
+                {
+                    Text = "Second window!",
+                    Width = ControlSizeType.MaxByContent,
+                    Height = ControlSizeType.MaxByContent
+                },
+                Title = "Second Window",
+                Width = ControlSizeType.MaxByContent,
+                Height = ControlSizeType.MaxByContent,
+                HorizontalAlignment = WindowAlignment.End,
+                VerticalAlignment = WindowAlignment.Center
+            });
+            Console.Start(new WindowsNativeConsoleProvider());
         }
     }
 
