@@ -149,17 +149,44 @@ namespace GoddamnConsoleSample
                 Title = "First Window",
                 Width = 80
             });
-            Console.Windows.Add(new Window
+            var btn = new Button
             {
-                Content = new TextView
+                Text = "Button!",
+                AttachedProperties =
+                {
+                    new GridProperties
+                    {
+                        Row = 1
+                    }
+                }
+            };
+            var text =
+                new TextView
                 {
                     Text = "Second window!",
                     Width = ControlSizeType.MaxByContent,
                     Height = ControlSizeType.MaxByContent
+                };
+            var clkCnt = 0;
+            btn.Clicked += (o, e) => text.Text = $"Click #{++clkCnt}";
+            Console.Windows.Add(new Window
+            {
+                Content = new Grid
+                {
+                    Children =
+                    {
+                        text,
+                        btn
+                    },
+                    RowDefinitions =
+                    {
+                        new GridSize(GridUnitType.Auto, 0),
+                        new GridSize(GridUnitType.Auto, 0)
+                    }
                 },
                 Title = "Second Window",
-                Width = ControlSizeType.MaxByContent,
-                Height = ControlSizeType.MaxByContent,
+                Width = 20,
+                Height = 8,
                 HorizontalAlignment = WindowAlignment.End,
                 VerticalAlignment = WindowAlignment.Center
             });

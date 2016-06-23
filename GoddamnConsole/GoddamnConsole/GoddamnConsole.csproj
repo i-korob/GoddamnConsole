@@ -48,6 +48,7 @@
     <Compile Include="Console.cs" />
     <Compile Include="Controls\Border.cs" />
     <Compile Include="Controls\ChildrenControl.cs" />
+    <Compile Include="Controls\Button.cs" />
     <Compile Include="Controls\ContentControl.cs" />
     <Compile Include="Controls\Control.cs" />
     <Compile Include="Controls\ControlDataBinding.cs" />

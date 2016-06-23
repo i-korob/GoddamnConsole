@@ -9,8 +9,25 @@ namespace GoddamnConsole.Controls
         private WindowAlignment _verticalAlignment;
         private string _title;
 
-        public override int MaxHeight => (Content?.ActualHeight ?? 0) + 2;
-        public override int MaxWidth => (Content?.ActualWidth ?? 0) + 2;
+        public override int MaxHeight
+        {
+            get
+            {
+                if (Content == null) return 2;
+                if (Content.Height.Type == ControlSizeType.BoundingBoxSize) return 2;
+                else return Content.ActualHeight + 2;
+            }
+        }
+
+        public override int MaxWidth
+        {
+            get
+            {
+                if (Content == null) return 2;
+                if (Content.Width.Type == ControlSizeType.BoundingBoxSize) return 2;
+                else return Content.ActualWidth + 2;
+            }
+        }
 
         public override ParentControl Parent
         {
