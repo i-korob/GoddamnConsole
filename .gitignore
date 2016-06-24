@@ -23,7 +23,7 @@ bld/
 [Oo]bj/
 
 #docfx
-_site/
+/**/_site/
 
 # Visual Studio 2015 cache/options directory
 .vs/
