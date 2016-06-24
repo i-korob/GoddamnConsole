@@ -2,10 +2,16 @@
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Draws a border around another element
+    /// </summary>
     public class Border : ContentControl
     {
         private FrameStyle _frameStyle = FrameStyle.Single;
         
+        /// <summary>
+        /// Gets or sets the border frame style
+        /// </summary>
         public FrameStyle FrameStyle
         {
             get { return _frameStyle; }

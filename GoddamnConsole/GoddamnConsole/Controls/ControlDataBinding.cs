@@ -12,6 +12,9 @@ namespace GoddamnConsole.Controls
 
         private object _dataContext;
         
+        /// <summary>
+        /// Gets or sets the data context for an element
+        /// </summary>
         public object DataContext
         {
             get { return _dataContext; }
@@ -22,6 +25,11 @@ namespace GoddamnConsole.Controls
             }
         }
         
+        /// <summary>
+        /// Binds the element property to the data context
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <param name="bindingPath"></param>
         public void Bind(string propertyName, string bindingPath)
         {
             var property = GetType().GetProperty(propertyName);
@@ -30,6 +38,10 @@ namespace GoddamnConsole.Controls
             _bindings.Add(property, new Binding(this, property, bindingPath));
         }
 
+        /// <summary>
+        /// Unbinds the element property
+        /// </summary>
+        /// <param name="propertyName"></param>
         public void Unbind(string propertyName)
         {
             var property = GetType().GetProperty(propertyName);

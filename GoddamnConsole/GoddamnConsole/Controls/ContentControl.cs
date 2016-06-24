@@ -3,10 +3,13 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a control, which can have only one child
+    /// </summary>
     public abstract class ContentControl : ParentControl, IContentControl
     {
         private Control _content;
-
+        
         public Control Content
         {
             get { return _content; }

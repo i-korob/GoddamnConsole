@@ -5,16 +5,19 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a control that contains multiple items that share same space
+    /// </summary>
     public class TabControl : ChildrenControl
     {
         public TabControl()
         {
             Focusable = true;
         }
-
+        
         public override IList<Control> FocusableChildren
             => SelectedTab == null ? new Control[0] : new Control[] {SelectedTab};
-
+        
         public override Rectangle MeasureBoundingBox(Control child)
         {
             return child == SelectedTab
@@ -92,6 +95,9 @@ namespace GoddamnConsole.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current tab
+        /// </summary>
         public Tab SelectedTab
         {
             get { return _selectedTab; }
@@ -105,10 +111,16 @@ namespace GoddamnConsole.Controls
         public override bool IsChildVisible(Control child) => child == SelectedTab;
     }
 
+    /// <summary>
+    /// Represents a tab content container
+    /// </summary>
     public class Tab : ContentControl
     {
         private string _name;
 
+        /// <summary>
+        /// Gets or sets the name of tab
+        /// </summary>
         public string Name
         {
             get { return _name; }

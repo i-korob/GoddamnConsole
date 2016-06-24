@@ -3,6 +3,9 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a console content container
+    /// </summary>
     public class Window : ContentControl
     {
         private WindowAlignment _horizontalAlignment;
@@ -35,18 +38,27 @@ namespace GoddamnConsole.Controls
             set { throw new NotSupportedException(); }
         }
 
+        /// <summary>
+        /// Gets or sets a vertical alignment style
+        /// </summary>
         public WindowAlignment VerticalAlignment
         {
             get { return _verticalAlignment; }
             set { _verticalAlignment = value; OnPropertyChanged(); }
         }
-
+        
+        /// <summary>
+        /// Gets or sets a horizontal alignment style
+        /// </summary>
         public WindowAlignment HorizontalAlignment
         {
             get { return _horizontalAlignment; }
             set { _horizontalAlignment = value; OnPropertyChanged(); }
         }
-
+        
+        /// <summary>
+        /// Gets or sets a window title
+        /// </summary>
         public string Title
         {
             get { return _title; }
@@ -82,10 +94,22 @@ namespace GoddamnConsole.Controls
         }
     }
 
+    /// <summary>
+    /// Describes a kind of window alignment
+    /// </summary>
     public enum WindowAlignment
     {
+        /// <summary>
+        /// Window is aligned to begin of console area (Top/Left)
+        /// </summary>
         Begin,
+        /// <summary>
+        /// Window is aligned to end of console area (Bottom/Right)
+        /// </summary>
         End,
+        /// <summary>
+        /// Window is aligned to center of console area
+        /// </summary>
         Center
     }
 }

@@ -2,6 +2,9 @@
 
 namespace GoddamnConsole
 {
+    /// <summary>
+    /// Represents a structure that contains character and its attributes
+    /// </summary>
     public struct Character
     {
         public Character(char chr)
@@ -21,9 +24,21 @@ namespace GoddamnConsole
             Attribute = attr;
         }
 
+        /// <summary>
+        /// Returns the character
+        /// </summary>
         public char Char { get; }
+        /// <summary>
+        /// Returns the character foreground
+        /// </summary>
         public CharColor Foreground { get; }
+        /// <summary>
+        /// Returns the character background
+        /// </summary>
         public CharColor Background { get; }
+        /// <summary>
+        /// Returns the character attributes
+        /// </summary>
         public CharAttribute Attribute { get; }
 
         public static implicit operator Character(char x)
@@ -32,6 +47,9 @@ namespace GoddamnConsole
         }
     }
 
+    /// <summary>
+    /// Describes the character colors
+    /// </summary>
     public enum CharColor : short
     {
         Black = 0,
@@ -52,6 +70,9 @@ namespace GoddamnConsole
         White = 0xf
     }
 
+    /// <summary>
+    /// Returns the character attributes
+    /// </summary>
     [Flags]
     public enum CharAttribute : short
     {

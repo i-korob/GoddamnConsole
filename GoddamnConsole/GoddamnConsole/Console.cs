@@ -7,6 +7,9 @@ using GoddamnConsole.NativeProviders;
 
 namespace GoddamnConsole
 {
+    /// <summary>
+    /// Represents a control host
+    /// </summary>
     public class Console
     {
         internal static INativeConsoleProvider Provider;
@@ -14,12 +17,24 @@ namespace GoddamnConsole
         private static Control _focused;
         private static Window _focusedWindow;
 
+        /// <summary>
+        /// Returns current window width
+        /// </summary>
         public static int WindowWidth => Provider?.WindowWidth ?? 0;
 
+        /// <summary>
+        /// Returns current window height
+        /// </summary>
         public static int WindowHeight => Provider?.WindowHeight ?? 0;
 
+        /// <summary>
+        /// Returns a value that indicates whether rendering cycle has been started
+        /// </summary>
         public static bool Started => Provider != null;
-        
+
+        /// <summary>
+        /// Gets or sets the console background
+        /// </summary>
         public static CharColor Background
         {
             get { return _background; }
@@ -30,8 +45,14 @@ namespace GoddamnConsole
             }
         }
 
+        /// <summary>
+        /// Returns a list of windows
+        /// </summary>
         public static IList<Window> Windows { get; } = new List<Window>();
 
+        /// <summary>
+        /// Gets or sets the current focused window
+        /// </summary>
         public static Window FocusedWindow
         {
             get { return _focusedWindow; }
@@ -44,6 +65,9 @@ namespace GoddamnConsole
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current focused element
+        /// </summary>
         public static Control Focused
         {
             get { return _focused; }
@@ -55,9 +79,15 @@ namespace GoddamnConsole
                 Refresh();
             }
         }
-        
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether console can move focus
+        /// </summary>
         public static bool CanChangeFocus { get; set; } = true;
 
+        /// <summary>
+        /// Starts rendering cycle and waits for shutdown
+        /// </summary>
         public static void Start(INativeConsoleProvider provider)
         {
             if (Provider != null) throw new ArgumentException("Already started");
@@ -115,6 +145,9 @@ namespace GoddamnConsole
             }
         }
 
+        /// <summary>
+        /// Moves focus to next window
+        /// </summary>
         public static void FocusNextWindow()
         {
             Focused = null;
@@ -124,6 +157,10 @@ namespace GoddamnConsole
             FocusNext();
         }
 
+
+        /// <summary>
+        /// Moves focus to previous window
+        /// </summary>
         public static void FocusPrevWindow()
         {
             Focused = null;
@@ -132,7 +169,10 @@ namespace GoddamnConsole
             FocusedWindow = Windows[index];
             FocusNext();
         }
-
+        
+        /// <summary>
+        /// Moves focus to next control
+        /// </summary>
         public static void FocusNext()
         {
             if (Windows.Count == 0) return;
@@ -145,6 +185,9 @@ namespace GoddamnConsole
             Refresh();
         }
         
+        /// <summary>
+        /// Moves focus to previous control
+        /// </summary>
         public static void FocusPrev()
         {
             if (Windows.Count == 0) return;
@@ -156,7 +199,10 @@ namespace GoddamnConsole
                     : list.FirstOrDefault();
             Refresh();
         }
-
+        
+        /// <summary>
+        /// Performs console redraw
+        /// </summary>
         public static void Refresh()
         {
             if (Provider == null) return;
@@ -185,7 +231,10 @@ namespace GoddamnConsole
             }
             Provider?.Refresh();
         }
-
+        
+        /// <summary>
+        /// Stops console rendering cycle and disposes native provider
+        /// </summary>
         public static void Shutdown()
         {
             if (Provider == null) throw new ArgumentException("Not started");

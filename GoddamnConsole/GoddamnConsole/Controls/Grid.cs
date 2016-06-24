@@ -5,12 +5,21 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a flexible grid area that consists of rows and columns. Child elements of the Grid are measured and arranged according to their row/column assignments
+    /// </summary>
     public class Grid : ChildrenControl
     {
+        /// <summary>
+        /// Returns a collection of row definitions
+        /// </summary>
         public IList<GridSize> RowDefinitions { get; } = new List<GridSize>();
+        /// <summary>
+        /// Returns a collection of column definitions
+        /// </summary>
         public IList<GridSize> ColumnDefinitions { get; } = new List<GridSize>();
-
-        public int[] MeasureSizes(bool measureColumns)
+        
+        private int[] MeasureSizes(bool measureColumns)
         {
             var boxSize = measureColumns ? ActualWidth : ActualHeight;
             var definitions = measureColumns ? ColumnDefinitions : RowDefinitions;
@@ -92,26 +101,6 @@ namespace GoddamnConsole.Controls
             return sizes.Select(x => (int) x).ToArray();
         }
 
-        protected override void OnRender(DrawingContext context)
-        {
-            //foreach (var child in Children)
-            //{
-            //    var rows = MeasureSizes(false);
-            //    var columns = MeasureSizes(true);
-            //    var props = child.AttachedProperty<GridProperties>() ?? new GridProperties();
-            //    //var row = Math.Max(0, Math.Min(props.Row, rows.Length));
-            //    //var column = Math.Max(0, Math.Min(props.Column, columns.Length));
-            //    //var rowSpan = Math.Max(1, Math.Min(props.RowSpan, rows.Length - row));
-            //    //var columnSpan = Math.Max(1, Math.Min(props.ColumnSpan, columns.Length - column));
-            //    //child.Render(context.Shrink(
-            //    //    new Rectangle(
-            //    //        columns.Take(column).Sum(),
-            //    //        rows.Take(row).Sum(),
-            //    //        columns.Skip(column).Take(columnSpan).Sum(),
-            //    //        rows.Skip(row).Take(rowSpan).Sum())));
-            //}
-        }
-
         public override Rectangle MeasureBoundingBox(Control child)
         {
             if (!Children.Contains(child)) return new Rectangle(0, 0, 0, 0);
@@ -130,13 +119,28 @@ namespace GoddamnConsole.Controls
         }
     }
 
+    /// <summary>
+    /// Describes the kind of value that a GridUnitType object is holding
+    /// </summary>
     public enum GridUnitType
     {
+        /// <summary>
+        /// The value is expressed as a weighted proportion of available space
+        /// </summary>
         Grow,
+        /// <summary>
+        /// The size is determined by the size of content object
+        /// </summary>
         Auto,
+        /// <summary>
+        /// The value is expressed in pixels
+        /// </summary>
         Fixed
     }
 
+    /// <summary>
+    /// Represents a row/column size value
+    /// </summary>
     public class GridSize
     {
         public GridSize(GridUnitType unit, int val)
@@ -145,16 +149,37 @@ namespace GoddamnConsole.Controls
             Value = Math.Max(0, val);
         }
 
+        /// <summary>
+        /// Gets or sets the fixed value (used only in Fixed sizing)
+        /// </summary>
         public int Value { get; set; }
 
+        /// <summary>
+        /// Gets or sets the type of sizing
+        /// </summary>
         public GridUnitType UnitType { get; set; }
     }
 
+    /// <summary>
+    /// Represents an attached property for Grid control
+    /// </summary>
     public class GridProperties : IAttachedProperty
     {
+        /// <summary>
+        /// Gets or sets the row alignment
+        /// </summary>
         public int Row { get; set; }
+        /// <summary>
+        /// Gets or sets a value that indicates the total numbers of occupied rows
+        /// </summary>
         public int RowSpan { get; set; }
+        /// <summary>
+        /// Gets or sets the column alignment
+        /// </summary>
         public int Column { get; set; }
+        /// <summary>
+        /// Gets or sets a value that indicates the total numbers of occupied columns
+        /// </summary>
         public int ColumnSpan { get; set; }
     }
 }

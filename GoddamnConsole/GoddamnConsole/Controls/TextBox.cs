@@ -5,6 +5,9 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a editable text area
+    /// </summary>
     public class TextBox : Control
     {
         private class TextMeasurement
@@ -111,6 +114,9 @@ namespace GoddamnConsole.Controls
             Focusable = true;
         }
 
+        /// <summary>
+        /// Gets or sets the text of TextBox
+        /// </summary>
         public string Text
         {
             get { return _text; }
@@ -123,6 +129,9 @@ namespace GoddamnConsole.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a text wrapping option
+        /// </summary>
         public TextWrapping TextWrapping
         {
             get { return _textWrapping; }

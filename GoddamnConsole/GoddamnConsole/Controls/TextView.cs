@@ -3,6 +3,9 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a read-only text area
+    /// </summary>
     public class TextView : Control
     {
         private TextWrapping _textWrapping = TextWrapping.Wrap;
@@ -16,6 +19,9 @@ namespace GoddamnConsole.Controls
                    ? DrawingContext.MeasureWrappedText(_text ?? "", ActualWidth).Height
                    : DrawingContext.MeasureText(_text ?? "").Count();
 
+        /// <summary>
+        /// Gets or sets the text of TextView
+        /// </summary>
         [AlsoNotifyFor(nameof(MaxWidth))]
         [AlsoNotifyFor(nameof(MaxHeight))]
         public string Text
@@ -27,7 +33,10 @@ namespace GoddamnConsole.Controls
                 OnPropertyChanged();
             }
         }
-
+        
+        /// <summary>
+        /// Gets or sets a text wrapping option
+        /// </summary>
         [AlsoNotifyFor(nameof(MaxWidth))]
         [AlsoNotifyFor(nameof(MaxHeight))]
         public TextWrapping TextWrapping

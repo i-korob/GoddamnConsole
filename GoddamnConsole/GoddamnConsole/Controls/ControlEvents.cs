@@ -7,40 +7,94 @@ using GoddamnConsole.NativeProviders;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents an interface of event which can be prevented to further handling
+    /// </summary>
     public interface IPreventableEvent
     {
+        /// <summary>
+        /// Gets or sets a value that indicates whether event is handled and should be prevented to further handling
+        /// </summary>
         bool Handled { get; set; }
     }
 
+    /// <summary>
+    /// Provides data for the KeyPressed event
+    /// </summary>
     public class KeyPressedEventArgs : EventArgs, IPreventableEvent
     {
+        /// <summary>
+        /// Initializes a new instance of the KeyPressedEventArgs class
+        /// <param name="info">Keyboard button info</param>
+        /// </summary>
         public KeyPressedEventArgs(ConsoleKeyInfo info)
         {
             Info = info;
         }
 
+        /// <summary>
+        /// Returns the keyboard button info
+        /// </summary>
         public ConsoleKeyInfo Info { get; }
         public bool Handled { get; set; }
     }
 
     public abstract partial class Control : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets or sets a value that indicates whether unhandled exceptions in event handlers is suppressed
+        /// </summary>
         public bool SuppressUnhandledExceptions { get; set; } = false;
 
+        /// <summary>
+        /// Occurs when keyboard button pressed and this control is focused before the event has been processed
+        /// </summary>
         public event EventHandler<KeyPressedEventArgs> PreviewKeyPressed;
+        /// <summary>
+        /// Occurs when keyboard button pressed and this control is focused after the event has been processed
+        /// </summary>
         public event EventHandler<KeyPressedEventArgs> KeyPressed;
+        /// <summary>
+        /// Occurs when control becomes focused
+        /// </summary>
         public event EventHandler GotFocus;
+        /// <summary>
+        /// Occurs when control ceases to be focused
+        /// </summary>
         public event EventHandler LostFocus;
         //public event EventHandler LayoutUpdated; // todo maybe?
+        /// <summary>
+        /// Occurs after control was rendered
+        /// </summary>
         public event EventHandler Rendered;
+        /// <summary>
+        /// Occurs when control size was changed
+        /// </summary>
         public event EventHandler<SizeChangedEventArgs> SizeChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Called when control needs to be redrawn
+        /// </summary>
         protected virtual void OnRender(DrawingContext dc) { }
+        /// <summary>
+        /// Called when keyboard button pressed and this control is focused
+        /// </summary>
         protected virtual void OnKeyPressed(ConsoleKeyInfo info) { }
+        /// <summary>
+        /// Called when control becomes focused
+        /// </summary>
         protected virtual void OnGotFocus() { }
+        /// <summary>
+        /// Called when control ceases to be focused
+        /// </summary>
         protected virtual void OnLostFocus() { }
+        /// <summary>
+        /// Called when control size was changed
+        /// </summary>
+        /// <param name="prevSize"></param>
+        /// <param name="newSize"></param>
         protected virtual void OnSizeChanged(Size prevSize, Size newSize) { }
 
         private void SafeInvoke(dynamic @event, EventArgs args)
@@ -110,7 +164,7 @@ namespace GoddamnConsole.Controls
             OnSizeChanged(prevSize, newSize);
             SafeInvoke(SizeChanged, new SizeChangedEventArgs(prevSize, newSize));
         }
-
+        
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             var cancelInvalidation = false;
@@ -131,6 +185,9 @@ namespace GoddamnConsole.Controls
         }
     }
 
+    /// <summary>
+    /// Used when property should notify that another property has changed, when it changes 
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class AlsoNotifyForAttribute : Attribute
     {
@@ -139,9 +196,15 @@ namespace GoddamnConsole.Controls
             PropertyName = propertyName;
         }
 
+        /// <summary>
+        /// Returns a property name
+        /// </summary>
         public string PropertyName { get; }
     }
 
+    /// <summary>
+    /// Used when control should not invalidate, when property changes
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class NoInvalidateOnChangeAttribute : Attribute {}
 }

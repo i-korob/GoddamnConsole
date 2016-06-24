@@ -3,6 +3,9 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents the control with content which can be scrolled vertically and horizontally
+    /// </summary>
     public class ScrollViewer : ContentControl
     {
         public ScrollViewer()

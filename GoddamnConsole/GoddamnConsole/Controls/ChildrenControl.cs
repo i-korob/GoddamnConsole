@@ -5,6 +5,9 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a control, which can have more than one child
+    /// </summary>
     public class ChildrenControl : ParentControl, IChildrenControl
     {
         private class ChildrenCollection : IList<Control>
@@ -98,7 +101,11 @@ namespace GoddamnConsole.Controls
             Children = new ChildrenCollection(this);
         }
         
+        /// <summary>
+        /// Called when children collection is updated
+        /// </summary>
         public virtual void OnChildrenUpdated() { }
+
         public override Rectangle MeasureBoundingBox(Control child) 
             => new Rectangle(0, 0, ActualWidth, ActualHeight);
 

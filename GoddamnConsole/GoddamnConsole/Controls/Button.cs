@@ -3,6 +3,9 @@ using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
+    /// <summary>
+    /// Represents a standart button control, which reacts to the Button.Clicked event by pressing Enter
+    /// </summary>
     public class Button : Control
     {
         public Button()
@@ -12,12 +15,18 @@ namespace GoddamnConsole.Controls
 
         private string _text;
 
+        /// <summary>
+        /// Gets or sets the title of button
+        /// </summary>
         public string Text
         {
             get { return _text; }
             set { _text = value; OnPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Occurs when a button is clicked
+        /// </summary>
         public event EventHandler Clicked;
 
         protected override void OnKeyPressed(ConsoleKeyInfo info)

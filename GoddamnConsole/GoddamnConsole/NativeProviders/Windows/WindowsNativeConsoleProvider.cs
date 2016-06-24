@@ -10,6 +10,9 @@ using static GoddamnConsole.NativeProviders.Windows.NativeMethods;
 
 namespace GoddamnConsole.NativeProviders.Windows
 {
+    /// <summary>
+    /// Represents a Windows native console provider
+    /// </summary>
     public sealed unsafe class WindowsNativeConsoleProvider : INativeConsoleProvider
     {
         // ReSharper disable once InconsistentNaming
@@ -317,6 +320,7 @@ namespace GoddamnConsole.NativeProviders.Windows
         [SuppressMessage("Microsoft.Usage", "CA2216:DisposableTypesShouldDeclareFinalizer")]
         public void Dispose()
         {
+            _shutdownEvent.Set();
             _shutdownEvent.Dispose();
             _threadToken.Cancel();
             _threadToken.Dispose();

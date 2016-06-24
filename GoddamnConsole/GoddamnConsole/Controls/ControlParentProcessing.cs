@@ -6,6 +6,9 @@ namespace GoddamnConsole.Controls
     {
         private ParentControl _parent;
 
+        /// <summary>
+        /// Gets or sets the parent of this control
+        /// </summary>
         [AlsoNotifyFor(nameof(ActualWidth))]
         [AlsoNotifyFor(nameof(ActualHeight))]
         [AlsoNotifyFor(nameof(ActualVisibility))]
@@ -104,6 +107,9 @@ namespace GoddamnConsole.Controls
             }
         }
 
+        /// <summary>
+        /// Occurs when this control was removed from parent, or parent has been changed
+        /// </summary>
         public event EventHandler DetachedFromParent;
     }
 }
