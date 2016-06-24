@@ -60,16 +60,23 @@ namespace GoddamnConsole.Controls
             context.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight), 
                 new FrameOptions
                 {
-                    Style = Console.Focused == this ? FrameStyle.Double : FrameStyle.Single
+                    Style = Console.Focused == this ? FrameStyle.Double : FrameStyle.Single,
+                    Foreground = Foreground,
+                    Background = Background
                 });
-            context.DrawText(new Point(0, 1), headerLine);
-            context.DrawText(new Point(1, 2), new string(style[4], ActualWidth - 2));
-            context.PutChar(new Point(0, 2), style[1], CharColor.White, CharColor.Black, CharAttribute.None);
-            context.PutChar(new Point(ActualWidth - 1, 2), style[2], CharColor.White, CharColor.Black, CharAttribute.None);
+            var txo = new TextOptions()
+            {
+                Background = Background,
+                Foreground = Foreground
+            };
+            context.DrawText(new Point(0, 1), headerLine, txo);
+            context.DrawText(new Point(1, 2), new string(style[4], ActualWidth - 2), txo);
+            context.PutChar(new Point(0, 2), style[1], Foreground, Background, CharAttribute.None);
+            context.PutChar(new Point(ActualWidth - 1, 2), style[2], Foreground, Background, CharAttribute.None);
             for (var i = 1; i < Children.Count; i++)
             {
-                context.PutChar(new Point(li + i * (wpt + 1), 0), style[5], CharColor.White, CharColor.Black, CharAttribute.None);
-                context.PutChar(new Point(li + i * (wpt + 1), 2), style[3], CharColor.White, CharColor.Black, CharAttribute.None);
+                context.PutChar(new Point(li + i * (wpt + 1), 0), style[5], Foreground, Background, CharAttribute.None);
+                context.PutChar(new Point(li + i * (wpt + 1), 2), style[3], Foreground, Background, CharAttribute.None);
             }
             if (SelectedTab != null && Children.Contains(SelectedTab))
             {
@@ -79,11 +86,10 @@ namespace GoddamnConsole.Controls
                 padded = padded.PadRight(wpt + (index == 0 ? li : 0));
                 context.DrawText(new Point(1 + (index > 0 ? li : 0) + index * (wpt + 1), 1), padded, new TextOptions
                 {
-                    Background = CharColor.White,
-                    Foreground = CharColor.Black
+                    Background = Foreground,
+                    Foreground = Background
                 });
             }
-            // SelectedTab?.Content?.OnRender(context.Shrink(new Rectangle(1, 3, ActualWidth - 2, ActualHeight - 4)));
         }
 
         public Tab SelectedTab

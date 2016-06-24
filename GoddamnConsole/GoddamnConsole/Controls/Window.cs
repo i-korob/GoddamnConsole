@@ -56,7 +56,12 @@ namespace GoddamnConsole.Controls
         protected override void OnRender(DrawingContext dc)
         {
             var style = Console.FocusedWindow == this ? FrameStyle.Double : FrameStyle.Single;
-            dc.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight), new FrameOptions {Style = style});
+            dc.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight), new FrameOptions
+            {
+                Style = style,
+                Foreground = Foreground,
+                Background = Background
+            });
             var truncated = Title.Length + 2 > ActualWidth - 4
                                 ? ActualWidth < 9
                                       ? string.Empty
@@ -64,7 +69,11 @@ namespace GoddamnConsole.Controls
                                 : ActualWidth < 9
                                       ? string.Empty
                                       : $" {Title} ";
-            dc.DrawText(new Point(2, 0), truncated);
+            dc.DrawText(new Point(2, 0), truncated, new TextOptions
+            {
+                Foreground = Foreground,
+                Background = Background
+            });
         }
 
         public override Rectangle MeasureBoundingBox(Control child)
