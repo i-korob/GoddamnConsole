@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnConsole", "GoddamnCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnConsoleSample", "GoddamnConsoleSample\GoddamnConsoleSample.csproj", "{B31F1DFC-1ABA-439A-AA45-269A5B09E261}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoddamnConsoleUnixSample", "GoddamnConsoleUnixSample\GoddamnConsoleUnixSample.csproj", "{750AC6B5-F8E7-4EBA-AD5A-FB45763F23FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B31F1DFC-1ABA-439A-AA45-269A5B09E261}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B31F1DFC-1ABA-439A-AA45-269A5B09E261}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B31F1DFC-1ABA-439A-AA45-269A5B09E261}.Release|Any CPU.Build.0 = Release|Any CPU
+		{750AC6B5-F8E7-4EBA-AD5A-FB45763F23FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{750AC6B5-F8E7-4EBA-AD5A-FB45763F23FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{750AC6B5-F8E7-4EBA-AD5A-FB45763F23FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{750AC6B5-F8E7-4EBA-AD5A-FB45763F23FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
