@@ -142,7 +142,7 @@ namespace GoddamnConsoleUnixSample
             ctl.Children.Add(tab1);
             ctl.Children.Add(tab2);
             ctl.Children.Add(tab3);
-            ctl.SelectedTab = tab2;
+            ctl.SelectedTab = tab3;
             Console.Windows.Add(new Window
             {
                 Content = ctl,

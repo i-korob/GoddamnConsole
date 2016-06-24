@@ -227,6 +227,7 @@ namespace GoddamnConsole
                                   : 0,
                         wid,
                         hei));
+                dc.Clear(Background);
                 window.OnRenderInternal(dc);
             }
             Provider?.Refresh();

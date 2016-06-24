@@ -1,12 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Syscon = System.Console; // todo use ioctl
 
 namespace GoddamnConsole.NativeProviders.Unix
 {
     public class UnixNativeConsoleProvider : INativeConsoleProvider
     {
+        [DllImport("libc", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int puts([MarshalAs(UnmanagedType.LPStr)] string str);
+
+        public UnixNativeConsoleProvider()
+        {
+            new Thread(() => // keyboard monitor
+            {
+                while (true)
+                {
+                    var chr = Syscon.ReadKey(true);
+                    KeyPressed?.Invoke(this, new KeyPressedEventArgs(chr));
+                }
+            }).Start();
+        }
+
         private const int BufferSize = 0x100;
         private Character[] _buffer = new Character[BufferSize * BufferSize];
 
@@ -49,12 +66,27 @@ namespace GoddamnConsole.NativeProviders.Unix
             var str = new StringBuilder("\x1b[2J\x1b[H");
             for (var i = 0; i < WindowHeight; i++)
                 for (var j = 0; j < WindowWidth; j++)
-                    str.Append(_buffer[i * WindowWidth + j].Char);
-            Syscon.WriteLine(str.ToString());
+                {
+                    var chr = _buffer[i * BufferSize + j];
+                    var fg = (int)chr.Foreground;
+                    var bg = (int)chr.Background;
+                    str.Append("\x1b[3");
+                    str.Append(((fg & 0x4) >> 2) | (fg & 0x2) | ((fg & 0x1) << 2));
+                    if ((fg & 0x8) > 0) str.Append(";1");
+                    str.Append(";4");
+                    str.Append(((bg & 0x4) >> 2) | (bg & 0x2) | ((bg & 0x1) << 2));
+                    if ((bg & 0x8) > 0) str.Append(";1");
+                    str.Append("m");
+                    str.Append(_buffer[i * BufferSize + j].Char);
+                }
+            str.Append("\x1b[H");
+            puts(str.ToString());
+            //Syscon.WriteLine(str.ToString());
         }
 
         public void Start()
         {
+
         }
 
         public void Clear(CharColor background)
@@ -65,7 +97,7 @@ namespace GoddamnConsole.NativeProviders.Unix
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+
         }
 
         public event EventHandler<SizeChangedEventArgs> SizeChanged;
