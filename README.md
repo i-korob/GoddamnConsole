@@ -6,14 +6,14 @@ GoddamnConsole is simple console UI framework, that uses visual components inste
 ## Features
 
 1. Visual components
-2. Popup windows (partial support)
-3. Keyboard input (needs to implement in controls)
+2. Multiple windows
+3. Keyboard input
 4. Simple drawing
 5. Can be portable
 
 ## Documentation
 
-Will be added soon
+Full API Reference on https://zawodskoj.github.io/
 
 ## OS Support
 
@@ -21,8 +21,8 @@ GoddamnConsole uses INativeConsoleProvider interface. It abstracts low-level con
 
 ## Installation
 
-Binary releases will be added soon.
-You can download sources and build it by yourself.
+You can download binary build and add reference to it, or you can download sources and build it by yourself.
+NuGet package will be added later.
 
 ## Contribute
 
