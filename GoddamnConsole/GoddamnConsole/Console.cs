@@ -12,6 +12,11 @@ namespace GoddamnConsole
     /// </summary>
     public class Console
     {
+        static Console()
+        {
+            System.Console.CancelKeyPress += (o, e) => Shutdown();
+        }
+
         internal static INativeConsoleProvider Provider;
         private static CharColor _background = CharColor.Black;
         private static Control _focused;
@@ -101,24 +106,24 @@ namespace GoddamnConsole
                     Refresh();
                     return;
                 }
-                if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == ConsoleModifiers.Shift)
-                {
-                    FocusPrev();
-                    Refresh();
-                    return;
-                }
-                if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == ConsoleModifiers.Control)
+                if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == ConsoleModifiers.Shift) // Can not intercept CTRL in Linux
                 {
                     FocusNextWindow();
                     Refresh();
                     return;
                 }
-                if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == (ConsoleModifiers.Control | ConsoleModifiers.Shift))
-                {
-                    FocusPrevWindow();
-                    Refresh();
-                    return;
-                }
+                //if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == ConsoleModifiers.Control)
+                //{
+                //    FocusNextWindow();
+                //    Refresh();
+                //    return;
+                //}
+                //if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == (ConsoleModifiers.Control | ConsoleModifiers.Shift))
+                //{
+                //    FocusPrevWindow();
+                //    Refresh();
+                //    return;
+                //}
                 Focused?.OnKeyPressedInternal(e.Info);
             };
             provider.SizeChanged += (o, e) =>

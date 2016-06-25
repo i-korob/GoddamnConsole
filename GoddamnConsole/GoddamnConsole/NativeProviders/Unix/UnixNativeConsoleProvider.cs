@@ -1,22 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using GoddamnConsole.Drawing;
 using Syscon = System.Console; // todo use ioctl
+using static GoddamnConsole.NativeProviders.Unix.NativeMethods;
 
 namespace GoddamnConsole.NativeProviders.Unix
 {
-    public class UnixNativeConsoleProvider : INativeConsoleProvider
+    /// <summary>
+    /// Represents a Unix native console provider (based on ncurses)
+    /// </summary>
+    public sealed unsafe class UnixNativeConsoleProvider : INativeConsoleProvider
     {
-        [DllImport("libc", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int puts([MarshalAs(UnmanagedType.LPStr)] string str);
-
         public UnixNativeConsoleProvider()
         {
+            initscr();
+            start_color();
+            for (short i = 0; i < 64; i++)
+            {
+                var fg = i >> 3;
+                var bg = i & 7;
+                fg = ((fg & 0x4) >> 2) | (fg & 0x2) | ((fg & 0x1) << 2);
+                bg = ((bg & 0x4) >> 2) | (bg & 0x2) | ((bg & 0x1) << 2);
+                init_pair((short)(i + 1), (short)fg, (short)bg);
+            }
+            new Thread(() => // window size monitor
+            {
+                var oldw = Syscon.WindowWidth;
+                var oldh = Syscon.WindowHeight;
+                while (!_cts.IsCancellationRequested)
+                {
+                    var neww = Syscon.WindowWidth;
+                    var newh = Syscon.WindowHeight;
+                    if (neww != oldw || newh != oldh)
+                    {
+                        WindowWidth = neww;
+                        WindowHeight = newh;
+                        resizeterm(newh, neww);
+                        try
+                        {
+                            SizeChanged?.Invoke(this,
+                                                new SizeChangedEventArgs(new Size(oldw, oldh), new Size(neww, newh)));
+                        }
+                        catch
+                        {
+                            //
+                        }
+                        oldw = neww;
+                        oldh = newh;
+                    }
+                }
+            }).Start();
             new Thread(() => // keyboard monitor
             {
-                while (true)
+                while (!_cts.IsCancellationRequested)
                 {
                     var chr = Syscon.ReadKey(true);
                     KeyPressed?.Invoke(this, new KeyPressedEventArgs(chr));
@@ -25,13 +63,15 @@ namespace GoddamnConsole.NativeProviders.Unix
         }
 
         private const int BufferSize = 0x100;
-        private Character[] _buffer = new Character[BufferSize * BufferSize];
+        private readonly Character[] _buffer = new Character[BufferSize * BufferSize];
 
-        public int WindowWidth { get; } = Syscon.WindowWidth;
-        public int WindowHeight { get; } = Syscon.WindowHeight;
+        public int WindowWidth { get; private set; } = Syscon.WindowWidth;
+        public int WindowHeight { get; private set; } = Syscon.WindowHeight;
         public bool CursorVisible { get; set; }
         public int CursorX { get; set; }
         public int CursorY { get; set; }
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+
         public void PutChar(Character chr, int x, int y)
         {
             if (x >= BufferSize || y >= BufferSize || x < 0 || y < 0) return;
@@ -63,25 +103,22 @@ namespace GoddamnConsole.NativeProviders.Unix
 
         public void Refresh()
         {
-            var str = new StringBuilder("\x1b[2J\x1b[H");
+            move(0, 0);
             for (var i = 0; i < WindowHeight; i++)
                 for (var j = 0; j < WindowWidth; j++)
                 {
                     var chr = _buffer[i * BufferSize + j];
-                    var fg = (int)chr.Foreground;
-                    var bg = (int)chr.Background;
-                    str.Append("\x1b[3");
-                    str.Append(((fg & 0x4) >> 2) | (fg & 0x2) | ((fg & 0x1) << 2));
-                    if ((fg & 0x8) > 0) str.Append(";1");
-                    str.Append(";4");
-                    str.Append(((bg & 0x4) >> 2) | (bg & 0x2) | ((bg & 0x1) << 2));
-                    if ((bg & 0x8) > 0) str.Append(";1");
-                    str.Append("m");
-                    str.Append(_buffer[i * BufferSize + j].Char);
+                    var fg = (int) chr.Foreground;
+                    var bg = (int) chr.Background;
+                    var bold = (fg & 0x8) > 0;
+                    fg = fg & 0x7;
+                    bg = bg == 8 ? 7 : (bg & 0x7);
+                    var cchar = new cchar_t();
+                    cchar.attr = ((1 + bg + (fg << 3)) << 8) + (bold ? 2097152 : 0);
+                    cchar.chars[0] = chr.Char;
+                    add_wch(&cchar);
                 }
-            str.Append("\x1b[H");
-            puts(str.ToString());
-            //Syscon.WriteLine(str.ToString());
+            refresh();
         }
 
         public void Start()
@@ -95,9 +132,12 @@ namespace GoddamnConsole.NativeProviders.Unix
                 _buffer[i] = new Character(' ', background, background, CharAttribute.None);
         }
 
+        [SuppressMessage("Microsoft.Usage", "CA2216:DisposableTypesShouldDeclareFinalizer")]
         public void Dispose()
         {
-
+            _cts.Cancel();
+            _cts.Dispose();
+            endwin();
         }
 
         public event EventHandler<SizeChangedEventArgs> SizeChanged;
