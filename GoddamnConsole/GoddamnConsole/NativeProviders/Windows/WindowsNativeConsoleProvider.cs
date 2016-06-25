@@ -72,7 +72,7 @@ namespace GoddamnConsole.NativeProviders.Windows
             public char Char;
             public short Attributes;
 
-            public static int SizeOf { get; } = Marshal.SizeOf<CHAR_INFO>();
+            public static int SizeOf { get; } = Marshal.SizeOf(typeof(CHAR_INFO));
         }
 
         // ReSharper disable once InconsistentNaming
@@ -162,7 +162,7 @@ namespace GoddamnConsole.NativeProviders.Windows
             {
                 INPUT_RECORD* charBuf = stackalloc INPUT_RECORD[1];
                 var ptr = new IntPtr(charBuf);
-                var sizeOf = Marshal.SizeOf<INPUT_RECORD>();
+                var sizeOf = Marshal.SizeOf(typeof(INPUT_RECORD));
                 while (!_threadToken.IsCancellationRequested)
                 {
                     uint nchars = 0;
