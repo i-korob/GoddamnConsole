@@ -15,7 +15,7 @@ namespace GoddamnConsole.Controls
         public bool DrawBorders
         {
             get { return _drawBorders; }
-            set {}// _drawBorders = value; OnPropertyChanged(); }
+            set { _drawBorders = value; OnPropertyChanged(); }
         }
 
         public override Size BoundingBoxReduction
@@ -23,11 +23,11 @@ namespace GoddamnConsole.Controls
 
         public override int MaxHeight =>
             Children.GroupBy(x => x.AttachedProperty<GridProperties>()?.Column ?? 0)
-                    .Max(x => x.Sum(y => y.ActualHeight));
+                    .Max(x => x.Sum(y => y.ActualHeight)) + BoundingBoxReduction.Height;
 
         public override int MaxWidth =>
             Children.GroupBy(x => x.AttachedProperty<GridProperties>()?.Row ?? 0)
-                    .Max(x => x.Sum(y => y.ActualWidth));
+                    .Max(x => x.Sum(y => y.ActualWidth)) + BoundingBoxReduction.Width;
 
         /// <summary>
         /// Returns a collection of row definitions
@@ -45,7 +45,7 @@ namespace GoddamnConsole.Controls
             if (definitions.Count == 0)
                 definitions = new[]
                 {
-                    new GridSize(GridUnitType.Fixed, boxSize)
+                    new GridSize(GridUnitType.Auto, 0)
                 };
             var sizes = new long[definitions.Count];
             for (var i = 0; i < definitions.Count; i++)
@@ -65,16 +65,16 @@ namespace GoddamnConsole.Controls
                                 ? children.Max(
                                     x =>
                                     x.Width.Type != ControlSizeType.BoundingBoxSize
-                                        ? x.ActualWidth + (DrawBorders ? 2 : 0)
+                                        ? x.ActualWidth + (DrawBorders ? i == 0 ? 2 : 1 : 0)
                                         : long.MaxValue)
                                 : children.Max(
                                     x =>
                                     x.Height.Type != ControlSizeType.BoundingBoxSize
-                                        ? x.ActualHeight + (DrawBorders ? 2 : 0)
+                                        ? x.ActualHeight + (DrawBorders ? i == 0 ? 2 : 1 : 0)
                                         : long.MaxValue);
                         break;
                     case GridUnitType.Fixed:
-                        sizes[i] = definitions[i].Value;
+                        sizes[i] = definitions[i].Value + (DrawBorders ? i == 0 ? 2 : 1 : 0);
                         break;
                     case GridUnitType.Grow:
                         break; // process later
@@ -143,54 +143,106 @@ namespace GoddamnConsole.Controls
             var h = rows.Skip(row).Take(rowSpan).Sum();
             if (DrawBorders)
             {
-                var vdecr = column == 0 ? 2 : 1;
-                var hdecr = row == 0 ? 2 : 1;
-                if (w < vdecr || h < hdecr) return new Rectangle(0, 0, 0, 0);
-                return new Rectangle(x + (vdecr - 1), y + (hdecr - 1), w - vdecr, h - hdecr);
+                var nfc = column > 0 ? 1 : 0;
+                var nfr = row > 0 ? 1 : 0;
+                return new Rectangle(x + 1 - nfc, y + 1 - nfr, w - 2 + nfc, h - 2 + nfr);
+                //var hdecr = column == 0 ? 2 : 1;
+                //var vdecr = row == 0 ? 2 : 1;
+                //if (w < vdecr || h < hdecr) return new Rectangle(0, 0, 0, 0);
+                //return new Rectangle(x + (hdecr - 1), y + (vdecr - 1), w /*- hdecr*/ - 1 - columnSpan, h /*- vdecr*/ - 1 - rowSpan);
             }
             return new Rectangle(x, y, w, h);
         }
 
+        private bool HasSpanningChildren(int row, int column, bool vertical)
+        {
+            return
+                vertical
+                    ? Children.Any(x =>
+                    {
+                        var atp = x.AttachedProperty<GridProperties>();
+                        return ((atp?.Row ?? 0) <= row) && ((atp?.Column ?? 0) == column) &&
+                               ((atp?.Row ?? 0) + (atp?.RowSpan ?? 1) - 1 > row);
+                    })
+                    : Children.Any(x =>
+                    {
+                        var atp = x.AttachedProperty<GridProperties>();
+                        return ((atp?.Row ?? 0) == row) && ((atp?.Column ?? 0) <= column) &&
+                               ((atp?.Column ?? 0) + (atp?.ColumnSpan ?? 1) - 1 > row);
+                    });
+        }
+
         protected override void OnRender(DrawingContext dc)
         {
-            return;
             if (!DrawBorders) return;
-            var rows = MeasureSizes(false);
-            var columns = MeasureSizes(true);
-            var rowOfs = 0;
-            for (var i = 0; i < rows.Length; i++)
-            {
-                var ydecr = i == 0 ? 0 : 1;
-                var colOfs = 0;
-                for (var j = 0; j < columns.Length; j++)
+            for (var column = 0; column < Math.Max(1, ColumnDefinitions.Count); column++)
+                for (var row = 0; row < Math.Max(1, RowDefinitions.Count); row++)
                 {
-                    var xdecr = j == 0 ? 0 : 1;
-                    if (rows[i] >= 2 && columns[j] >= 2)
-                        dc.DrawFrame(new Rectangle(colOfs - xdecr, rowOfs - ydecr, columns[j] + xdecr, rows[i] + ydecr));
-                    dc.PutChar(new Point(colOfs - xdecr, rowOfs - ydecr),
-                               i == 0
-                                   ? j == 0
-                                         ? FrameOptions.Frames[0][2]
-                                         : FrameOptions.Frames[0][8]
-                                   : j == 0
-                                         ? FrameOptions.Frames[0][6]
-                                         : FrameOptions.Frames[0][10],
-                               Foreground, Background,
-                               CharAttribute.None);
-                    dc.PutChar(new Point(colOfs - xdecr + columns[j], rowOfs - ydecr),
-                               i == 0 ? FrameOptions.Frames[0][3] : FrameOptions.Frames[0][7],
-                               Foreground, Background,
-                               CharAttribute.None);
-                    dc.PutChar(new Point(colOfs - xdecr, rowOfs - ydecr + rows[i]),
-                               j == 0
-                                   ? FrameOptions.Frames[0][4]
-                                   : FrameOptions.Frames[0][9],
-                               Foreground, Background,
-                               CharAttribute.None);
-                    colOfs += columns[j];
+                    var child = Children.FirstOrDefault(x =>
+                    {
+                        var atp = x.AttachedProperty<GridProperties>();
+                        return ((atp?.Row ?? 0) == row) && ((atp?.Column ?? 0) == column);
+                    });
+                    if (child == null) continue;
+                    var boundingBox = MeasureBoundingBox(child).Offset(-1, -1).Expand(2, 2);
+                    dc.DrawFrame(boundingBox);
+                    if (column > 0 || row > 0)
+                        dc.PutChar(new Point(boundingBox.X, boundingBox.Y),
+                                   column > 0
+                                       ? row > 0 && !HasSpanningChildren(row - 1, column - 1, false)
+                                             ? !HasSpanningChildren(row - 1, column - 1, true)
+                                                   ? FrameOptions.Frames[0][10]
+                                                   : FrameOptions.Frames[0][6]
+                                             : FrameOptions.Frames[0][8]
+                                       : !HasSpanningChildren(row - 1, column - 1, true)
+                                             ? FrameOptions.Frames[0][6]
+                                             : FrameOptions.Frames[0][6],
+                                   Foreground, Background, CharAttribute.None);
+                    if (column == Math.Max(1, ColumnDefinitions.Count) - 1 && row > 0)
+                        dc.PutChar(new Point(boundingBox.X + boundingBox.Width - 1, boundingBox.Y),
+                                   FrameOptions.Frames[0][7],
+                                   Foreground, Background, CharAttribute.None);
+                    if (row == Math.Max(1, RowDefinitions.Count) - 1 && column > 0)
+                        dc.PutChar(new Point(boundingBox.X, boundingBox.Y + boundingBox.Height - 1),
+                                   FrameOptions.Frames[0][9],
+                                   Foreground, Background, CharAttribute.None);
                 }
-                rowOfs += rows[i];
-            }
+            //var rows = MeasureSizes(false);
+            //var columns = MeasureSizes(true);
+            //var rowOfs = 0;
+            //for (var i = 0; i < rows.Length; i++)
+            //{
+            //    var ydecr = i == 0 ? 0 : 1;
+            //    var colOfs = 0;
+            //    for (var j = 0; j < columns.Length; j++)
+            //    {
+            //        var xdecr = j == 0 ? 0 : 1;
+            //        if (rows[i] >= 2 && columns[j] >= 2)
+            //            dc.DrawFrame(new Rectangle(colOfs - xdecr, rowOfs - ydecr, columns[j] + xdecr, rows[i] + ydecr));
+            //        dc.PutChar(new Point(colOfs - xdecr, rowOfs - ydecr),
+            //                   i == 0
+            //                       ? j == 0
+            //                             ? FrameOptions.Frames[0][2]
+            //                             : FrameOptions.Frames[0][8]
+            //                       : j == 0
+            //                             ? FrameOptions.Frames[0][6]
+            //                             : FrameOptions.Frames[0][10],
+            //                   Foreground, Background,
+            //                   CharAttribute.None);
+            //        dc.PutChar(new Point(colOfs - xdecr + columns[j], rowOfs - ydecr),
+            //                   i == 0 ? FrameOptions.Frames[0][3] : FrameOptions.Frames[0][7],
+            //                   Foreground, Background,
+            //                   CharAttribute.None);
+            //        dc.PutChar(new Point(colOfs - xdecr, rowOfs - ydecr + rows[i]),
+            //                   j == 0
+            //                       ? FrameOptions.Frames[0][4]
+            //                       : FrameOptions.Frames[0][9],
+            //                   Foreground, Background,
+            //                   CharAttribute.None);
+            //        colOfs += columns[j];
+            //    }
+            //    rowOfs += rows[i];
+            //}
         }
     }
 

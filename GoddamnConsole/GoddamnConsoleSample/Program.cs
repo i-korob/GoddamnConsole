@@ -145,9 +145,142 @@ namespace GoddamnConsoleSample
                     Height = ControlSizeType.MaxByContent
                 }
             };
+
+            var tab4 = new Tab
+            {
+                Name = "Grid 2",
+                Content = new Grid
+                {
+                    DrawBorders = true,
+                    RowDefinitions =
+                    {
+                        new GridSize(GridUnitType.Auto, 0),
+                        new GridSize(GridUnitType.Auto, 0),
+                        new GridSize(GridUnitType.Auto, 0),
+                    },
+                    ColumnDefinitions =
+                    {
+                        new GridSize(GridUnitType.Auto, 0),
+                        new GridSize(GridUnitType.Auto, 0),
+                        new GridSize(GridUnitType.Auto, 0),
+                    },
+                    Children =
+                    {
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 0,
+                                    Row = 0
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 1,
+                                    Row = 0
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 2,
+                                    Row = 0
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 0,
+                                    Row = 1
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 1,
+                                    Row = 1
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 2,
+                                    Row = 1
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 0,
+                                    Row = 2
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 1,
+                                    Row = 2
+                                }
+                            }
+                        },
+                        new TextView
+                        {
+                            Text = "Ыыыы",
+                            AttachedProperties =
+                            {
+                                new GridProperties
+                                {
+                                    Column = 2,
+                                    Row = 2
+                                }
+                            }
+                        },
+                    }
+                }
+            };
             ctl.Children.Add(tab1);
             ctl.Children.Add(tab2);
             ctl.Children.Add(tab3);
+            ctl.Children.Add(tab4);
             ctl.SelectedTab = tab2;
             Console.Windows.Add(new ContentWindow
             {
@@ -190,7 +323,7 @@ namespace GoddamnConsoleSample
                         new GridSize(GridUnitType.Auto, 0),
                         new GridSize(GridUnitType.Auto, 0)
                     },
-                    DrawBorders = true,
+                    //DrawBorders = true,
                     Width = ControlSizeType.MaxByContent,
                     Height = ControlSizeType.MaxByContent
                 },

@@ -133,6 +133,12 @@ namespace GoddamnConsole.NativeProviders.Windows
             _buffer = (CHAR_INFO*) (_bufferPtr = Marshal.AllocHGlobal(BufferSize * BufferSize * CHAR_INFO.SizeOf)).ToPointer();
             _stdin = GetStdHandle(-10);
             _stdout = GetStdHandle(-11);
+            {
+                var info = new CONSOLE_SCREEN_BUFFER_INFO();
+                GetConsoleScreenBufferInfo(_stdout, ref info);
+                WindowWidth = info.Window.Right - info.Window.Left + 1;
+                WindowHeight = info.Window.Bottom - info.Window.Top + 1;
+            }
             new Thread(() => // window size monitor
             {
                 while (!_threadToken.IsCancellationRequested)
