@@ -5,22 +5,27 @@ namespace GoddamnConsole.NativeProviders.Unix
 {
     internal static unsafe class NativeMethods
     {
-        [DllImport("libncursesw.so.5.9")]
+        private const string NcursesLib = "libncursesw.so.5";
+
+        [DllImport(NcursesLib)]
         public static extern IntPtr initscr();
 
-        [DllImport("libncursesw.so.5.9")]
+        [DllImport(NcursesLib)]
         public static extern int endwin();
 
-        [DllImport("libncursesw.so.5.9")]
+        [DllImport(NcursesLib)]
         public static extern int start_color();
 
-        [DllImport("libncursesw.so.5.9")]
+        [DllImport(NcursesLib)]
         public static extern int refresh();
 
-        [DllImport("libncursesw.so.5.9")]
+        [DllImport(NcursesLib)]
+        public static extern int curs_set(int visibility);
+
+        [DllImport(NcursesLib)]
         public static extern int add_wch(cchar_t* chr);
 
-        [DllImport("libncursesw.so.5.9")]
+        [DllImport(NcursesLib)]
         public static extern int init_pair(short color, short f, short b);
 
         [StructLayout(LayoutKind.Sequential)]
@@ -31,10 +36,10 @@ namespace GoddamnConsole.NativeProviders.Unix
             public fixed int chars[5];
         }
 
-        [DllImport("libncursesw.so.5.9")]
+        [DllImport(NcursesLib)]
         public static extern void move(int y, int x);
 
-        [DllImport("libncursesw.so.5.9")]
+        [DllImport(NcursesLib)]
         public static extern int resizeterm(int lines, int cols);
     }
 }

@@ -67,7 +67,7 @@ namespace GoddamnConsole.Drawing
             for (var x = 0; x < _width - _scrollX; x++)
                 for (var y = 0; y < _height - _scrollY; y++)
                 {
-                    PutChar(new Point(x, y), ' ', background, background, CharAttribute.None);
+                    PutChar(new Point(x, y), ' ', CharColor.White, background, CharAttribute.None);
                 }
         }
 

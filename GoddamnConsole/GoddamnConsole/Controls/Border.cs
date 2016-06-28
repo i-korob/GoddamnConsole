@@ -20,6 +20,8 @@ namespace GoddamnConsole.Controls
             }
         }
 
+        public override Size BoundingBoxReduction { get; } = new Size(2, 2);
+
         protected override void OnRender(DrawingContext context)
         {
             context.Clear(Background);

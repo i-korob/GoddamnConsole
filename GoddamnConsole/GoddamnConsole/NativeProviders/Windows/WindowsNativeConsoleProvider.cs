@@ -156,9 +156,8 @@ namespace GoddamnConsole.NativeProviders.Windows
                     Refresh();
                     Thread.Sleep(16);
                 }
-                _shutdownEvent.Set();
             }).Start();
-            new Thread(() => // keyboard monitor
+            _keyboardThread = new Thread(() => // keyboard monitor
             {
                 INPUT_RECORD* charBuf = stackalloc INPUT_RECORD[1];
                 var ptr = new IntPtr(charBuf);
@@ -181,10 +180,12 @@ namespace GoddamnConsole.NativeProviders.Windows
                                                         )));
                     }
                 }
-            }).Start();
+            });
+            _keyboardThread.Start();
         }
 
         private static readonly Action<IntPtr, byte, int> Memset;
+        private Thread _keyboardThread;
 
         public int WindowWidth { get; private set; }
 
@@ -324,6 +325,7 @@ namespace GoddamnConsole.NativeProviders.Windows
             _shutdownEvent.Dispose();
             _threadToken.Cancel();
             _threadToken.Dispose();
+            _keyboardThread.Abort();
         }
     }
 }

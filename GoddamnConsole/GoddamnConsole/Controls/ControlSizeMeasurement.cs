@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
@@ -7,22 +9,58 @@ namespace GoddamnConsole.Controls
         private ControlSize _width = ControlSizeType.BoundingBoxSize;
         private ControlSize _height = ControlSizeType.BoundingBoxSize;
         private bool _visibility = true;
+        public virtual Size BoundingBoxReduction { get; } = new Size(0, 0);
+
         /// <summary>
         /// Returns a minimal width value
         /// </summary>
-        public virtual int MinWidth { get; } = 0;
+        public virtual int MinWidth => BoundingBoxReduction.Width;
         /// <summary>
         /// Returns a maximal width value
         /// </summary>
-        public virtual int MaxWidth { get; } = int.MaxValue;
+        public virtual int MaxWidth
+        {
+            get
+            {
+                var chc = this as IChildrenControl;
+                if (chc != null)
+                {
+                    return chc.Children.Max(x => x.ActualWidth) + BoundingBoxReduction.Width;
+                }
+                var coc = this as IContentControl;
+                if (coc != null)
+                {
+                    return (coc.Content?.ActualWidth ?? 0) + BoundingBoxReduction.Width;
+                }
+                return BoundingBoxReduction.Width;
+            }
+        }
+
         /// <summary>
         /// Returns a minimal height value
         /// </summary>
-        public virtual int MinHeight { get; } = 0;
+        public virtual int MinHeight => BoundingBoxReduction.Height;
+
         /// <summary>
         /// Returns a maximal height value
         /// </summary>
-        public virtual int MaxHeight { get; } = int.MaxValue;
+        public virtual int MaxHeight 
+        {
+            get
+            {
+                var chc = this as IChildrenControl;
+                if (chc != null)
+                {
+                    return chc.Children.Max(x => x.ActualHeight) + BoundingBoxReduction.Height;
+                }
+                var coc = this as IContentControl;
+                if (coc != null)
+                {
+                    return (coc.Content?.ActualHeight ?? 0) + BoundingBoxReduction.Height;
+                }
+                return BoundingBoxReduction.Height;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the width of this control
@@ -58,8 +96,26 @@ namespace GoddamnConsole.Controls
                     case ControlSizeType.Infinite:
                         return int.MaxValue;
                     case ControlSizeType.BoundingBoxSize:
+                        if (Parent?.Width.Type == ControlSizeType.MaxByContent ||
+                            Parent?.Width.Type == ControlSizeType.MinByContent)
+                        {
+                            // possible loop
+                            var parent = Parent?.Parent;
+                            var reduction = Parent?.BoundingBoxReduction.Width ?? 0;
+                            while (parent != null)
+                            {
+                                reduction += parent.BoundingBoxReduction.Width;
+                                if (parent.Width.Type != ControlSizeType.MaxByContent &&
+                                    parent.Width.Type != ControlSizeType.MinByContent)
+                                {
+                                    return parent.ActualWidth - reduction;
+                                }
+                                parent = parent.Parent;
+                            }
+                            return Console.WindowHeight - reduction;
+                        }
                         return Parent?.MeasureBoundingBox(this)?.Width
-                            ?? Console.WindowWidth;
+                               ?? Console.WindowWidth;
                     case ControlSizeType.MinByContent:
                         return MinWidth;
                     case ControlSizeType.MaxByContent:
@@ -84,8 +140,26 @@ namespace GoddamnConsole.Controls
                     case ControlSizeType.Infinite:
                         return int.MaxValue;
                     case ControlSizeType.BoundingBoxSize:
+                        if (Parent?.Height.Type == ControlSizeType.MaxByContent ||
+                            Parent?.Height.Type == ControlSizeType.MinByContent)
+                        {
+                            // possible loop
+                            var parent = Parent?.Parent;
+                            var reduction = Parent?.BoundingBoxReduction.Height ?? 0;
+                            while (parent != null)
+                            {
+                                reduction += parent.BoundingBoxReduction.Height;
+                                if (parent.Height.Type != ControlSizeType.MaxByContent &&
+                                    parent.Height.Type != ControlSizeType.MinByContent)
+                                {
+                                    return parent.ActualHeight - reduction;
+                                }
+                                parent = parent.Parent;
+                            }
+                            return Console.WindowHeight - reduction;
+                        }
                         return Parent?.MeasureBoundingBox(this)?.Height
-                            ?? Console.WindowHeight;
+                               ?? Console.WindowHeight;
                     case ControlSizeType.MinByContent:
                         return MinHeight;
                     case ControlSizeType.MaxByContent:

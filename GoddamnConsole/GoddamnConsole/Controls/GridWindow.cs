@@ -1,33 +1,25 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
 {
-    /// <summary>
-    /// Represents a flexible grid area that consists of rows and columns. Child elements of the Grid are measured and arranged according to their row/column assignments
-    /// </summary>
-    public class Grid : ChildrenControl
+    public class GridWindow : WindowBase, IChildrenControl
     {
-        private bool _drawBorders;
+        public GridWindow()
+        {
+            Children = new ChildrenCollection(this);
+        }
+
+        private bool _drawBorders = true;
 
         public bool DrawBorders
         {
             get { return _drawBorders; }
-            set {}// _drawBorders = value; OnPropertyChanged(); }
+            set { _drawBorders = value; OnPropertyChanged(); }
         }
-
-        public override Size BoundingBoxReduction
-            => DrawBorders ? new Size(Math.Max(1, ColumnDefinitions.Count) + 1, Math.Max(1, RowDefinitions.Count) + 1) : new Size(0, 0);
-
-        public override int MaxHeight =>
-            Children.GroupBy(x => x.AttachedProperty<GridProperties>()?.Column ?? 0)
-                    .Max(x => x.Sum(y => y.ActualHeight));
-
-        public override int MaxWidth =>
-            Children.GroupBy(x => x.AttachedProperty<GridProperties>()?.Row ?? 0)
-                    .Max(x => x.Sum(y => y.ActualWidth));
 
         /// <summary>
         /// Returns a collection of row definitions
@@ -37,10 +29,12 @@ namespace GoddamnConsole.Controls
         /// Returns a collection of column definitions
         /// </summary>
         public IList<GridSize> ColumnDefinitions { get; } = new List<GridSize>();
-        
+
         private int[] MeasureSizes(bool measureColumns)
         {
-            var boxSize = measureColumns ? ActualWidth : ActualHeight;
+            var boxSize = measureColumns
+                              ? DrawBorders ? ActualWidth : ActualWidth - 2
+                              : DrawBorders ? ActualHeight : ActualHeight - 2;
             var definitions = measureColumns ? ColumnDefinitions : RowDefinitions;
             if (definitions.Count == 0)
                 definitions = new[]
@@ -62,16 +56,9 @@ namespace GoddamnConsole.Controls
                         });
                         sizes[i] =
                             measureColumns
-                                ? children.Max(
-                                    x =>
-                                    x.Width.Type != ControlSizeType.BoundingBoxSize
-                                        ? x.ActualWidth + (DrawBorders ? 2 : 0)
-                                        : long.MaxValue)
+                                ? children.Max(x => x.Width.Type != ControlSizeType.BoundingBoxSize ? x.ActualWidth : long.MaxValue)
                                 : children.Max(
-                                    x =>
-                                    x.Height.Type != ControlSizeType.BoundingBoxSize
-                                        ? x.ActualHeight + (DrawBorders ? 2 : 0)
-                                        : long.MaxValue);
+                                    x => x.Height.Type != ControlSizeType.BoundingBoxSize ? x.ActualHeight : long.MaxValue);
                         break;
                     case GridUnitType.Fixed:
                         sizes[i] = definitions[i].Value;
@@ -124,7 +111,7 @@ namespace GoddamnConsole.Controls
             {
                 for (var i = 0; i < sizes.Length; i++) if (sizes[i] < 0) sizes[i] = 0;
             }
-            return sizes.Select(x => (int) x).ToArray();
+            return sizes.Select(x => (int)x).ToArray();
         }
 
         public override Rectangle MeasureBoundingBox(Control child)
@@ -148,13 +135,45 @@ namespace GoddamnConsole.Controls
                 if (w < vdecr || h < hdecr) return new Rectangle(0, 0, 0, 0);
                 return new Rectangle(x + (vdecr - 1), y + (hdecr - 1), w - vdecr, h - hdecr);
             }
-            return new Rectangle(x, y, w, h);
+            return new Rectangle(x + 1, y + 1, w, h);
+        }
+
+        public override Point GetScrollOffset(Control child)
+        {
+            return new Point(0, 0);
+        }
+
+        public override bool IsChildVisible(Control child)
+        {
+            return true;
         }
 
         protected override void OnRender(DrawingContext dc)
         {
-            return;
-            if (!DrawBorders) return;
+            var style = Console.FocusedWindow == this ? FrameStyle.Double : FrameStyle.Single;
+            dc.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight), new FrameOptions
+            {
+                Style = style,
+                Foreground = Foreground,
+                Background = Background
+            });
+            var truncated = Title.Length + 2 > ActualWidth - 4
+                                ? ActualWidth < 9
+                                      ? string.Empty
+                                      : $" {Title.Remove(ActualWidth - 9)}... "
+                                : ActualWidth < 9
+                                      ? string.Empty
+                                      : $" {Title} ";
+            if (!DrawBorders)
+            {
+                dc.DrawText(new Point(2, 0), truncated, new TextOptions
+                {
+                    Foreground = Foreground,
+                    Background = Background
+                });
+                return;
+            }
+            var sti = Console.FocusedWindow == this ? 1 : 0;
             var rows = MeasureSizes(false);
             var columns = MeasureSizes(true);
             var rowOfs = 0;
@@ -166,95 +185,130 @@ namespace GoddamnConsole.Controls
                 {
                     var xdecr = j == 0 ? 0 : 1;
                     if (rows[i] >= 2 && columns[j] >= 2)
-                        dc.DrawFrame(new Rectangle(colOfs - xdecr, rowOfs - ydecr, columns[j] + xdecr, rows[i] + ydecr));
+                        dc.DrawFrame(new Rectangle(colOfs - xdecr, rowOfs - ydecr, columns[j] + xdecr, rows[i] + ydecr),
+                            new FrameOptions
+                            {
+                                Style = style
+                            });
                     dc.PutChar(new Point(colOfs - xdecr, rowOfs - ydecr),
                                i == 0
                                    ? j == 0
-                                         ? FrameOptions.Frames[0][2]
-                                         : FrameOptions.Frames[0][8]
+                                         ? FrameOptions.Frames[sti][2]
+                                         : FrameOptions.Frames[sti][8]
                                    : j == 0
-                                         ? FrameOptions.Frames[0][6]
-                                         : FrameOptions.Frames[0][10],
+                                         ? FrameOptions.Frames[sti][6]
+                                         : FrameOptions.Frames[sti][10],
                                Foreground, Background,
                                CharAttribute.None);
                     dc.PutChar(new Point(colOfs - xdecr + columns[j], rowOfs - ydecr),
-                               i == 0 ? FrameOptions.Frames[0][3] : FrameOptions.Frames[0][7],
+                               i == 0 ? FrameOptions.Frames[sti][3] : FrameOptions.Frames[sti][7],
                                Foreground, Background,
                                CharAttribute.None);
                     dc.PutChar(new Point(colOfs - xdecr, rowOfs - ydecr + rows[i]),
                                j == 0
-                                   ? FrameOptions.Frames[0][4]
-                                   : FrameOptions.Frames[0][9],
+                                   ? FrameOptions.Frames[sti][4]
+                                   : FrameOptions.Frames[sti][9],
                                Foreground, Background,
                                CharAttribute.None);
                     colOfs += columns[j];
                 }
                 rowOfs += rows[i];
             }
+            dc.DrawText(new Point(2, 0), truncated, new TextOptions
+            {
+                Foreground = Foreground,
+                Background = Background
+            });
         }
-    }
 
-    /// <summary>
-    /// Describes the kind of value that a GridUnitType object is holding
-    /// </summary>
-    public enum GridUnitType
-    {
-        /// <summary>
-        /// The value is expressed as a weighted proportion of available space
-        /// </summary>
-        Grow,
-        /// <summary>
-        /// The size is determined by the size of content object
-        /// </summary>
-        Auto,
-        /// <summary>
-        /// The value is expressed in pixels
-        /// </summary>
-        Fixed
-    }
+        public IList<Control> Children { get; }
+        public IList<Control> FocusableChildren => Children;
+        public event EventHandler<ChildRemovedEventArgs> ChildRemoved;
 
-    /// <summary>
-    /// Represents a row/column size value
-    /// </summary>
-    public class GridSize
-    {
-        public GridSize(GridUnitType unit, int val)
+        private class ChildrenCollection : IList<Control>
         {
-            UnitType = unit;
-            Value = Math.Max(0, val);
+            public ChildrenCollection(GridWindow parent)
+            {
+                _parent = parent;
+            }
+
+            private readonly GridWindow _parent;
+            private readonly List<Control> _internal = new List<Control>();
+
+            public IEnumerator<Control> GetEnumerator()
+            {
+                return _internal.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _internal.GetEnumerator();
+            }
+
+            public void Add(Control item)
+            {
+                if (item.Parent != _parent)
+                {
+                    item.Parent = _parent;
+                    return;
+                }
+                _internal.Add(item);
+                _parent.Invalidate();
+            }
+
+            public void Clear()
+            {
+                var copy = _internal.ToArray();
+                _internal.Clear();
+                foreach (var item in copy)
+                {
+                    _parent.ChildRemoved?.Invoke(_parent, new ChildRemovedEventArgs(item));
+                }
+                _parent.Invalidate();
+            }
+
+            public bool Contains(Control item)
+            {
+                return _internal.Contains(item);
+            }
+
+            public void CopyTo(Control[] array, int arrayIndex)
+            {
+                _internal.CopyTo(array, arrayIndex);
+            }
+
+            public bool Remove(Control item)
+            {
+                if (!Contains(item)) return false;
+                _internal.Remove(item);
+                _parent.ChildRemoved?.Invoke(_parent, new ChildRemovedEventArgs(item));
+                _parent.Invalidate();
+                return true;
+            }
+
+            public int Count => _internal.Count;
+            public bool IsReadOnly { get; } = false;
+
+            public int IndexOf(Control item)
+            {
+                return _internal.IndexOf(item);
+            }
+
+            public void Insert(int index, Control item)
+            {
+                _internal.Insert(index, item);
+            }
+
+            public void RemoveAt(int index)
+            {
+                _internal.RemoveAt(index);
+            }
+
+            public Control this[int index]
+            {
+                get { return _internal[index]; }
+                set { _internal[index] = value; }
+            }
         }
-
-        /// <summary>
-        /// Gets or sets the fixed value (used only in Fixed sizing)
-        /// </summary>
-        public int Value { get; set; }
-
-        /// <summary>
-        /// Gets or sets the type of sizing
-        /// </summary>
-        public GridUnitType UnitType { get; set; }
-    }
-
-    /// <summary>
-    /// Represents an attached property for Grid control
-    /// </summary>
-    public class GridProperties : IAttachedProperty
-    {
-        /// <summary>
-        /// Gets or sets the row alignment
-        /// </summary>
-        public int Row { get; set; }
-        /// <summary>
-        /// Gets or sets a value that indicates the total numbers of occupied rows
-        /// </summary>
-        public int RowSpan { get; set; }
-        /// <summary>
-        /// Gets or sets the column alignment
-        /// </summary>
-        public int Column { get; set; }
-        /// <summary>
-        /// Gets or sets a value that indicates the total numbers of occupied columns
-        /// </summary>
-        public int ColumnSpan { get; set; }
     }
 }

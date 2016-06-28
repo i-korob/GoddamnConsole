@@ -93,10 +93,10 @@ namespace GoddamnConsole.Drawing
     {
         internal static string[] Frames =
         {
-            "─│┌┐└┘",
-            "═║╔╗╚╝",
-            "██████",
-            "-|++++"
+            "─│┌┐└┘├┤┬┴┼",
+            "═║╔╗╚╝╠╣╦╩╬",
+            "███████████",
+            "-|+++++++++"
         };
 
         public FrameStyle Style { get; set; }

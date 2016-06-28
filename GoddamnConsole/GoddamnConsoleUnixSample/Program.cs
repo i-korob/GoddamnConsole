@@ -128,14 +128,17 @@ namespace GoddamnConsoleUnixSample
             var tab3 = new Tab
             {
                 Name = "ScrollViewer + TextView",
-                Content = new ScrollViewer
+                Content = new Border
                 {
-                    Content = new TextView
+                    Content = new ScrollViewer
                     {
-                        Text = LongLorem,
-                        Background = CharColor.Blue,
-                        Foreground = CharColor.LightYellow,
-                        Height = ControlSizeType.MaxByContent
+                        Content = new TextView
+                        {
+                            Text = LongLorem,
+                            Background = CharColor.Blue,
+                            Foreground = CharColor.LightYellow,
+                            Height = ControlSizeType.MaxByContent
+                        }
                     }
                 }
             };
@@ -143,7 +146,7 @@ namespace GoddamnConsoleUnixSample
             ctl.Children.Add(tab2);
             ctl.Children.Add(tab3);
             ctl.SelectedTab = tab3;
-            Console.Windows.Add(new Window
+            Console.Windows.Add(new ContentWindow
             {
                 Content = ctl,
                 Title = "First Window",
@@ -169,7 +172,7 @@ namespace GoddamnConsoleUnixSample
                 };
             var clkCnt = 0;
             btn.Clicked += (o, e) => text.Text = $"Click #{++clkCnt}";
-            Console.Windows.Add(new Window
+            Console.Windows.Add(new ContentWindow
             {
                 Content = new Grid
                 {

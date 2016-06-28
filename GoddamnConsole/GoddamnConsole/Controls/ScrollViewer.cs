@@ -51,8 +51,6 @@ namespace GoddamnConsole.Controls
                 else if (contentWidth - ActualWidth < -_scrollX)
                     _scrollX = -(contentWidth - ActualWidth);
             }
-            //var scrolled = context.Scroll(new Point(_scrollX, _scrollY));
-            //Content.Render(scrolled);
         }
 
         public override Point GetScrollOffset(Control child) => new Point(_scrollX, _scrollY);

@@ -9,7 +9,7 @@ namespace GoddamnConsole.Controls
     public abstract class ParentControl : Control, IParentControl
     {
         /// <summary>
-        /// Measures a child position and width, which will be used in rendering
+        /// Measures a child position and size, which will be used in rendering
         /// </summary>
         public abstract Rectangle MeasureBoundingBox(Control child);
         /// <summary>

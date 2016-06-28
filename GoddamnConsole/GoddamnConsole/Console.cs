@@ -4,6 +4,8 @@ using System.Linq;
 using GoddamnConsole.Controls;
 using GoddamnConsole.Drawing;
 using GoddamnConsole.NativeProviders;
+using GoddamnConsole.NativeProviders.Unix;
+using GoddamnConsole.NativeProviders.Windows;
 
 namespace GoddamnConsole
 {
@@ -20,7 +22,7 @@ namespace GoddamnConsole
         internal static INativeConsoleProvider Provider;
         private static CharColor _background = CharColor.Black;
         private static Control _focused;
-        private static Window _focusedWindow;
+        private static WindowBase _focusedWindow;
 
         /// <summary>
         /// Returns current window width
@@ -53,12 +55,12 @@ namespace GoddamnConsole
         /// <summary>
         /// Returns a list of windows
         /// </summary>
-        public static IList<Window> Windows { get; } = new List<Window>();
+        public static IList<WindowBase> Windows { get; } = new List<WindowBase>();
 
         /// <summary>
         /// Gets or sets the current focused window
         /// </summary>
-        public static Window FocusedWindow
+        public static WindowBase FocusedWindow
         {
             get { return _focusedWindow; }
             set
@@ -93,8 +95,14 @@ namespace GoddamnConsole
         /// <summary>
         /// Starts rendering cycle and waits for shutdown
         /// </summary>
-        public static void Start(INativeConsoleProvider provider)
+        public static void Start()
         {
+            var pf = Environment.OSVersion.Platform;
+            var isUnix = pf == PlatformID.Unix || pf == PlatformID.MacOSX || (int) pf == 128; // unix/macosx/mono linux
+            var provider =
+                isUnix
+                    ? (INativeConsoleProvider) new UnixNativeConsoleProvider()
+                    : new WindowsNativeConsoleProvider();
             if (Provider != null) throw new ArgumentException("Already started");
             Provider = provider;
             provider.Clear(_background);
@@ -235,7 +243,7 @@ namespace GoddamnConsole
                 dc.Clear(Background);
                 window.OnRenderInternal(dc);
             }
-            Provider?.Refresh();
+            Provider.Refresh();
         }
         
         /// <summary>

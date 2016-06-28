@@ -114,7 +114,8 @@ namespace GoddamnConsoleSample
                             },
                             Height = 10
                         }
-                    }
+                    },
+                    DrawBorders = true
                 }
             };
             var tab2 = new Tab
@@ -128,22 +129,27 @@ namespace GoddamnConsoleSample
             var tab3 = new Tab
             {
                 Name = "ScrollViewer + TextView",
-                Content = new ScrollViewer
+                Content = new Border
                 {
-                    Content = new TextView
+                    Content = new ScrollViewer
                     {
-                        Text = LongLorem,
-                        Background = CharColor.Blue,
-                        Foreground = CharColor.LightYellow,
-                        Height = ControlSizeType.MaxByContent
-                    }
+                        Content = new TextView
+                        {
+                            Text = LongLorem,
+                            Background = CharColor.Blue,
+                            Foreground = CharColor.LightYellow,
+                            Height = ControlSizeType.MaxByContent
+                        }
+                    },
+                    Width = ControlSizeType.MaxByContent,
+                    Height = ControlSizeType.MaxByContent
                 }
             };
             ctl.Children.Add(tab1);
             ctl.Children.Add(tab2);
             ctl.Children.Add(tab3);
             ctl.SelectedTab = tab2;
-            Console.Windows.Add(new Window
+            Console.Windows.Add(new ContentWindow
             {
                 Content = ctl,
                 Title = "First Window",
@@ -158,7 +164,8 @@ namespace GoddamnConsoleSample
                     {
                         Row = 1
                     }
-                }
+                },
+                Height = ControlSizeType.MinByContent
             };
             var text =
                 new TextView
@@ -169,7 +176,7 @@ namespace GoddamnConsoleSample
                 };
             var clkCnt = 0;
             btn.Clicked += (o, e) => text.Text = $"Click #{++clkCnt}";
-            Console.Windows.Add(new Window
+            Console.Windows.Add(new ContentWindow
             {
                 Content = new Grid
                 {
@@ -182,15 +189,18 @@ namespace GoddamnConsoleSample
                     {
                         new GridSize(GridUnitType.Auto, 0),
                         new GridSize(GridUnitType.Auto, 0)
-                    }
+                    },
+                    DrawBorders = true,
+                    Width = ControlSizeType.MaxByContent,
+                    Height = ControlSizeType.MaxByContent
                 },
                 Title = "Second Window",
-                Width = 20,
-                Height = 8,
+                Width = ControlSizeType.MaxByContent,
+                Height = ControlSizeType.MaxByContent,
                 HorizontalAlignment = WindowAlignment.End,
                 VerticalAlignment = WindowAlignment.Center
             });
-            Console.Start(new WindowsNativeConsoleProvider());
+            Console.Start();
         }
     }
 

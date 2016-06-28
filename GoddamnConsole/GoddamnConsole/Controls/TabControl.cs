@@ -14,7 +14,9 @@ namespace GoddamnConsole.Controls
         {
             Focusable = true;
         }
-        
+
+        public override Size BoundingBoxReduction => new Size(2, 4);
+
         public override IList<Control> FocusableChildren
             => SelectedTab == null ? new Control[0] : new Control[] {SelectedTab};
         

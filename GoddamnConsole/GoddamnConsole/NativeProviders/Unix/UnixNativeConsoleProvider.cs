@@ -16,6 +16,7 @@ namespace GoddamnConsole.NativeProviders.Unix
         public UnixNativeConsoleProvider()
         {
             initscr();
+            curs_set(0); // underline attribute instead of native cursor
             start_color();
             for (short i = 0; i < 64; i++)
             {
@@ -68,9 +69,28 @@ namespace GoddamnConsole.NativeProviders.Unix
         public int WindowWidth { get; private set; } = Syscon.WindowWidth;
         public int WindowHeight { get; private set; } = Syscon.WindowHeight;
         public bool CursorVisible { get; set; }
-        public int CursorX { get; set; }
-        public int CursorY { get; set; }
+
+        public int CursorX
+        {
+            get { return _cursorX; }
+            set { _cursorX = value;
+                CursorVisible = true;
+            }
+        }
+
+        public int CursorY
+        {
+            get { return _cursorY; }
+            set
+            {
+                _cursorY = value;
+                CursorVisible = true;
+            }
+        }
+
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private int _cursorX;
+        private int _cursorY;
 
         public void PutChar(Character chr, int x, int y)
         {
@@ -115,6 +135,8 @@ namespace GoddamnConsole.NativeProviders.Unix
                     bg = bg == 8 ? 7 : (bg & 0x7);
                     var cchar = new cchar_t();
                     cchar.attr = ((1 + bg + (fg << 3)) << 8) + (bold ? 2097152 : 0);
+                    if (CursorVisible && CursorX == j && CursorY == i)
+                        cchar.attr |= 131072;
                     cchar.chars[0] = chr.Char;
                     add_wch(&cchar);
                 }
@@ -129,7 +151,7 @@ namespace GoddamnConsole.NativeProviders.Unix
         public void Clear(CharColor background)
         {
             for (var i = 0; i < BufferSize * BufferSize; i++)
-                _buffer[i] = new Character(' ', background, background, CharAttribute.None);
+                _buffer[i] = new Character(' ', CharColor.White, background, CharAttribute.None);
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2216:DisposableTypesShouldDeclareFinalizer")]

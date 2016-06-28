@@ -15,6 +15,8 @@ namespace GoddamnConsole.Controls
 
         private string _text;
 
+        public override int MinHeight => 3;
+
         /// <summary>
         /// Gets or sets the title of button
         /// </summary>
