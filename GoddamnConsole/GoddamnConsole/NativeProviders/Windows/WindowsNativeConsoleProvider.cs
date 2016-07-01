@@ -158,11 +158,14 @@ namespace GoddamnConsole.NativeProviders.Windows
                     {
                         SizeChanged?.Invoke(this, new SizeChangedEventArgs(new Size(pw, ph), new Size(nw, nh)));
                     }
-                    catch { /* Do not care if subscriber fucked up */ }
+                    catch
+                    {
+                        /* Do not care if subscriber fucked up */
+                    }
                     Refresh();
                     Thread.Sleep(16);
                 }
-            }).Start();
+            }) {Priority = ThreadPriority.Lowest}.Start();
             _keyboardThread = new Thread(() => // keyboard monitor
             {
                 INPUT_RECORD* charBuf = stackalloc INPUT_RECORD[1];
@@ -191,7 +194,7 @@ namespace GoddamnConsole.NativeProviders.Windows
         }
 
         private static readonly Action<IntPtr, byte, int> Memset;
-        private Thread _keyboardThread;
+        private readonly Thread _keyboardThread;
 
         public int WindowWidth { get; private set; }
 

@@ -221,7 +221,7 @@ namespace GoddamnConsole
             if (Provider == null) return;
             Provider.CursorVisible = false;
             Provider.Clear(_background);
-            foreach (var window in Windows)
+            foreach (var window in Windows.OrderBy(x => FocusedWindow == x ? int.MaxValue : Windows.IndexOf(x)))
             {
                 DrawingContext dc = new RealDrawingContext(window != FocusedWindow);
                 var wid = window.ActualWidth;

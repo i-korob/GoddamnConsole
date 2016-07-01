@@ -33,7 +33,7 @@ namespace GoddamnConsole.Controls
             var xofs =
                 Children.TakeWhile(x => x != child)
                         .Sum(x => x.Width.Type == ControlSizeType.BoundingBoxSize ? 0 : x.ActualWidth);
-            if (xofs > ActualHeight) return new Rectangle(0, 0, 0, 0);
+            if (xofs > ActualWidth) return new Rectangle(0, 0, 0, 0);
             return
                 new Rectangle(
                     xofs,

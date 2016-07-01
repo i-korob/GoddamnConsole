@@ -36,6 +36,8 @@ namespace GoddamnConsole.Controls
             if (info.Key == ConsoleKey.Enter) Clicked?.Invoke(this, EventArgs.Empty);
         }
 
+        public override int MaxHeight => 3;
+
         protected override void OnRender(DrawingContext dc)
         {
             dc.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight), new FrameOptions

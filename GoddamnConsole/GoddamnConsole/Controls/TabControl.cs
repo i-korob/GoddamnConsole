@@ -59,7 +59,7 @@ namespace GoddamnConsole.Controls
             var headerLine = style[0] + string.Concat(Children.Cast<Tab>().Select((x, i) =>
             {
                 var padded = x.Name.PadLeft(x.Name.Length + 2);
-                if (padded.Length > wpt - 4) padded = padded.Remove(wpt - 2);
+                if (padded.Length > wpt - 2) padded = padded.Remove(wpt - 2);
                 return padded.PadRight(wpt + (i == 0 ? li : 0)) + style[0];
             }));
             context.DrawFrame(new Rectangle(0, 0, ActualWidth, ActualHeight), 
@@ -106,6 +106,12 @@ namespace GoddamnConsole.Controls
             set { _selectedTab = value;
                 OnPropertyChanged();
             }
+        }
+
+        public int SelectedIndex
+        {
+            get { return Children.IndexOf(SelectedTab); }
+            set { SelectedTab = (Tab) Children[value]; }
         }
         
         private Tab _selectedTab;

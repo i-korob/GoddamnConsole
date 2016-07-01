@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GoddamnConsole.Drawing;
 
@@ -82,6 +83,9 @@ namespace GoddamnConsole.Controls
             set { _height = value; OnPropertyChanged(); }
         }
 
+        private Stack<Control> _hmstack = new Stack<Control>();
+        private Stack<Control> _wmstack = new Stack<Control>();
+
         /// <summary>
         /// Returns the measured width of this control
         /// </summary>
@@ -119,7 +123,16 @@ namespace GoddamnConsole.Controls
                     case ControlSizeType.MinByContent:
                         return MinWidth;
                     case ControlSizeType.MaxByContent:
-                        return MaxWidth;
+                        if (_wmstack.Contains(this))
+                        {
+                            // measurement loop
+                            return int.MaxValue;
+                            // throw new Exception("Measurement loop detected");
+                        }
+                        _wmstack.Push(this);
+                        var value = MaxWidth;
+                        _wmstack.Pop();
+                        return value;
                     default:
                         return 0;
                 }
@@ -163,7 +176,16 @@ namespace GoddamnConsole.Controls
                     case ControlSizeType.MinByContent:
                         return MinHeight;
                     case ControlSizeType.MaxByContent:
-                        return MaxHeight;
+                        if (_hmstack.Contains(this))
+                        {
+                            // measurement loop
+                            return int.MaxValue;
+                            //throw new Exception("Measurement loop detected");
+                        }
+                        _hmstack.Push(this);
+                        var value = MaxHeight;
+                        _hmstack.Pop();
+                        return value;
                     default:
                         return 0;
                 }

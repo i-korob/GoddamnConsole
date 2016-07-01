@@ -3,7 +3,6 @@ using System.Linq;
 using GoddamnConsole;
 using GoddamnConsole.Controls;
 using GoddamnConsole.Drawing;
-using GoddamnConsole.NativeProviders.Windows;
 using Console = GoddamnConsole.Console;
 
 namespace GoddamnConsoleSample
@@ -24,315 +23,265 @@ namespace GoddamnConsoleSample
 
         private static void Main()
         {
-            var ctl = new TabControl();
-            var tab1 = new Tab
+            var gridWindowTest = new GridWindow
             {
-                Name = "Grid",
-                Content = new Grid
+                Title = "GridWindow Test (Next: Shift+Tab)",
+                DrawBorders = true,
+                RowDefinitions =
                 {
-                    ColumnDefinitions =
-                    {
-                        new GridSize(GridUnitType.Fixed, 10),
-                        new GridSize(GridUnitType.Grow, 1),
-                        new GridSize(GridUnitType.Grow, 2)
-                    },
-                    RowDefinitions =
-                    {
-                        new GridSize(GridUnitType.Fixed, 5),
-                        new GridSize(GridUnitType.Auto, 0)
-                    },
-                    Children =
-                    {
-                        new Border
-                        {
-                            Content =
-                                new TextView
-                                {
-                                    Text = LongLorem,
-                                    TextWrapping = TextWrapping.Wrap
-                                },
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    RowSpan = 2
-                                }
-                            },
-                            FrameStyle = FrameStyle.Double
-                        },
-                        new Border
-                        {
-                            Content =
-                                new TextView
-                                {
-                                    Text = LongLorem,
-                                    TextWrapping = TextWrapping.Wrap
-                                },
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 1,
-                                    ColumnSpan = 2
-                                }
-                            },
-                            FrameStyle = FrameStyle.Fill
-                        },
-                        new Border
-                        {
-                            Content =
-                                new TextView
-                                {
-                                    Text = LongLorem,
-                                    TextWrapping = TextWrapping.Wrap
-                                },
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Row = 1,
-                                    Column = 1
-                                }
-                            },
-                            FrameStyle = FrameStyle.Simple
-                        },
-                        new Border
-                        {
-                            Content =
-                                new TextView
-                                {
-                                    Text = LongLorem,
-                                    TextWrapping = TextWrapping.Wrap
-                                },
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Row = 1,
-                                    Column = 2
-                                }
-                            },
-                            Height = 10
-                        }
-                    },
-                    DrawBorders = true
-                }
-            };
-            var tab2 = new Tab
-            {
-                Name = "TextBox",
-                Content = new TextBox
+                    new GridSize(GridUnitType.Fixed, 10),
+                    new GridSize(GridUnitType.Auto, 0),
+                    new GridSize(GridUnitType.Auto, 0),
+                },
+                ColumnDefinitions =
                 {
-                    Text = "You can write here!"
-                }
-            };
-            var tab3 = new Tab
-            {
-                Name = "ScrollViewer + TextView",
-                Content = new Border
+                    new GridSize(GridUnitType.Grow, 3),
+                    new GridSize(GridUnitType.Grow, 2),
+                    new GridSize(GridUnitType.Fixed, 15)
+                },
+                Children =
                 {
-                    Content = new ScrollViewer
+                    new Border
                     {
+                        FrameStyle = FrameStyle.Single,
                         Content = new TextView
                         {
-                            Text = LongLorem,
-                            Background = CharColor.Blue,
-                            Foreground = CharColor.LightYellow,
-                            Height = ControlSizeType.MaxByContent
+                            Text = "1"
+                        },
+                        AttachedProperties =
+                        {
+                            new GridProperties
+                            {
+                                Row = 0,
+                                Column = 0,
+                                RowSpan = 3
+                            }
                         }
                     },
-                    Width = ControlSizeType.MaxByContent,
-                    Height = ControlSizeType.MaxByContent
-                }
-            };
-
-            var tab4 = new Tab
-            {
-                Name = "Grid 2",
-                Content = new Grid
-                {
-                    DrawBorders = true,
-                    RowDefinitions =
+                    new Border
                     {
-                        new GridSize(GridUnitType.Auto, 0),
-                        new GridSize(GridUnitType.Auto, 0),
-                        new GridSize(GridUnitType.Auto, 0),
+                        FrameStyle = FrameStyle.Single,
+                        Content = new TextView
+                        {
+                            Text = "2"
+                        },
+                        AttachedProperties =
+                        {
+                            new GridProperties
+                            {
+                                Row = 0,
+                                Column = 1,
+                                ColumnSpan = 2
+                            }
+                        }
                     },
-                    ColumnDefinitions =
+                    new Border
                     {
-                        new GridSize(GridUnitType.Auto, 0),
-                        new GridSize(GridUnitType.Auto, 0),
-                        new GridSize(GridUnitType.Auto, 0),
+                        FrameStyle = FrameStyle.Single,
+                        Content = new TextView
+                        {
+                            Text = "3"
+                        },
+                        AttachedProperties =
+                        {
+                            new GridProperties
+                            {
+                                Row = 1,
+                                Column = 1
+                            }
+                        }
                     },
-                    Children =
+                    new Border
                     {
-                        new TextView
+                        FrameStyle = FrameStyle.Single,
+                        Content = new TextView
                         {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 0,
-                                    Row = 0
-                                }
-                            }
+                            Text = "4"
                         },
-                        new TextView
+                        AttachedProperties =
                         {
-                            Text = "Ыыыы",
-                            AttachedProperties =
+                            new GridProperties
                             {
-                                new GridProperties
-                                {
-                                    Column = 1,
-                                    Row = 0
-                                }
+                                Row = 2,
+                                Column = 2
                             }
-                        },
-                        new TextView
-                        {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 2,
-                                    Row = 0
-                                }
-                            }
-                        },
-                        new TextView
-                        {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 0,
-                                    Row = 1
-                                }
-                            }
-                        },
-                        new TextView
-                        {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 1,
-                                    Row = 1
-                                }
-                            }
-                        },
-                        new TextView
-                        {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 2,
-                                    Row = 1
-                                }
-                            }
-                        },
-                        new TextView
-                        {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 0,
-                                    Row = 2
-                                }
-                            }
-                        },
-                        new TextView
-                        {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 1,
-                                    Row = 2
-                                }
-                            }
-                        },
-                        new TextView
-                        {
-                            Text = "Ыыыы",
-                            AttachedProperties =
-                            {
-                                new GridProperties
-                                {
-                                    Column = 2,
-                                    Row = 2
-                                }
-                            }
-                        },
+                        }
                     }
                 }
             };
-            ctl.Children.Add(tab1);
-            ctl.Children.Add(tab2);
-            ctl.Children.Add(tab3);
-            ctl.Children.Add(tab4);
-            ctl.SelectedTab = tab2;
-            Console.Windows.Add(new ContentWindow
-            {
-                Content = ctl,
-                Title = "First Window",
-                Width = 80
-            });
             var btn = new Button
             {
-                Text = "Button!",
-                AttachedProperties =
-                {
-                    new GridProperties
-                    {
-                        Row = 1
-                    }
-                },
-                Height = ControlSizeType.MinByContent
+                Text = "Press me!",
+                Height = ControlSizeType.MaxByContent
             };
-            var text =
-                new TextView
-                {
-                    Text = "Second window!",
-                    Width = ControlSizeType.MaxByContent,
-                    Height = ControlSizeType.MaxByContent
-                };
-            var clkCnt = 0;
-            btn.Clicked += (o, e) => text.Text = $"Click #{++clkCnt}";
-            Console.Windows.Add(new ContentWindow
+            var text = new TextView
             {
-                Content = new Grid
+                Text = "Click count: 0",
+                Height = ControlSizeType.MaxByContent
+            };
+            var clkCnt = 0;
+            btn.Clicked += (o, e) => text.Text = $"Click count: {++clkCnt}";
+            var tabControlTest = new ContentWindow
+            {
+                Title = "ContentWindow + TabControl Test (Prev: Shift+Tab)",
+                Content = new TabControl
                 {
                     Children =
                     {
-                        text,
-                        btn
+                        new Tab
+                        {
+                            Name = "TextView",
+                            Content = new TextView
+                            {
+                                Text = "Read-only text!\n" + LongLorem
+                            }
+                        },
+                        new Tab
+                        {
+                            Name = "Vertical StackPanel",
+                            Content = new StackPanel
+                            {
+                                Children =
+                                {
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #1",
+                                                Height = ControlSizeType.MaxByContent
+                                            },
+                                        Height = ControlSizeType.MaxByContent
+                                    },
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #2",
+                                                Height = ControlSizeType.MaxByContent
+                                            },
+                                        Height = ControlSizeType.MaxByContent
+                                    },
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #3",
+                                                Height = ControlSizeType.MaxByContent
+                                            },
+                                        Height = ControlSizeType.MaxByContent
+                                    },
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #4",
+                                                Height = ControlSizeType.MaxByContent
+                                            },
+                                        Height = ControlSizeType.MaxByContent
+                                    }
+                                }
+                            }
+                        },
+                        new Tab
+                        {
+                            Name = "Horizontal StackPanel",
+                            Content = new StackPanel
+                            {
+                                Orientation = StackPanelOrientation.Horizontal,
+                                Children =
+                                {
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #1",
+                                                Width = ControlSizeType.MaxByContent
+                                            },
+                                        Width = ControlSizeType.MaxByContent
+                                    },
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #2",
+                                                Width = ControlSizeType.MaxByContent
+                                            },
+                                        Width = ControlSizeType.MaxByContent
+                                    },
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #3",
+                                                Width = ControlSizeType.MaxByContent
+                                            },
+                                        Width = ControlSizeType.MaxByContent
+                                    },
+                                    new Border
+                                    {
+                                        Content =
+                                            new TextView
+                                            {
+                                                Text = "Item #4",
+                                                Width = ControlSizeType.MaxByContent
+                                            },
+                                        Width = ControlSizeType.MaxByContent
+                                    }
+                                }
+                            }
+                        },
+                        new Tab
+                        {
+                            Name = "ScrollViewer",
+                            Content = new ScrollViewer
+                            {
+                                Content = new TextView
+                                {
+                                    Text = LongLorem,
+                                    TextWrapping = TextWrapping.Wrap,
+                                    Height = ControlSizeType.MaxByContent
+                                }
+                            }
+                        },
+                        new Tab
+                        {
+                            Name = "TextBox",
+                            Content = new TextBox
+                            {
+                                Text = "Hello World!",
+                                TextWrapping = TextWrapping.Wrap
+                            }
+                        },
+                        new Tab
+                        {
+                            Name = "Button",
+                            Content = new StackPanel
+                            {
+                                Children =
+                                {
+                                    new TextView
+                                    {
+                                        Text = "Press that",
+                                        Height = ControlSizeType.MaxByContent
+                                    },
+                                    btn,
+                                    text
+                                }
+                            }
+                        }
                     },
-                    RowDefinitions =
-                    {
-                        new GridSize(GridUnitType.Auto, 0),
-                        new GridSize(GridUnitType.Auto, 0)
-                    },
-                    //DrawBorders = true,
-                    Width = ControlSizeType.MaxByContent,
-                    Height = ControlSizeType.MaxByContent
-                },
-                Title = "Second Window",
-                Width = ControlSizeType.MaxByContent,
-                Height = ControlSizeType.MaxByContent,
-                HorizontalAlignment = WindowAlignment.End,
-                VerticalAlignment = WindowAlignment.Center
-            });
+                    SelectedIndex = 0
+                }
+            };
+            Console.Windows.Add(gridWindowTest);
+            Console.Windows.Add(tabControlTest);
             Console.Start();
         }
     }
