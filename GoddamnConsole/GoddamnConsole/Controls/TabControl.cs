@@ -87,7 +87,7 @@ namespace GoddamnConsole.Controls
             {
                 var index = Children.IndexOf(SelectedTab);
                 var padded = SelectedTab.Name.PadLeft(SelectedTab.Name.Length + 2);
-                if (padded.Length > wpt - 4) padded = padded.Remove(wpt - 2);
+                if (padded.Length > wpt - 2) padded = padded.Remove(wpt - 2);
                 padded = padded.PadRight(wpt + (index == 0 ? li : 0));
                 context.DrawText(new Point(1 + (index > 0 ? li : 0) + index * (wpt + 1), 1), padded, new TextOptions
                 {

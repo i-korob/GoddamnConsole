@@ -108,7 +108,7 @@ namespace GoddamnConsole.NativeProviders.Windows
         private readonly IntPtr _bufferPtr;
         private readonly IntPtr _stdout;
         private readonly IntPtr _stdin;
-        private const int BufferSize = 0x100;
+        private const int BufferSize = 0x200;
 
         static WindowsNativeConsoleProvider()
         {

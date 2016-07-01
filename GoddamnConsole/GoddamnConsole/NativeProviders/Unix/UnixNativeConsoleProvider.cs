@@ -51,8 +51,9 @@ namespace GoddamnConsole.NativeProviders.Unix
                         oldw = neww;
                         oldh = newh;
                     }
+                    Thread.Sleep(16);
                 }
-            }).Start();
+            }) { Priority = ThreadPriority.Lowest}.Start();
             new Thread(() => // keyboard monitor
             {
                 while (!_cts.IsCancellationRequested)
@@ -63,7 +64,7 @@ namespace GoddamnConsole.NativeProviders.Unix
             }).Start();
         }
 
-        private const int BufferSize = 0x100;
+        private const int BufferSize = 0x200;
         private readonly Character[] _buffer = new Character[BufferSize * BufferSize];
 
         public int WindowWidth { get; private set; } = Syscon.WindowWidth;
