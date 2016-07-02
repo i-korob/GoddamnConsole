@@ -46,6 +46,12 @@ namespace GoddamnConsole.NativeProviders.Windows
             IntPtr consoleHandle,
             ref WindowsNativeConsoleProvider.CONSOLE_CURSOR_INFO bufInfo);
 
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetConsoleScreenBufferSize(
+            IntPtr consoleHandle,
+            WindowsNativeConsoleProvider.COORD size);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetStdHandle(int handle);
 

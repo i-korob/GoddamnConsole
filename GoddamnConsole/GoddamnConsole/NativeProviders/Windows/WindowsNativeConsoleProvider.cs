@@ -128,6 +128,8 @@ namespace GoddamnConsole.NativeProviders.Windows
                 (Action<IntPtr, byte, int>)dynamicMethod.CreateDelegate(typeof(Action<IntPtr, byte, int>));
         }
 
+        private readonly COORD _prevBuf;
+
         public WindowsNativeConsoleProvider()
         {
             _threadToken = new CancellationTokenSource();
@@ -140,6 +142,12 @@ namespace GoddamnConsole.NativeProviders.Windows
                 GetConsoleScreenBufferInfo(_stdout, ref info);
                 WindowWidth = info.Window.Right - info.Window.Left + 1;
                 WindowHeight = info.Window.Bottom - info.Window.Top + 1;
+                _prevBuf = info.Size;
+                SetConsoleScreenBufferSize(_stdout, new COORD
+                {
+                    X = (short) WindowWidth,
+                    Y = (short) WindowHeight
+                });
             }
             new Thread(() => // window size monitor
             {
@@ -157,6 +165,11 @@ namespace GoddamnConsole.NativeProviders.Windows
                     _resizeFlag = true;
                     WindowWidth = nw;
                     WindowHeight = nh;
+                    SetConsoleScreenBufferSize(_stdout, new COORD
+                    {
+                        X = (short)WindowWidth,
+                        Y = (short)WindowHeight
+                    });
                     try
                     {
                         SizeChanged?.Invoke(this, new SizeChangedEventArgs(new Size(pw, ph), new Size(nw, nh)));
@@ -333,7 +346,6 @@ namespace GoddamnConsole.NativeProviders.Windows
             }
             var info = new CONSOLE_SCREEN_BUFFER_INFO();
             GetConsoleScreenBufferInfo(_stdout, ref info);
-            SetConsoleCursorPosition(_stdout, new COORD());
             var rect = new SMALL_RECT
             {
                 Left = (short)(info.Window.Left + x),
@@ -345,11 +357,6 @@ namespace GoddamnConsole.NativeProviders.Windows
             WriteConsoleOutputW(_stdout, new IntPtr(_buffer),
                 new COORD { X = BufferSize, Y = BufferSize },
                 new COORD { X = x, Y = y }, ref rect);
-            SetConsoleCursorPosition(_stdout, new COORD
-            {
-                X = info.CursorPosition.X,
-                Y = info.CursorPosition.Y
-            });
             if (!_resizeFlag)
             {
                 var tbuf = _buffer2;
@@ -376,6 +383,10 @@ namespace GoddamnConsole.NativeProviders.Windows
         [SuppressMessage("Microsoft.Usage", "CA2216:DisposableTypesShouldDeclareFinalizer")]
         public void Dispose()
         {
+            Clear(CharColor.Black);
+            Refresh();
+            SetConsoleScreenBufferSize(_stdout, _prevBuf);
+            SetConsoleCursorPosition(_stdout, new COORD {Y = 1});
             _shutdownEvent.Set();
             _shutdownEvent.Dispose();
             _threadToken.Cancel();
