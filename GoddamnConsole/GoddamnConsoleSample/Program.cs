@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Linq;
-using GoddamnConsole;
 using GoddamnConsole.Controls;
 using GoddamnConsole.Drawing;
 using Console = GoddamnConsole.Console;

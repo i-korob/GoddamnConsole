@@ -104,8 +104,9 @@ namespace GoddamnConsole.NativeProviders.Windows
 
         private readonly CancellationTokenSource _threadToken;
         private readonly ManualResetEvent _shutdownEvent = new ManualResetEvent(false);
-        private readonly CHAR_INFO* _buffer;
-        private readonly IntPtr _bufferPtr;
+        private CHAR_INFO* _buffer;
+        private CHAR_INFO* _buffer2;
+        private bool _resizeFlag;
         private readonly IntPtr _stdout;
         private readonly IntPtr _stdin;
         private const int BufferSize = 0x200;
@@ -130,7 +131,8 @@ namespace GoddamnConsole.NativeProviders.Windows
         public WindowsNativeConsoleProvider()
         {
             _threadToken = new CancellationTokenSource();
-            _buffer = (CHAR_INFO*) (_bufferPtr = Marshal.AllocHGlobal(BufferSize * BufferSize * CHAR_INFO.SizeOf)).ToPointer();
+            _buffer = (CHAR_INFO*)Marshal.AllocHGlobal(BufferSize * BufferSize * CHAR_INFO.SizeOf).ToPointer();
+            _buffer2 = (CHAR_INFO*)Marshal.AllocHGlobal(BufferSize * BufferSize * CHAR_INFO.SizeOf).ToPointer();
             _stdin = GetStdHandle(-10);
             _stdout = GetStdHandle(-11);
             {
@@ -152,6 +154,7 @@ namespace GoddamnConsole.NativeProviders.Windows
                     if (nw == WindowWidth && nh == WindowHeight) continue;
                     var pw = WindowWidth;
                     var ph = WindowHeight;
+                    _resizeFlag = true;
                     WindowWidth = nw;
                     WindowHeight = nh;
                     try
@@ -162,7 +165,7 @@ namespace GoddamnConsole.NativeProviders.Windows
                     {
                         /* Do not care if subscriber fucked up */
                     }
-                    Refresh();
+                    //Refresh();
                     Thread.Sleep(16);
                 }
             }) {Priority = ThreadPriority.Lowest}.Start();
@@ -299,18 +302,61 @@ namespace GoddamnConsole.NativeProviders.Windows
 
         public void Refresh()
         {
+            short w = BufferSize;
+            short h = BufferSize;
+            short x = 0;
+            short y = 0;
+            if (!_resizeFlag)
+            {
+                x = BufferSize - 1;
+                y = x;
+                short x2 = 0;
+                short y2 = 0;
+                for (short ix = 0; ix < BufferSize; ix++)
+                    for (short iy = 0; iy < BufferSize; iy++)
+                    {
+                        var ofs = iy * BufferSize + ix;
+                        var xor = (_buffer[ofs].Attributes ^ _buffer2[ofs].Attributes) |
+                                  (_buffer[ofs].Char ^ _buffer2[ofs].Char);
+                        if (xor != 0)
+                        {
+                            x = Math.Min(x, ix);
+                            y = Math.Min(y, iy);
+                            x2 = Math.Max(x2, ix);
+                            y2 = Math.Max(y2, iy);
+                        }
+                    }
+                if (x > x2) x = (short) (x2 + 1);
+                if (y > y2) y = (short) (y2 + 1);
+                w = (short) (x2 - x + 1);
+                h = (short) (y2 - y + 1);
+            }
             var info = new CONSOLE_SCREEN_BUFFER_INFO();
             GetConsoleScreenBufferInfo(_stdout, ref info);
+            SetConsoleCursorPosition(_stdout, new COORD());
             var rect = new SMALL_RECT
             {
-                Left = info.Window.Left,
-                Top = info.Window.Top,
-                Right = (short) (info.Window.Left + BufferSize - 1), 
-                Bottom = (short) (info.Window.Top + BufferSize - 1),   
+                Left = (short)(info.Window.Left + x),
+                Top = (short)(info.Window.Top + y),
+                Right = (short)(info.Window.Left + x + w - 1),
+                Bottom = (short)(info.Window.Top + y + h - 1)
             };
-            WriteConsoleOutputW(_stdout, _bufferPtr,
+            Memset(new IntPtr(_buffer2), 0, BufferSize * BufferSize);
+            WriteConsoleOutputW(_stdout, new IntPtr(_buffer),
                 new COORD { X = BufferSize, Y = BufferSize },
-                new COORD(), ref rect);
+                new COORD { X = x, Y = y }, ref rect);
+            SetConsoleCursorPosition(_stdout, new COORD
+            {
+                X = info.CursorPosition.X,
+                Y = info.CursorPosition.Y
+            });
+            if (!_resizeFlag)
+            {
+                var tbuf = _buffer2;
+                _buffer2 = _buffer;
+                _buffer = tbuf;
+            }
+            _resizeFlag = false;
         }
 
         public void Clear(CharColor background)

@@ -110,13 +110,17 @@ namespace GoddamnConsole
             {
                 if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == 0)
                 {
+                    _prevent = true;
                     FocusNext();
+                    _prevent = false;
                     Refresh();
                     return;
                 }
                 if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == ConsoleModifiers.Shift) // Can not intercept CTRL in Linux
                 {
+                    _prevent = true;
                     FocusNextWindow();
+                    _prevent = false;
                     Refresh();
                     return;
                 }
@@ -132,15 +136,23 @@ namespace GoddamnConsole
                 //    Refresh();
                 //    return;
                 //}
+                _prevent = true;
                 Focused?.OnKeyPressedInternal(e.Info);
+                _prevent = false;
+                Refresh();
             };
             provider.SizeChanged += (o, e) =>
             {
+                _prevent = true;
                 foreach (var window in Windows)
                     window.OnSizeChangedInternal(e.Before, e.After);
+                _prevent = false;
                 Refresh();
             };
+            _prevent = true;
             FocusNextWindow();
+            _prevent = false;
+            Refresh();
         }
 
         private static void AllFocusableElements(Control current, ICollection<Control> elements)
@@ -195,7 +207,7 @@ namespace GoddamnConsole
                 list.Contains(Focused)
                     ? list[(list.IndexOf(Focused) + 1) % list.Count]
                     : list.FirstOrDefault();
-            Refresh();
+            //Refresh();
         }
         
         /// <summary>
@@ -210,40 +222,65 @@ namespace GoddamnConsole
                 list.Contains(Focused)
                     ? list[(list.Count + list.IndexOf(Focused) - 1) % list.Count]
                     : list.FirstOrDefault();
-            Refresh();
+            //Refresh();
         }
-        
+
+        private static bool _fault;
+        private static bool _refreshing;
+        private static int _discardCount;
+        private static bool _prevent;
+
         /// <summary>
         /// Performs console redraw
         /// </summary>
         public static void Refresh()
         {
-            if (Provider == null) return;
-            Provider.CursorVisible = false;
-            Provider.Clear(_background);
-            foreach (var window in Windows.OrderBy(x => FocusedWindow == x ? int.MaxValue : Windows.IndexOf(x)))
+            if (_prevent) return;
+            if (_refreshing)
             {
-                DrawingContext dc = new RealDrawingContext(window != FocusedWindow);
-                var wid = window.ActualWidth;
-                var hei = window.ActualHeight;
-                dc = dc.Shrink(
-                    new Rectangle(
-                        window.HorizontalAlignment == WindowAlignment.Center
-                            ? (WindowWidth - wid) / 2
-                            : window.HorizontalAlignment == WindowAlignment.End
-                                  ? WindowWidth - wid
-                                  : 0,
-                        window.VerticalAlignment == WindowAlignment.Center
-                            ? (WindowHeight - hei) / 2
-                            : window.VerticalAlignment == WindowAlignment.End
-                                  ? WindowHeight - hei
-                                  : 0,
-                        wid,
-                        hei));
-                dc.Clear(Background);
-                window.OnRenderInternal(dc);
+                _fault = true;
+                return;
             }
-            Provider.Refresh();
+            _refreshing = true;
+            _discardCount = 0;
+            _fault = false;
+            try
+            {
+                if (Provider == null) return;
+                do
+                {
+                    Provider.CursorVisible = false;
+                    Provider.Clear(_background);
+                    foreach (var window in Windows.OrderBy(x => FocusedWindow == x ? int.MaxValue : Windows.IndexOf(x)))
+                    {
+                        DrawingContext dc = new RealDrawingContext(window != FocusedWindow);
+                        var wid = window.ActualWidth;
+                        var hei = window.ActualHeight;
+                        dc = dc.Shrink(
+                            new Rectangle(
+                                window.HorizontalAlignment == WindowAlignment.Center
+                                    ? (WindowWidth - wid) / 2
+                                    : window.HorizontalAlignment == WindowAlignment.End
+                                          ? WindowWidth - wid
+                                          : 0,
+                                window.VerticalAlignment == WindowAlignment.Center
+                                    ? (WindowHeight - hei) / 2
+                                    : window.VerticalAlignment == WindowAlignment.End
+                                          ? WindowHeight - hei
+                                          : 0,
+                                wid,
+                                hei));
+                        dc.Clear(Background);
+                        window.OnRenderInternal(dc);
+                    }
+                    _discardCount++;
+                } while (_fault && _discardCount < 3);
+                Provider.Refresh();
+            }
+            finally
+            {
+                _refreshing = false; 
+            }
         }
         
         /// <summary>

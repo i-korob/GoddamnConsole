@@ -83,8 +83,8 @@ namespace GoddamnConsole.Controls
             set { _height = value; OnPropertyChanged(); }
         }
 
-        private Stack<Control> _hmstack = new Stack<Control>();
-        private Stack<Control> _wmstack = new Stack<Control>();
+        private readonly Stack<Control> _hmstack = new Stack<Control>();
+        private readonly Stack<Control> _wmstack = new Stack<Control>();
 
         /// <summary>
         /// Returns the measured width of this control
@@ -174,6 +174,7 @@ namespace GoddamnConsole.Controls
                         return Parent?.MeasureBoundingBox(this)?.Height
                                ?? Console.WindowHeight;
                     case ControlSizeType.MinByContent:
+                        // todo shit detection (for width too)
                         return MinHeight;
                     case ControlSizeType.MaxByContent:
                         if (_hmstack.Contains(this))
