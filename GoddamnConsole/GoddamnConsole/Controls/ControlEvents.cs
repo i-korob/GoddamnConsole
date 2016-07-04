@@ -70,7 +70,7 @@ namespace GoddamnConsole.Controls
         /// <summary>
         /// Occurs when control size was changed
         /// </summary>
-        public event EventHandler<SizeChangedEventArgs> SizeChanged;
+        public event EventHandler SizeChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -93,9 +93,7 @@ namespace GoddamnConsole.Controls
         /// <summary>
         /// Called when control size was changed
         /// </summary>
-        /// <param name="prevSize"></param>
-        /// <param name="newSize"></param>
-        protected virtual void OnSizeChanged(Size prevSize, Size newSize) { }
+        protected virtual void OnSizeChanged() { }
 
         private void SafeInvoke(dynamic @event, EventArgs args)
         {
@@ -114,7 +112,7 @@ namespace GoddamnConsole.Controls
         {
             var preventable = args as IPreventableEvent;
             SafeInvoke(@event, args);
-            if (preventable?.Handled ?? false) return;
+            if (preventable?.Handled ?? false) return; //-V3021
             (this as IContentControl)?.Content?.Bubble(@event, args);
             if (preventable?.Handled ?? false) return;
             foreach (var control in (this as IChildrenControl)?.Children ?? new Control[0])
@@ -159,10 +157,17 @@ namespace GoddamnConsole.Controls
             SafeInvoke(Rendered, EventArgs.Empty);
         }
 
-        internal void OnSizeChangedInternal(Size prevSize, Size newSize)
+        internal void OnSizeChangedInternal()
         {
-            OnSizeChanged(prevSize, newSize);
-            SafeInvoke(SizeChanged, new SizeChangedEventArgs(prevSize, newSize));
+            OnSizeChanged();
+            SafeInvoke(SizeChanged, EventArgs.Empty);
+            var content = (this as IContentControl)?.Content;
+            content?.OnSizeChangedInternal();
+            foreach (
+                var control in (this as IChildrenControl)?.Children ?? new Control[0])
+            {
+                control.OnSizeChangedInternal();
+            }
         }
         
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

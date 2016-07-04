@@ -87,17 +87,39 @@ namespace GoddamnConsole.Drawing
     public class TextOptions : CommonOptions
     {
         public TextWrapping TextWrapping { get; set; } = TextWrapping.NoWrap;
+        public Alignment VerticalAlignment { get; set; } = Alignment.Begin;
+        public Alignment HorizontalAlignment { get; set; } = Alignment.Begin;
+    }
+
+    [Flags]
+    public enum FramePiece
+    {
+        Top = 1,
+        Right = 2,
+        Bottom = 4,
+        Left = 8,
+        Vertical = Top | Bottom,
+        Horizontal = Left | Right,
+        Cross = Vertical | Horizontal
     }
 
     public class FrameOptions : CommonOptions
     {
-        internal static string[] Frames =
+        private static readonly string[] Frames =
         {
-            "─│┌┐└┘├┤┬┴┼",
-            "═║╔╗╚╝╠╣╦╩╬",
-            "███████████",
-            "-|+++++++++"
+            "   └ │┌├ ┘─┴┐┤┬┼",
+            "   ╚ ║╔╠ ╝═╩╗╣╦╬",
+            "   █ ███ ███████",
+            "   + |++ +-+++++",
         };
+
+        public static char Piece(FramePiece piece, FrameStyle style)
+        {
+            if ((int) style >= Frames.Length) throw new ArgumentException(nameof(style));
+            var frames = Frames[(int) style];
+            if ((int) piece >= frames.Length) throw new ArgumentException(nameof(piece));
+            return frames[(int) piece];
+        }
 
         public FrameStyle Style { get; set; }
     }
@@ -114,5 +136,24 @@ namespace GoddamnConsole.Drawing
         Double = 1,
         Fill = 2,
         Simple = 3
+    }
+
+    /// <summary>
+    /// Describes a kind of element alignment
+    /// </summary>
+    public enum Alignment
+    {
+        /// <summary>
+        /// Element is aligned to begin of area (Top/Left)
+        /// </summary>
+        Begin,
+        /// <summary>
+        /// Element is aligned to end of area (Bottom/Right)
+        /// </summary>
+        End,
+        /// <summary>
+        /// Element is aligned to center of area
+        /// </summary>
+        Center
     }
 }

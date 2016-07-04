@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
@@ -18,6 +19,9 @@ namespace GoddamnConsole.Controls
             => _textWrapping == TextWrapping.Wrap
                    ? DrawingContext.MeasureWrappedText(_text ?? "", ActualWidth).Height
                    : DrawingContext.MeasureText(_text ?? "").Count();
+
+        public Alignment VerticalTextAlignment { get; set; }
+        public Alignment HorizontalTextAlignment { get; set; }
 
         /// <summary>
         /// Gets or sets the text of TextView
@@ -59,7 +63,9 @@ namespace GoddamnConsole.Controls
                 {
                     TextWrapping = TextWrapping,
                     Foreground = Foreground,
-                    Background = Background
+                    Background = Background,
+                    VerticalAlignment = VerticalTextAlignment,
+                    HorizontalAlignment = HorizontalTextAlignment
                 });
         }
     }

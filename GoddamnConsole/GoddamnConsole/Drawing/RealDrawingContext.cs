@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static GoddamnConsole.Drawing.FrameOptions;
 
 namespace GoddamnConsole.Drawing
 {
@@ -129,32 +130,56 @@ namespace GoddamnConsole.Drawing
             var skip = rect.Y < 0 ? -rect.Y : 0;
             var xOfs = rect.X > 0 ? rect.X : 0;
             var yOfs = rect.Y > 0 ? rect.Y : 0;
-            foreach (var line in lines.Skip(skip).Take((int) Math.Max(int.MaxValue, Math.Min((long) rect.Height - _scrollY, (long) _height - rect.Y - _scrollY))))
+            var lineArray = lines.ToArray();
+            switch (opts?.VerticalAlignment ?? Alignment.Begin)
             {
-                DrawText(new Point(xOfs, yOfs++), line, opts);
+                case Alignment.Center:
+                    yOfs += (rect.Height - lineArray.Length) / 2;
+                    break;
+                case Alignment.End:
+                    yOfs += rect.Height - lineArray.Length;
+                    break;
+            }
+            foreach (var line in lineArray.Skip(skip).Take((int) Math.Max(int.MaxValue, Math.Min((long) rect.Height - _scrollY, (long) _height - rect.Y - _scrollY))))
+            {
+                var alignX = 0;
+                switch (opts?.HorizontalAlignment ?? Alignment.Begin)
+                {
+                    case Alignment.Center:
+                        alignX = (rect.Width - line.Length) / 2;
+                        break;
+                    case Alignment.End:
+                        alignX = rect.Width - line.Length;
+                        break;
+                }
+                DrawText(new Point(xOfs + alignX, yOfs++), line, opts);
             }
         }
 
         public override void DrawFrame(Rectangle rect, FrameOptions opts = null)
         {
-            var frame = FrameOptions.Frames[(int) (opts?.Style ?? FrameStyle.Single)];
+            var style = opts?.Style ?? FrameStyle.Single;
             var rectOpts = new RectangleOptions
             {
                 Attributes = opts?.Attributes ?? CharAttribute.None,
                 Background = opts?.Background ?? CharColor.Black,
                 Foreground = opts?.Foreground ?? CharColor.White
             };
-            DrawRectangle(new Rectangle(rect.X + 1, rect.Y, rect.Width - 2, 1), frame[0], rectOpts);
-            DrawRectangle(new Rectangle(rect.X + 1, rect.Y + rect.Height - 1, rect.Width - 2, 1), frame[0], rectOpts);
-            DrawRectangle(new Rectangle(rect.X, rect.Y + 1, 1, rect.Height - 2), frame[1], rectOpts);
-            DrawRectangle(new Rectangle(rect.X + rect.Width - 1, rect.Y + 1, 1, rect.Height - 2), frame[1], rectOpts);
-            PutChar(new Point(rect.X, rect.Y), frame[2], rectOpts.Foreground, rectOpts.Background, rectOpts.Attributes);
-            PutChar(new Point(rect.X + rect.Width - 1, rect.Y), frame[3], rectOpts.Foreground,
-                rectOpts.Background, rectOpts.Attributes);
-            PutChar(new Point(rect.X, rect.Y + rect.Height - 1), frame[4], rectOpts.Foreground,
-                rectOpts.Background, rectOpts.Attributes);
-            PutChar(new Point(rect.X + rect.Width - 1, rect.Y + rect.Height - 1), frame[5],
-                rectOpts.Foreground, rectOpts.Background, rectOpts.Attributes);
+            DrawRectangle(new Rectangle(rect.X + 1, rect.Y, rect.Width - 2, 1), Piece(FramePiece.Horizontal, style), rectOpts);
+            DrawRectangle(new Rectangle(rect.X + 1, rect.Y + rect.Height - 1, rect.Width - 2, 1), Piece(FramePiece.Horizontal, style), rectOpts);
+            DrawRectangle(new Rectangle(rect.X, rect.Y + 1, 1, rect.Height - 2), Piece(FramePiece.Vertical, style), rectOpts);
+            DrawRectangle(new Rectangle(rect.X + rect.Width - 1, rect.Y + 1, 1, rect.Height - 2), Piece(FramePiece.Vertical, style), rectOpts);
+            PutChar(new Point(rect.X, rect.Y), Piece(FramePiece.Bottom | FramePiece.Right, style), rectOpts.Foreground,
+                    rectOpts.Background, rectOpts.Attributes);
+            PutChar(new Point(rect.X + rect.Width - 1, rect.Y), Piece(FramePiece.Bottom | FramePiece.Left, style),
+                    rectOpts.Foreground,
+                    rectOpts.Background, rectOpts.Attributes);
+            PutChar(new Point(rect.X, rect.Y + rect.Height - 1), Piece(FramePiece.Top | FramePiece.Right, style),
+                    rectOpts.Foreground,
+                    rectOpts.Background, rectOpts.Attributes);
+            PutChar(new Point(rect.X + rect.Width - 1, rect.Y + rect.Height - 1),
+                    Piece(FramePiece.Top | FramePiece.Left, style),
+                    rectOpts.Foreground, rectOpts.Background, rectOpts.Attributes);
         }
     }
 

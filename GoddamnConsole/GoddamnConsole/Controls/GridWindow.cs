@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GoddamnConsole.Drawing;
+using static GoddamnConsole.Drawing.FrameOptions;
 
 namespace GoddamnConsole.Controls
 {
@@ -210,7 +211,6 @@ namespace GoddamnConsole.Controls
             }
             var rows = MeasureSizes(false);
             var columns = MeasureSizes(true);
-            var istyle = (int) style;
             for (var column = 0; column < Math.Max(1, ColumnDefinitions.Count); column++)
                 for (var row = 0; row < Math.Max(1, RowDefinitions.Count); row++)
                 {
@@ -244,20 +244,18 @@ namespace GoddamnConsole.Controls
                                    column > 0
                                        ? row > 0 && !HasSpanningChildren(row - 1, column - 1, false)
                                              ? !HasSpanningChildren(row - 1, column - 1, true)
-                                                   ? FrameOptions.Frames[istyle][10]
-                                                   : FrameOptions.Frames[istyle][6]
-                                             : FrameOptions.Frames[istyle][8]
-                                       : !HasSpanningChildren(row - 1, column - 1, true)
-                                             ? FrameOptions.Frames[istyle][6]
-                                             : FrameOptions.Frames[istyle][6],
+                                                   ? Piece(FramePiece.Cross, style)
+                                                   : Piece(FramePiece.Vertical | FramePiece.Right, style)
+                                             : Piece(FramePiece.Horizontal | FramePiece.Bottom, style)
+                                       : Piece(FramePiece.Vertical | FramePiece.Right, style),
                                    Foreground, Background, CharAttribute.None);
                     if (column == Math.Max(1, ColumnDefinitions.Count) - 1 && row > 0)
                         dc.PutChar(new Point(boundingBox.X + boundingBox.Width - 1, boundingBox.Y),
-                                   FrameOptions.Frames[istyle][7],
+                                   Piece(FramePiece.Vertical | FramePiece.Left, style),
                                    Foreground, Background, CharAttribute.None);
                     if (row == Math.Max(1, RowDefinitions.Count) - 1 && column > 0)
                         dc.PutChar(new Point(boundingBox.X, boundingBox.Y + boundingBox.Height - 1),
-                                   FrameOptions.Frames[istyle][9],
+                                   Piece(FramePiece.Horizontal | FramePiece.Top, style),
                                    Foreground, Background, CharAttribute.None);
                 }
             dc.DrawText(new Point(2, 0), truncated, new TextOptions
@@ -293,6 +291,9 @@ namespace GoddamnConsole.Controls
 
             public void Add(Control item)
             {
+                if (item.Name != null &&
+                    _parent.AllControls.Any(x => x.Name == item.Name))
+                    throw new Exception("Control with exact name already exists");
                 if (item.Parent != _parent)
                 {
                     item.Parent = _parent;

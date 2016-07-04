@@ -124,18 +124,6 @@ namespace GoddamnConsole
                     Refresh();
                     return;
                 }
-                //if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == ConsoleModifiers.Control)
-                //{
-                //    FocusNextWindow();
-                //    Refresh();
-                //    return;
-                //}
-                //if (CanChangeFocus && e.Info.Key == ConsoleKey.Tab && e.Info.Modifiers == (ConsoleModifiers.Control | ConsoleModifiers.Shift))
-                //{
-                //    FocusPrevWindow();
-                //    Refresh();
-                //    return;
-                //}
                 _prevent = true;
                 Focused?.OnKeyPressedInternal(e.Info);
                 _prevent = false;
@@ -145,7 +133,7 @@ namespace GoddamnConsole
             {
                 _prevent = true;
                 foreach (var window in Windows)
-                    window.OnSizeChangedInternal(e.Before, e.After);
+                    window.OnSizeChangedInternal();
                 _prevent = false;
                 Refresh();
             };
@@ -207,7 +195,6 @@ namespace GoddamnConsole
                 list.Contains(Focused)
                     ? list[(list.IndexOf(Focused) + 1) % list.Count]
                     : list.FirstOrDefault();
-            //Refresh();
         }
         
         /// <summary>
@@ -222,10 +209,9 @@ namespace GoddamnConsole
                 list.Contains(Focused)
                     ? list[(list.Count + list.IndexOf(Focused) - 1) % list.Count]
                     : list.FirstOrDefault();
-            //Refresh();
         }
 
-        private static bool _fault;
+        private static volatile bool _fault;
         private static bool _refreshing;
         private static int _discardCount;
         private static bool _prevent;
@@ -258,14 +244,14 @@ namespace GoddamnConsole
                         var hei = window.ActualHeight;
                         dc = dc.Shrink(
                             new Rectangle(
-                                window.HorizontalAlignment == WindowAlignment.Center
+                                window.HorizontalAlignment == Alignment.Center
                                     ? (WindowWidth - wid) / 2
-                                    : window.HorizontalAlignment == WindowAlignment.End
+                                    : window.HorizontalAlignment == Alignment.End
                                           ? WindowWidth - wid
                                           : 0,
-                                window.VerticalAlignment == WindowAlignment.Center
+                                window.VerticalAlignment == Alignment.Center
                                     ? (WindowHeight - hei) / 2
-                                    : window.VerticalAlignment == WindowAlignment.End
+                                    : window.VerticalAlignment == Alignment.End
                                           ? WindowHeight - hei
                                           : 0,
                                 wid,

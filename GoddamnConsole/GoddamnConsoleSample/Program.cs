@@ -116,20 +116,21 @@ namespace GoddamnConsoleSample
             var text = new TextView
             {
                 Text = "Click count: 0",
-                Height = ControlSizeType.MaxByContent
+                Height = ControlSizeType.MaxByContent,
+                Name = "clkCnt"
             };
             var clkCnt = 0;
-            btn.Clicked += (o, e) => text.Text = $"Click count: {++clkCnt}";
+            btn.Clicked += (o, e) => ((TextView) btn.ByName("clkCnt")).Text = $"Click count: {++clkCnt}";
             var tabControlTest = new ContentWindow
             {
-                Title = "ContentWindow + TabControl Test (Prev: Shift+Tab)",
+                Title = "ContentWindow + TabControl2 Test (Prev: Shift+Tab)",
                 Content = new TabControl
                 {
                     Children =
                     {
                         new Tab
                         {
-                            Name = "TextView",
+                            Title = "TextView",
                             Content = new TextView
                             {
                                 Text = "Read-only text!\n" + LongLorem
@@ -137,7 +138,7 @@ namespace GoddamnConsoleSample
                         },
                         new Tab
                         {
-                            Name = "Vertical StackPanel",
+                            Title = "Vertical StackPanel",
                             Content = new StackPanel
                             {
                                 Children =
@@ -187,7 +188,7 @@ namespace GoddamnConsoleSample
                         },
                         new Tab
                         {
-                            Name = "Horizontal StackPanel",
+                            Title = "Horizontal StackPanel",
                             Content = new StackPanel
                             {
                                 Orientation = StackPanelOrientation.Horizontal,
@@ -238,7 +239,7 @@ namespace GoddamnConsoleSample
                         },
                         new Tab
                         {
-                            Name = "ScrollViewer",
+                            Title = "ScrollViewer",
                             Content = new ScrollViewer
                             {
                                 Content = new TextView
@@ -251,7 +252,7 @@ namespace GoddamnConsoleSample
                         },
                         new Tab
                         {
-                            Name = "TextBox",
+                            Title = "TextBox",
                             Content = new TextBox
                             {
                                 Text = "Hello World!",
@@ -260,7 +261,7 @@ namespace GoddamnConsoleSample
                         },
                         new Tab
                         {
-                            Name = "Button",
+                            Title = "Button",
                             Content = new StackPanel
                             {
                                 Children =

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
@@ -21,6 +22,9 @@ namespace GoddamnConsole.Controls
                     _content = null;
                     ContentDetached?.Invoke(this, new ChildRemovedEventArgs(pc));
                 }
+                if (value?.Name != null &&
+                    AllControls.Any(x => x.Name == value.Name))
+                    throw new Exception("Control with exact name already exists");
                 if (value == null || value.Parent == this) _content = value;
                 else value.Parent = this;
                 OnPropertyChanged();

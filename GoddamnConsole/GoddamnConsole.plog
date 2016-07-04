@@ -1,0 +1,132 @@
+<?xml version="1.0" standalone="yes"?>
+<NewDataSet>
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="Solution_Path">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="SolutionPath" type="xs:string" minOccurs="0" />
+                <xs:element name="SolutionVersion" type="xs:string" minOccurs="0" />
+                <xs:element name="PlogVersion" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="ModificationDate" msdata:DateTimeMode="Utc" type="xs:dateTime" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="PVS-Studio_Analysis_Log">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="FavIcon" type="xs:boolean" minOccurs="0" />
+                <xs:element name="Level" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="DefaultOrder" type="xs:int" minOccurs="0" />
+                <xs:element name="ErrorCode" type="xs:string" minOccurs="0" />
+                <xs:element name="Message" type="xs:string" />
+                <xs:element name="Project" type="xs:string" minOccurs="0" />
+                <xs:element name="ShortFile" type="xs:string" minOccurs="0" />
+                <xs:element name="Line" type="xs:int" />
+                <xs:element name="FalseAlarm" type="xs:boolean" minOccurs="0" />
+                <xs:element name="File" type="xs:string" />
+                <xs:element name="CodePrev" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="CodeCurrent" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="CodeNext" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="TrialMessage" type="xs:boolean" minOccurs="0" />
+                <xs:element name="Analyzer" type="xs:int" minOccurs="0" />
+                <xs:element name="LineExtension" type="xs:string" minOccurs="0" />
+                <xs:element name="Retired" type="xs:boolean" default="false" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+      <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+        <xs:selector xpath=".//PVS-Studio_Analysis_Log" />
+        <xs:field xpath="Line" />
+        <xs:field xpath="Message" />
+        <xs:field xpath="File" />
+      </xs:unique>
+    </xs:element>
+  </xs:schema>
+  <Solution_Path>
+    <SolutionPath>C:\Users\zawod\Source\Repos\GoddamnConsole\GoddamnConsole\GoddamnConsole.sln</SolutionPath>
+    <SolutionVersion>14.0</SolutionVersion>
+    <PlogVersion>3</PlogVersion>
+    <ModificationDate>2016-07-03T20:20:48.5129799Z</ModificationDate>
+  </Solution_Path>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>1</DefaultOrder>
+    <ErrorCode>V3022</ErrorCode>
+    <Message>Expression '_fault &amp;&amp; _discardCount &lt; 3' is always false.</Message>
+    <Project>GoddamnConsole</Project>
+    <ShortFile>Console.cs</ShortFile>
+    <Line>277</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>C:\Users\zawod\Source\Repos\GoddamnConsole\GoddamnConsole\GoddamnConsole\Console.cs</File>
+    <CodePrev>4111713</CodePrev>
+    <CodeCurrent>187267631</CodeCurrent>
+    <CodeNext>31678105</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>4</Analyzer>
+    <LineExtension />
+    <Retired>false</Retired>
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>2</DefaultOrder>
+    <ErrorCode>V3021</ErrorCode>
+    <Message>There are two 'if' statements with identical conditional expressions. The first 'if' statement contains method return. This means that the second 'if' statement is senseless</Message>
+    <Project>GoddamnConsole</Project>
+    <ShortFile>ControlEvents.cs</ShortFile>
+    <Line>117</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>C:\Users\zawod\Source\Repos\GoddamnConsole\GoddamnConsole\GoddamnConsole\Controls\ControlEvents.cs</File>
+    <CodePrev>940354717</CodePrev>
+    <CodeCurrent>3832770828</CodeCurrent>
+    <CodeNext>3511311263</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>4</Analyzer>
+    <LineExtension>117,119</LineExtension>
+    <Retired>false</Retired>
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>3</DefaultOrder>
+    <ErrorCode>V3012</ErrorCode>
+    <Message>The '?:' operator, regardless of its conditional expression, always returns one and the same value: FrameOptions.Frames[0][6].</Message>
+    <Project>GoddamnConsole</Project>
+    <ShortFile>Grid.cs</ShortFile>
+    <Line>210</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>C:\Users\zawod\Source\Repos\GoddamnConsole\GoddamnConsole\GoddamnConsole\Controls\Grid.cs</File>
+    <CodePrev>464188041</CodePrev>
+    <CodeCurrent>2784258596</CodeCurrent>
+    <CodeNext>296415893</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>4</Analyzer>
+    <LineExtension />
+    <Retired>false</Retired>
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>4</DefaultOrder>
+    <ErrorCode>V3012</ErrorCode>
+    <Message>The '?:' operator, regardless of its conditional expression, always returns one and the same value: FrameOptions.Frames[istyle][6].</Message>
+    <Project>GoddamnConsole</Project>
+    <ShortFile>GridWindow.cs</ShortFile>
+    <Line>250</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>C:\Users\zawod\Source\Repos\GoddamnConsole\GoddamnConsole\GoddamnConsole\Controls\GridWindow.cs</File>
+    <CodePrev>1969146170</CodePrev>
+    <CodeCurrent>2784258596</CodeCurrent>
+    <CodeNext>895404327</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>4</Analyzer>
+    <LineExtension />
+    <Retired>false</Retired>
+  </PVS-Studio_Analysis_Log>
+</NewDataSet>

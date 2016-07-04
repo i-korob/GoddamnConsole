@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GoddamnConsole.Drawing;
+using static GoddamnConsole.Drawing.FrameOptions;
 
 namespace GoddamnConsole.Controls
 {
@@ -204,20 +205,18 @@ namespace GoddamnConsole.Controls
                                    column > 0
                                        ? row > 0 && !HasSpanningChildren(row - 1, column - 1, false)
                                              ? !HasSpanningChildren(row - 1, column - 1, true)
-                                                   ? FrameOptions.Frames[0][10]
-                                                   : FrameOptions.Frames[0][6]
-                                             : FrameOptions.Frames[0][8]
-                                       : !HasSpanningChildren(row - 1, column - 1, true)
-                                             ? FrameOptions.Frames[0][6]
-                                             : FrameOptions.Frames[0][6],
+                                                   ? Piece(FramePiece.Cross, FrameStyle.Single)
+                                                   : Piece(FramePiece.Vertical | FramePiece.Right, FrameStyle.Single)
+                                             : Piece(FramePiece.Horizontal | FramePiece.Bottom, FrameStyle.Single)
+                                       : Piece(FramePiece.Vertical | FramePiece.Right, FrameStyle.Single),
                                    Foreground, Background, CharAttribute.None);
                     if (column == Math.Max(1, ColumnDefinitions.Count) - 1 && row > 0)
                         dc.PutChar(new Point(boundingBox.X + boundingBox.Width - 1, boundingBox.Y),
-                                   FrameOptions.Frames[0][7],
+                                   Piece(FramePiece.Vertical | FramePiece.Left, FrameStyle.Single),
                                    Foreground, Background, CharAttribute.None);
                     if (row == Math.Max(1, RowDefinitions.Count) - 1 && column > 0)
                         dc.PutChar(new Point(boundingBox.X, boundingBox.Y + boundingBox.Height - 1),
-                                   FrameOptions.Frames[0][9],
+                                   Piece(FramePiece.Horizontal | FramePiece.Top, FrameStyle.Single),
                                    Foreground, Background, CharAttribute.None);
                 }
         }

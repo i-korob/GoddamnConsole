@@ -83,8 +83,10 @@ namespace GoddamnConsole.Controls
             set { _height = value; OnPropertyChanged(); }
         }
 
-        private readonly Stack<Control> _hmstack = new Stack<Control>();
-        private readonly Stack<Control> _wmstack = new Stack<Control>();
+        private readonly Stack<Control> _minwstack = new Stack<Control>();
+        private readonly Stack<Control> _minhstack = new Stack<Control>();
+        private readonly Stack<Control> _maxwstack = new Stack<Control>();
+        private readonly Stack<Control> _maxhstack = new Stack<Control>();
 
         /// <summary>
         /// Returns the measured width of this control
@@ -121,18 +123,25 @@ namespace GoddamnConsole.Controls
                         return Parent?.MeasureBoundingBox(this)?.Width
                                ?? Console.WindowWidth;
                     case ControlSizeType.MinByContent:
-                        return MinWidth;
+                        if (_minwstack.Contains(this))
+                        {
+                            // measurement loop
+                            return 0;
+                        }
+                        _minwstack.Push(this);
+                        var minValue = MinWidth;
+                        _minwstack.Pop();
+                        return minValue;
                     case ControlSizeType.MaxByContent:
-                        if (_wmstack.Contains(this))
+                        if (_maxwstack.Contains(this))
                         {
                             // measurement loop
                             return int.MaxValue;
-                            // throw new Exception("Measurement loop detected");
                         }
-                        _wmstack.Push(this);
-                        var value = MaxWidth;
-                        _wmstack.Pop();
-                        return value;
+                        _maxwstack.Push(this);
+                        var maxValue = MaxWidth;
+                        _maxwstack.Pop();
+                        return maxValue;
                     default:
                         return 0;
                 }
@@ -174,19 +183,25 @@ namespace GoddamnConsole.Controls
                         return Parent?.MeasureBoundingBox(this)?.Height
                                ?? Console.WindowHeight;
                     case ControlSizeType.MinByContent:
-                        // todo shit detection (for width too)
-                        return MinHeight;
+                        if (_minhstack.Contains(this))
+                        {
+                            // measurement loop
+                            return 0;
+                        }
+                        _minhstack.Push(this);
+                        var minValue = MinHeight;
+                        _minhstack.Pop();
+                        return minValue;
                     case ControlSizeType.MaxByContent:
-                        if (_hmstack.Contains(this))
+                        if (_maxhstack.Contains(this))
                         {
                             // measurement loop
                             return int.MaxValue;
-                            //throw new Exception("Measurement loop detected");
                         }
-                        _hmstack.Push(this);
-                        var value = MaxHeight;
-                        _hmstack.Pop();
-                        return value;
+                        _maxhstack.Push(this);
+                        var maxValue = MaxHeight;
+                        _maxhstack.Pop();
+                        return maxValue;
                     default:
                         return 0;
                 }

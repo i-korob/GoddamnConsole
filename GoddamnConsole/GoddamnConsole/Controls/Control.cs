@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using GoddamnConsole.Drawing;
 
@@ -13,6 +14,48 @@ namespace GoddamnConsole.Controls
         private bool _focusable;
         private CharColor _foreground = CharColor.White;
         private CharColor _background = CharColor.Black;
+
+        private string _name;
+
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                if (value == _name) return;
+                if (value != null &&
+                    AllControls.Any(x => x.Name == value))
+                    throw new Exception("Control with exact name already exists");
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICollection<Control> LogicalChildren =>
+            this is IContentControl
+                ? new Collection<Control> {((IContentControl) this).Content}
+                : (this as IChildrenControl)?.Children ?? new Collection<Control>();
+
+        private void _allControls2(List<Control> collection)
+        {
+            var thisLogical = LogicalChildren;
+            collection.AddRange(thisLogical);
+            foreach (var logical in thisLogical) logical._allControls2(collection);
+        }
+
+        private ICollection<Control> _allControls()
+        {
+            var c = new List<Control> {this};
+            _allControls2(c);
+            return c;
+        }
+
+        public ICollection<Control> AllControls =>
+            _parent == null
+                ? _allControls()
+                : _parent.AllControls;
+
+        public Control ByName(string name) => AllControls.First(x => x.Name == name);
 
         /// <summary>
         /// Gets or sets a current cursor position. If control is not focused, attempts to set cursor position will be ignored

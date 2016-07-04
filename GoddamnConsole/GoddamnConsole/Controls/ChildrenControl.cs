@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GoddamnConsole.Drawing;
 
 namespace GoddamnConsole.Controls
@@ -32,6 +33,9 @@ namespace GoddamnConsole.Controls
 
             public void Add(Control item)
             {
+                if (item.Name != null &&
+                    _parent.AllControls.Any(x => x.Name == item.Name))
+                    throw new Exception("Control with exact name already exists");
                 if (item.Parent != _parent)
                 {
                     item.Parent = _parent;

@@ -151,7 +151,7 @@ namespace GoddamnConsole.Controls
         private string _text;
         private TextWrapping _textWrapping = TextWrapping.NoWrap;
 
-        protected override void OnSizeChanged(Size prevSize, Size newSize)
+        private void Remeasure()
         {
             if (_text != null)
                 _measurement = new TextMeasurement
@@ -159,10 +159,17 @@ namespace GoddamnConsole.Controls
                      _textWrapping == TextWrapping.Wrap ? ActualWidth : int.MaxValue);
         }
 
+        protected override void OnSizeChanged()
+        {
+            Remeasure();
+        }
+
         protected override void OnKeyPressed(ConsoleKeyInfo key)
         {
             if (key.Modifiers.HasFlag(ConsoleModifiers.Control) || key.Modifiers.HasFlag(ConsoleModifiers.Alt))
                 return;
+            if (_caretPos > Text.Length) _caretPos = Text.Length;
+            if (_caretPos < 0) _caretPos = 0;
             var prevPos = _caretPos;
             switch (key.Key)
             {
@@ -217,12 +224,16 @@ namespace GoddamnConsole.Controls
 
         protected override void OnRender(DrawingContext context)
         {
-            OnSizeChanged(new Size(0, 0), new Size(0, 0)); // todo переписать это дерьмо
-            var so = new Point((int) _scrollX, (int) _scrollY);
-            CursorPosition =
-                _measurement.CaretPosition(_caretPos)
-                            .Offset(so.X, so.Y)
-                            .Offset(context.RenderOffsetX, context.RenderOffsetY);
+            var so = new Point(TextWrapping == TextWrapping.Wrap ? 0 : (int) _scrollX, (int) _scrollY);
+            var cpos =
+                _measurement.CaretPosition(_caretPos);
+            if (cpos.X >= ActualWidth)
+            {
+                cpos = new Point(0, cpos.Y + 1);
+                if (cpos.Y + so.Y >= ActualHeight) so = so.Offset(0, -1);
+            }
+            CursorPosition = cpos.Offset(so.X, so.Y)
+                                 .Offset(context.RenderOffsetX, context.RenderOffsetY);
             context = context.Scroll(so);
             context.Clear(Background);
             context.DrawText(
