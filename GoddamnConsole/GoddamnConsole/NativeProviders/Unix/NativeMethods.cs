@@ -5,7 +5,7 @@ namespace GoddamnConsole.NativeProviders.Unix
 {
     internal static unsafe class NativeMethods
     {
-        private const string NcursesLib = "libncursesw.so.5";
+        private const string NcursesLib = "libncursesw.so.5"; // todo грузить версии старше 5
 
         [DllImport(NcursesLib)]
         public static extern IntPtr initscr();

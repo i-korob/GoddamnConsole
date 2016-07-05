@@ -121,6 +121,23 @@ namespace GoddamnConsoleSample
             };
             var clkCnt = 0;
             btn.Clicked += (o, e) => ((TextView) btn.ByName("clkCnt")).Text = $"Click count: {++clkCnt}";
+            var box = new TextBox
+            {
+                TextWrapping = TextWrapping.Wrap,
+                Text = "Hello World!"
+            };
+            var view = new TextView
+            {
+                DataContext = box,
+                AttachedProperties =
+                {
+                    new GridProperties
+                    {
+                        Row = 1
+                    }
+                }
+            };
+            view.Bind(nameof(view.Text), "Text");
             var tabControlTest = new ContentWindow
             {
                 Title = "ContentWindow + TabControl2 Test (Prev: Shift+Tab)",
@@ -252,11 +269,19 @@ namespace GoddamnConsoleSample
                         },
                         new Tab
                         {
-                            Title = "TextBox",
-                            Content = new TextBox
+                            Title = "TextBox + Binding",
+                            Content = new Grid
                             {
-                                Text = "Hello World!",
-                                TextWrapping = TextWrapping.Wrap
+                                RowDefinitions =
+                                {
+                                    new GridSize(GridUnitType.Grow, 1),
+                                    new GridSize(GridUnitType.Grow, 1)
+                                },
+                                Children =
+                                {
+                                    box,
+                                    view
+                                }
                             }
                         },
                         new Tab

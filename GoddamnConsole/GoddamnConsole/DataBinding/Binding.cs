@@ -22,13 +22,26 @@ namespace GoddamnConsole.DataBinding
         private readonly PropertyInfo _property;
         
         private readonly List<BindingNode> _nodes = new List<BindingNode>();
+        private readonly bool _strict;
+        private readonly BindingMode _mode;
 
-        public Binding(Control control, PropertyInfo property, string path)
+        public Binding(Control control, PropertyInfo property, string path, BindingMode mode, bool strict)
         {
             _path = path;
             _property = property;
             _control = control;
+            _mode = mode;
+            _strict = strict;
+            if (mode == BindingMode.OneWayToSource || mode == BindingMode.TwoWay)
+                control.PropertyChanged += OnTargetPropertyChanged;
             Refresh();
+        }
+
+        private void OnTargetPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var last = _nodes.LastOrDefault();
+            if (last == null) return;
+            last.Property.SetValue(last.Object, _property.GetValue(_control));
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -37,8 +50,10 @@ namespace GoddamnConsole.DataBinding
             if (node != null) Refresh();
         }
 
-        public void Cleanup()
+        public void Cleanup(bool unbindTarget = false)
         {
+            if (unbindTarget && (_mode == BindingMode.OneWayToSource || _mode == BindingMode.TwoWay))
+                _control.PropertyChanged -= OnTargetPropertyChanged;
             foreach (var node in _nodes.Where(x => x.Handler != null))
             {
                 node.ObjectType
@@ -77,18 +92,26 @@ namespace GoddamnConsole.DataBinding
                 }
                 try
                 {
-                    _property.SetValue(_control, data);
+                    if (_mode == BindingMode.OneWay || _mode == BindingMode.TwoWay)
+                        _property.SetValue(_control, data);
                 }
                 catch
                 {
-                    // invalid property value
+                    if (_strict) throw; // invalid property value
                 }
             }
             catch
             {
                 Cleanup();
-                // throw; // invalid path
+                if (_strict) throw; // invalid path
             }
         }
+    }
+
+    public enum BindingMode
+    {
+        OneWay,
+        TwoWay,
+        OneWayToSource
     }
 }

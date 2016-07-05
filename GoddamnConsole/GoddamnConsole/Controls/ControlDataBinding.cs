@@ -28,14 +28,12 @@ namespace GoddamnConsole.Controls
         /// <summary>
         /// Binds the element property to the data context
         /// </summary>
-        /// <param name="propertyName"></param>
-        /// <param name="bindingPath"></param>
-        public void Bind(string propertyName, string bindingPath)
+        public void Bind(string propertyName, string bindingPath, BindingMode mode = BindingMode.OneWay)
         {
             var property = GetType().GetProperty(propertyName);
             if (property == null) throw new ArgumentException("Property not found");
             Unbind(propertyName);
-            _bindings.Add(property, new Binding(this, property, bindingPath));
+            _bindings.Add(property, new Binding(this, property, bindingPath, mode, true));
         }
 
         /// <summary>
